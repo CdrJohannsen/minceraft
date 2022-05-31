@@ -26,13 +26,22 @@ def install():
 	version = display.userInput()
 	
 	
-	current_max = 0
+	current_max = 390
 	def set_status(status: str):
 		  display.append(status)
 	
 	def set_progress(progress: int):
-		  if current_max != 0:
-		      display.append(f"{progress}/{current_max}")
+		prog = f"{progress}/{current_max}"
+		size = int(os.get_terminal_size()[0])
+		barsize = size - len(prog) -2-4
+		barlen = int((barsize/current_max)*progress)
+		bar=''
+		for i in range(barlen):
+			bar += '='
+		for i in range(barsize-barlen):
+			bar += ' '
+		display.set('['+bar+']'+prog)
+		
 
 
 	def set_max(new_max: int):

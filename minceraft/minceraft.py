@@ -2,6 +2,7 @@ import time, sys, threading, pickle, os, hashlib, time, math, subprocess, msmcau
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
+import mclaunch
 
 
 ###############################################################
@@ -98,6 +99,7 @@ def login():
     return(userDic, userPassword)
 
 
+'''
 def simpleLaunch(email, password):
     minecraft_directory = '/home/malte/.config/minceraft'
     display.append('installing minecraft')
@@ -111,7 +113,7 @@ def simpleLaunch(email, password):
     for i in launchCommand:
         finalLaunchCommand += ' ' + i
     os.system(finalLaunchCommand)
-
+'''
 
    
 
@@ -123,16 +125,12 @@ createDirectory()
 os.system('cd .config/minceraft/')
 userDic, userPassword = login()
 
-display.append('press enter to quit')
 
-msEmail = ec.decrypt(userDic["msEmail"], userPassword)
-msPassword = ec.decrypt(userDic["msPassword"], userPassword) 
-simpleLaunch(msEmail, msPassword)
+while(True):
+	display.set(['', 'select an option'])
+	
+	display.appendTop('[0]    exit minceraft')
+	display.appendTop('[0]    exit minceraft')
 
 
 del display
-
-
-testFile = open("hi.txt", "w")
-testFile.write('hi')
-testFile.close()

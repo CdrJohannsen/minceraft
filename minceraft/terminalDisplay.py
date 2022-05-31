@@ -139,9 +139,9 @@ class advancedDisplay():
                 print()
         for i in self.outputList:
             print('   ' + i)
-	self.homeList.reverse()
+        self.homeList.reverse()
         while(True):
-            if(len(self.homeList) < homeLength):
+            if(len(self.homeList) < self.homeLength):
                 self.homeList.append('')
             else:
                 break

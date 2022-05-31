@@ -3,6 +3,7 @@ import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
 import readchar
+import math
 
 def mc_launch(dspl):
 	global display
@@ -23,6 +24,7 @@ def mc_launch(dspl):
 #########################################################
 
 def install():
+	display.clear()
 	display.homeSet('Select Version',2)
 	version = display.userInput()
 	display.homeSet('Installing'+version,2)
@@ -34,13 +36,13 @@ def install():
 	def set_progress(progress: int):
 		prog = f"{progress}/{current_max}"
 		size = int(os.get_terminal_size()[0])
-		barsize = size-len(prog)-2-4
-		barlen = int((barsize/current_max)*progress)
+		barsize = size-len(prog)-current_max-2-4
+		barlen = int(math.floor(barsize/current_max)*progress)
 		bar=''
 		for i in range(barlen):
 			bar += '='
 		for i in range(barsize-barlen):
-			bar += ' '
+			bar += '-'
 		display.listSet('['+bar+']'+prog)
 		
 

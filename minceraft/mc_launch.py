@@ -4,4 +4,4 @@ import terminalDisplay
 import encryption as ec
 
 def mc_launch():
-	
+	display.appendTop('[0]    ')

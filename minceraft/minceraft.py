@@ -105,7 +105,7 @@ def simpleLaunch(email, password):
     display.append('finished installing minecraft')
     resp = msmcauth.login(email, password)
     launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": resp.access_token}
-    launchOptions["jvmArguments"] = ["-Xmx8G", "-Xms2G"]
+    launchOptions["jvmArguments"] = ["-Xmx4G", "-Xms2G"]
     launchCommand = minecraft_launcher_lib.command.get_minecraft_command("1.8.9", minecraft_directory, launchOptions)
     finalLaunchCommand = ''
     for i in launchCommand:

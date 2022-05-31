@@ -101,7 +101,8 @@ class advancedDisplay():
         self.outputList.reverse()
         self.output()
         
-    def homeSet(self, homeObject):
+    def homeSet(self, homeObject, homeLength):
+        self.homeLength = homeLength
         self.homeList = ['']
         if(type(homeObject) is str):
             self.homeList += [homeObject]
@@ -110,7 +111,7 @@ class advancedDisplay():
         self.homeList.append('')
         self.homeList.reverse()
         while(True):
-            if(len(self.homeList) < 5):
+            if(len(self.homeList) < homeLength):
                 self.homeList.append('')
             else:
                 break

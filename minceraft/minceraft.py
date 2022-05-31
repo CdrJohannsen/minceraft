@@ -3,6 +3,7 @@ import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
 import mclaunch
+import mcedit
 
 
 ###############################################################
@@ -133,19 +134,20 @@ display.appendTop('[0]    exit minceraft')
 while(True):
 	userInput = display.userInput()
 	
-	if(userInput = '0'):
-		break
-	elif(userInput = '1'):
-		pass
-	elif(userInput = '2'):
-		mcedit.startEditor()
-	elif(userInput = '')
-		pass
-		#open preferences file and do the thing
-		#userInput = preferencesDic['mainMenuSelection']
-	else:
-		display.set(['', 'not a valid option, select another option'])
-		display.appendTop('[2]    enter the text editor mode')
-		display.appendTop('[1]    enter the launch menu')
-		display.appendTop('[0]    exit minceraft')
+    if(userInput = '0'):
+        break
+    elif(userInput = '1'):
+        pass
+    elif(userInput = '2'):
+        mcedit.startEditor()
+    elif(userInput = '')
+        pass
+        #open preferences file and do the thing
+        #userInput = preferencesDic['mainMenuSelection']
+    else:
+        display.set(['', 'not a valid option, select another option'])
+        display.appendTop('[2]    enter the text editor mode')
+        display.appendTop('[1]    enter the launch menu')
+        display.appendTop('[0]    exit minceraft')
+		
 del display

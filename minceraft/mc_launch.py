@@ -2,13 +2,17 @@ import time, os, msmcauth
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
+import readchar
 
-def mc_launch():
+def mc_launch(dspl):
+	global display
+	display = dspl
 	homePath = os.path.expanduser('~')
+	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
-	display.appendTop('[i]  install version')
+	display.set('[i]  install version')
 	display.appendTop('[r]  reauthenticate')
-	selected = display.userInput()
+	selected = readchar.readchar()
 	if selected == 'i':
 		install()
 	elif selected == 'r':
@@ -42,5 +46,5 @@ def install():
 		  "setMax": set_max
 	}
 
-	minecraft_launcher_lib.install.install_minecraft_version("1.17", minecraft_dir, callback=callback)
+	minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
 

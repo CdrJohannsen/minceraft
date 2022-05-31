@@ -4,6 +4,7 @@ import terminalDisplay
 import encryption as ec
 import mc_launch
 import mc_edit
+import readchar
 
 
 ###############################################################
@@ -71,7 +72,7 @@ def login():
             userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
         display.set(userSelection + ['', 'please choose your user profile'])
         while(True):
-            userSelected = int(display.userInput())
+            userSelected = int(readchar.readchar())
             if(userSelected == 0):
                 display.set('creating new user')
                 configFile = open(configPath, "rb")
@@ -120,6 +121,7 @@ def simpleLaunch(email, password):
 ###############################################################
 
 homePath = os.path.expanduser('~')
+global display
 display = terminalDisplay.terminalDisplay()
 createDirectory()
 os.system('cd .config/minceraft/')
@@ -131,12 +133,12 @@ display.appendTop('[2]    enter the text editor mode')
 display.appendTop('[1]    enter the launch menu')
 display.appendTop('[0]    exit minceraft')
 while(True):
-	userInput = display.userInput()
+	userInput = readchar.readchar()
 
 	if(userInput == '0'):
 	    break
 	elif(userInput == '1'):
-	    mc_launch.mc_launch()
+	    mc_launch.mc_launch(display)
 	elif(userInput == '2'):
 	    mcedit.startEditor()
 	elif(userInput == ''):

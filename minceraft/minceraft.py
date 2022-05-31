@@ -2,8 +2,8 @@ import time, sys, threading, pickle, os, hashlib, time, math, subprocess, msmcau
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
-import mclaunch
-import mcedit
+import mc_launch
+import mc_edit
 
 
 ###############################################################
@@ -139,7 +139,7 @@ while(True):
 	    mc_launch.mc_launch()
 	elif(userInput == '2'):
 	    mcedit.startEditor()
-	elif(userInput == '')
+	elif(userInput == ''):
 	    pass
 	    #open preferences file and do the thing
 	    #userInput = preferencesDic['mainMenuSelection']

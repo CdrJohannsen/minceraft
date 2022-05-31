@@ -10,14 +10,15 @@ def mc_launch(dspl):
 	homePath = os.path.expanduser('~')
 	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
-	display.homeSet('Select Option',2)
-	display.listSet('[i]  install version')
-	display.listAppend('[r]  reauthenticate')
-	selected = readchar.readchar()
-	if selected == 'i':
-		install()
-	elif selected == 'r':
-		auth()
+	while True:
+		display.homeSet('Select Option',2)
+		display.listSet('[i]  install version')
+		display.listAppend('[r]  reauthenticate')
+		selected = readchar.readchar()
+		if selected == 'i':
+			install()
+		elif selected == 'r':
+			auth()
 
 
 #########################################################
@@ -35,9 +36,12 @@ def install():
 	  "setProgress": set_progress,
 	  "setMax": set_max
 	}
-
-	minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
-	display.homeSet('Download finished!')
+	try:
+		minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
+		display.homeSet('Download finished!')
+	except:
+		display.homeSet('Couldn\'t download ' + version)
+	
 	
 def set_status(status: str):
 	  global downloading

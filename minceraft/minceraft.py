@@ -133,13 +133,13 @@ display.appendTop('[0]    exit minceraft')
 while(True):
 	userInput = display.userInput()
 
-	if(userInput = '0'):
+	if(userInput == '0'):
 	    break
-	elif(userInput = '1'):
+	elif(userInput == '1'):
 	    mc_launch.mc_launch()
-	elif(userInput = '2'):
+	elif(userInput == '2'):
 	    mcedit.startEditor()
-	elif(userInput = '')
+	elif(userInput == '')
 	    pass
 	    #open preferences file and do the thing
 	    #userInput = preferencesDic['mainMenuSelection']

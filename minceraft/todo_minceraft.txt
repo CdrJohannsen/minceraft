@@ -1,0 +1,3 @@
+[] add version
+[] start mineceraft
+[] reauthenticate

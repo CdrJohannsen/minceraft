@@ -123,6 +123,7 @@ def simpleLaunch(email, password):
 homePath = os.path.expanduser('~')
 global display
 display = terminalDisplay.terminalDisplay()
+advancedDisplay = terminalDisplay.advancedDisplay()
 createDirectory()
 os.system('cd .config/minceraft/')
 userDic, userPassword = login()
@@ -138,7 +139,7 @@ while(True):
 	if(userInput == '0'):
 	    break
 	elif(userInput == '1'):
-	    mc_launch.mc_launch(display)
+	    mc_launch.mc_launch(advancedDisplay)
 	elif(userInput == '2'):
 	    mcedit.startEditor()
 	elif(userInput == ''):

@@ -10,8 +10,8 @@ def mc_launch(dspl):
 	homePath = os.path.expanduser('~')
 	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
-	display.set('[i]  install version')
-	display.appendTop('[r]  reauthenticate')
+	display.listSet('[i]  install version')
+	display.listAppend('[r]  reauthenticate')
 	selected = readchar.readchar()
 	if selected == 'i':
 		install()
@@ -22,13 +22,13 @@ def mc_launch(dspl):
 #########################################################
 
 def install():
-	display.append('Select Version')
+	display.homeSet('Select Version')
 	version = display.userInput()
 	
 	
 	current_max = 390
 	def set_status(status: str):
-		  display.append(status)
+		  display.listAppend(status)
 	
 	def set_progress(progress: int):
 		prog = f"{progress}/{current_max}"
@@ -40,7 +40,7 @@ def install():
 			bar += '='
 		for i in range(barsize-barlen):
 			bar += ' '
-		display.set('['+bar+']'+prog)
+		display.listSet('['+bar+']'+prog)
 		
 
 

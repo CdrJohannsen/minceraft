@@ -78,6 +78,11 @@ class advancedDisplay():
         self.logo = True
         self.longSpacer = '                                                                                                                                                                                  '
     
+    def clear(self):
+        self.outputList = []
+        self.homeList = []
+        os.system('clear')
+        
     def listSet(self, appendObject):
         if(type(appendObject) is str):
             self.outputList = [appendObject]
@@ -101,7 +106,7 @@ class advancedDisplay():
         self.outputList.reverse()
         self.output()
         
-    def homeSet(self, homeObject, homeLength):
+    def homeSet(self, homeObject, homeLength = 5):
         self.homeLength = homeLength
         self.homeList = ['']
         if(type(homeObject) is str):
@@ -126,16 +131,16 @@ class advancedDisplay():
 " / /  / / / / / / /__/  __/ /  / /_/ / __/ /_  ",
 "/_/  /_/_/_/ /_/\___/\___/_/   \____/_/  \__/  "]
         os.system('clear')
-        if(terminalLength > (6 + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
+        if(terminalLength > (self.homeLength + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
             for i in range(math.ceil(terminalLength/2) - len(logoLines)):
                 print()
             spacer = self.longSpacer[:math.floor((terminalWidth - 48) / 2)]
             for i in logoLines:
                 print(spacer, i)
-            for i in range(math.floor(terminalLength / 2) - len(self.outputList) - 6):
+            for i in range(math.floor(terminalLength / 2) - len(self.outputList) - self.homeLength):
                 print()
         else:
-            for i in range(terminalLength - 6 - len(self.outputList)):
+            for i in range(terminalLength - self.homeLength - len(self.outputList)):
                 print()
         for i in self.outputList:
             print('   ' + i)

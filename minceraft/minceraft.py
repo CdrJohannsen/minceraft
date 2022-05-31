@@ -126,12 +126,26 @@ os.system('cd .config/minceraft/')
 userDic, userPassword = login()
 
 
+display.set(['', 'select an option'])
+display.appendTop('[2]    enter the text editor mode')
+display.appendTop('[1]    enter the launch menu')
+display.appendTop('[0]    exit minceraft')
 while(True):
-	display.set(['', 'select an option'])
+	userInput = display.userInput()
 	
-	display.appendTop('[0]    exit minceraft')
-	display.appendTop('[1]    enter the launch menu')
-	display.appendTop('[2]    enter the text editor mode')
-
-
+	if(userInput = '0'):
+		break
+	elif(userInput = '1'):
+		pass
+	elif(userInput = '2'):
+		mcedit.startEditor()
+	elif(userInput = '')
+		pass
+		#open preferences file and do the thing
+		#userInput = preferencesDic['mainMenuSelection']
+	else:
+		display.set(['', 'not a valid option, select another option'])
+		display.appendTop('[2]    enter the text editor mode')
+		display.appendTop('[1]    enter the launch menu')
+		display.appendTop('[0]    exit minceraft')
 del display

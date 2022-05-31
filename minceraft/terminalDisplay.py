@@ -116,12 +116,6 @@ class advancedDisplay():
             self.homeList += homeObject
         self.homeList.append('')
         self.homeList.reverse()
-        while(True):
-            if(len(self.homeList) < homeLength):
-                self.homeList.append('')
-            else:
-                break
-        self.homeList.reverse()
         self.output()
 
     def output(self):
@@ -145,6 +139,13 @@ class advancedDisplay():
                 print()
         for i in self.outputList:
             print('   ' + i)
+	self.homeList.reverse()
+        while(True):
+            if(len(self.homeList) < homeLength):
+                self.homeList.append('')
+            else:
+                break
+        self.homeList.reverse()
         for i in self.homeList:
             print('    ' + i)
             

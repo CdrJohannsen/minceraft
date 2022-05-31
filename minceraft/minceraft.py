@@ -50,7 +50,6 @@ def createDirectory():
 
 
 def login():
-    homePath = os.path.expanduser('~')
     configPath = os.path.join(homePath, ".config/minceraft/users.bin")
     try:
         configFile = open(configPath, "rb")
@@ -120,7 +119,7 @@ def simpleLaunch(email, password):
 
 ###############################################################
 
-
+homePath = os.path.expanduser('~')
 display = terminalDisplay.terminalDisplay()
 createDirectory()
 os.system('cd .config/minceraft/')

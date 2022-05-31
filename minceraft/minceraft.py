@@ -130,7 +130,8 @@ while(True):
 	display.set(['', 'select an option'])
 	
 	display.appendTop('[0]    exit minceraft')
-	display.appendTop('[0]    exit minceraft')
+	display.appendTop('[1]    enter the launch menu')
+	display.appendTop('[2]    enter the text editor mode')
 
 
 del display

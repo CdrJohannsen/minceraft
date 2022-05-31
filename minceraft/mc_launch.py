@@ -22,6 +22,8 @@ def mc_launch(dspl):
 
 
 #########################################################
+#Install
+#########################################################
 
 def install():
 	display.clear()
@@ -87,3 +89,7 @@ def set_progress(progress: int):
 def set_max(new_max: int):
 	  global current_max
 	  current_max = new_max
+
+#########################################################
+#Authenticate
+#########################################################

@@ -1,4 +1,4 @@
-import time, sys, threading, pickle, os, hashlib, time, math, subprocess, msmcauth
+import time, sys, threading, pickle, os, hashlib, math, subprocess, msmcauth
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
@@ -18,28 +18,32 @@ def hashValue(inputString):
 
 
 def returnNewUser():
-    userDic = {}
-    display.append("please choose a username")
-    userDic["username"] = display.userInput()
-    display.append("please choose a password")
-    userPassword = display.userInput()
-    userDic["passwordHash"] = hashValue(userPassword)
-    while(True):
-        display.append("please enter your microsoft email adress")
-        userDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
-        display.append("please enter your microsoft email password")
-        userDic["msPassword"] = ec.encrypt(display.userInput(), userPassword)
-        try:
-            msEmail = ec.decrypt(userDic["msEmail"], userPassword)
-            msPassword = ec.decrypt(userDic["msPassword"], userPassword)
-            resp = msmcauth.login(msEmail, msPassword)
-            token=resp.access_token
-            username=resp.username
-            uuid=resp.uuid
-            break
-        except:
-            display.set(['not a correct microsoft account', 'please try again'])
-    return(userDic)
+	userDic = {}
+	display.append("please choose a username")
+	userDic["username"] = display.userInput()
+	display.append("please choose a password")
+	userPassword = display.userInput()
+	userDic["passwordHash"] = hashValue(userPassword)
+	while(True):
+		display.append("please enter your microsoft email adress")
+		userDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
+		display.append("please enter your microsoft email password")
+		userDic["msPassword"] = ec.encrypt(display.userInput(), userPassword)
+		try:
+			msEmail = ec.decrypt(userDic["msEmail"], userPassword)
+			msPassword = ec.decrypt(userDic["msPassword"], userPassword)
+			resp = msmcauth.login(msEmail, msPassword)
+			launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
+			userDic['launchOptions']=launchOptions
+			t = time.time()
+			last_played = {}
+			last_played['time']=t
+			last_played['version']=''
+			userDic['last_played']=last_played
+			break
+		except:
+			display.set(['not a correct microsoft account', 'please try again'])
+	return(userDic)
 
 
 def createDirectory():
@@ -97,7 +101,7 @@ def login():
                 display.set(userSelection + ['', 'not a valid user, please choose another option'])
 		    
     display.set("you successfully logged in")
-    return(userDic, userPassword)
+    return(userDic, userPassword, userSelected-1)
 
 
 '''
@@ -121,12 +125,11 @@ def simpleLaunch(email, password):
 ###############################################################
 
 homePath = os.path.expanduser('~')
-global display
 display = terminalDisplay.terminalDisplay()
 advancedDisplay = terminalDisplay.advancedDisplay()
 createDirectory()
 os.system('cd .config/minceraft/')
-userDic, userPassword = login()
+userDic, userPassword, userSelected = login()
 
 
 display.set(['', 'select an option'])
@@ -139,7 +142,7 @@ while(True):
 	if(userInput == '0'):
 	    break
 	elif(userInput == '1'):
-	    mc_launch.mc_launch(advancedDisplay,userDic,userPassword)
+	    mc_launch.mc_launch(advancedDisplay,userDic,userPassword,userSelected)
 	elif(userInput == '2'):
 	    mcedit.startEditor()
 	elif(userInput == ''):

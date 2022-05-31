@@ -4,8 +4,10 @@ import terminalDisplay
 import encryption as ec
 import readchar
 
-def mc_launch(dspl,userDic,userPassword):
+def mc_launch(dspl,userDic,userPassword,usr):
 	global display
+	global userSelected
+	userSelected = usr
 	display = dspl
 	global homePath
 	homePath = os.path.expanduser('~')
@@ -25,7 +27,7 @@ def mc_launch(dspl,userDic,userPassword):
 		if selected == 'i':
 			install()
 		elif selected == 'r':
-			auth(userDic,userPassword)
+			auth(userPassword,userSelected)
 		else:
 			try:
 				selected = int(selectet)
@@ -111,11 +113,24 @@ def set_max(new_max: int):
 #Authenticate
 #########################################################
 
-def auth(userDic,userPassword):
-	email = ec.decrypt(userDic['msEmail'], userPassword)
-	msPassword = ec.decrypt(userDic["msPassword"], userPassword)
-	resp = msmcauth.login(email, msPassword)
-	launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": resp.access_token}
+def auth(userPassword,userSelected):
+	#try:
+		display.homeSet('Authentificating...')
+		with open(homePath+'/.config/minceraft/users.bin','rb') as f:
+			userDic = pickle.load(f)
+			
+		email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
+		msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
+		resp = msmcauth.login(email, msPassword)
+		launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
+		userDic[userSelected]['launchOptions'] = launchOptions
+		userDic[userSelected]['last_played']['time']=time.time()
+		
+		with open(homePath+'/.config/minceraft/users.bin','wb') as f:
+			pickle.dump(userDic,homePath+'/.config/minceraft/users.bin')
+	#except:
+		display.homeSet('Authentification failed!')
+		time.sleep(2)
 
 #########################################################
 #Start

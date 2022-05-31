@@ -4,6 +4,7 @@ import terminalDisplay
 import encryption as ec
 
 def mc_launch():
+	homePath = os.path.expanduser('~')
 	minecraft_dir = homePath+'/.minceraft'
 	display.appendTop('[i]  install version')
 	display.appendTop('[r]  reauthenticate')

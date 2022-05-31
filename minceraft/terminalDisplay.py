@@ -73,7 +73,7 @@ class terminalDisplay:
 class advancedDisplay():
 
     def __init__(self):
-	self.homeLength = 5
+				self.homeLength = 5
         self.outputList = []
         self.homeList = []
         self.logo = True

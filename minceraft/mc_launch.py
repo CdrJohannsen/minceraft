@@ -1,12 +1,13 @@
-import time, os, msmcauth
+import time, os, msmcauth, pickle
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
 import readchar
 
-def mc_launch(dspl):
+def mc_launch(dspl,userDic,userPassword):
 	global display
 	display = dspl
+	global homePath
 	homePath = os.path.expanduser('~')
 	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
@@ -14,11 +15,27 @@ def mc_launch(dspl):
 		display.homeSet('Select Option',2)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
+		versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
+		i=0
+		for version in versions:
+			display.listAppend('['+str(i)+']  '+version['id'])
+			i += 1
+		
 		selected = readchar.readchar()
 		if selected == 'i':
 			install()
 		elif selected == 'r':
-			auth()
+			auth(userDic,userPassword)
+		else:
+			try:
+				selected = int(selectet)
+				launchCommand = minecraft_launcher_lib.command.get_minecraft_command(versions[selected]['id'], minecraft_dir, launchOptions)
+				finalLaunchCommand = ''
+				for i in launchCommand:
+				    finalLaunchCommand += ' ' + i
+				os.system('cd '+minecraft_dir+'&& screen -dm '+finalLaunchCommand)
+			except:
+				display.homeSet('Version not avaliable!')
 
 
 #########################################################
@@ -92,4 +109,14 @@ def set_max(new_max: int):
 
 #########################################################
 #Authenticate
+#########################################################
+
+def auth(userDic,userPassword):
+	email = ec.decrypt(userDic['msEmail'], userPassword)
+	msPassword = ec.decrypt(userDic["msPassword"], userPassword)
+	resp = msmcauth.login(email, msPassword)
+	launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": resp.access_token}
+
+#########################################################
+#Start
 #########################################################

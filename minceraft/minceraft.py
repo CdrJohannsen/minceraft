@@ -139,7 +139,7 @@ while(True):
 	if(userInput == '0'):
 	    break
 	elif(userInput == '1'):
-	    mc_launch.mc_launch(advancedDisplay)
+	    mc_launch.mc_launch(advancedDisplay,userDic,userPassword)
 	elif(userInput == '2'):
 	    mcedit.startEditor()
 	elif(userInput == ''):

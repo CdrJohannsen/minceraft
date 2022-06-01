@@ -5,6 +5,7 @@ import encryption as ec
 import mc_launch
 import mc_edit
 import readchar
+import getpass
 
 
 ###############################################################
@@ -22,13 +23,13 @@ def returnNewUser():
 	display.append("please choose a username")
 	userDic["username"] = display.userInput()
 	display.append("please choose a password")
-	userPassword = display.userInput()
+	userPassword = getpass.getpass()
 	userDic["passwordHash"] = hashValue(userPassword)
 	while(True):
 		display.append("please enter your microsoft email adress")
 		userDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
 		display.append("please enter your microsoft email password")
-		userDic["msPassword"] = ec.encrypt(display.userInput(), userPassword)
+		userDic["msPassword"] = ec.encrypt(getpass.getpass(), userPassword)
 		try:
 			msEmail = ec.decrypt(userDic["msEmail"], userPassword)
 			msPassword = ec.decrypt(userDic["msPassword"], userPassword)
@@ -91,7 +92,7 @@ def login():
                 userDic = configFileList[userSelected - 1]
                 display.set('please enter your password for user ' + userDic['username'])
                 while(True):
-                    userPassword = display.userInput()
+                    userPassword = getpass.getpass()
                     if(hashValue(userPassword) == userDic['passwordHash']):
                         break
                     else:
@@ -142,7 +143,7 @@ while(True):
 	if(userInput == '0'):
 	    break
 	elif(userInput == '1'):
-	    mc_launch.mc_launch(advancedDisplay,userDic,userPassword,userSelected)
+	    mc_launch.mc_launch(advancedDisplay,userPassword,userSelected)
 	elif(userInput == '2'):
 	    mcedit.startEditor()
 	elif(userInput == ''):

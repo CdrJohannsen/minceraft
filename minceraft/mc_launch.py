@@ -4,13 +4,16 @@ import terminalDisplay
 import encryption as ec
 import readchar
 
-def mc_launch(dspl,userDic,userPassword,usr):
+def mc_launch(dspl,userPassword,usr):
+	global homePath
+	homePath = os.path.expanduser('~')
+	global userDic
+	with open(homePath+'/.config/minceraft/users.bin','rb') as f:
+		userDic = pickle.load(f)
 	global display
 	global userSelected
 	userSelected = usr
 	display = dspl
-	global homePath
-	homePath = os.path.expanduser('~')
 	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
 	while True:
@@ -28,16 +31,23 @@ def mc_launch(dspl,userDic,userPassword,usr):
 			install()
 		elif selected == 'r':
 			auth(userPassword,userSelected)
+		elif selected == '\r':
+			version = userDic[userSelected]['last_played']['version']
+			if version != '':
+				launch(userDic[userSelected]['last_played']['version'])
+			else:
+				display.homeSet('No version played last!')
+				time.sleep(2)
 		else:
 			try:
 				selected = int(selectet)
-				launchCommand = minecraft_launcher_lib.command.get_minecraft_command(versions[selected]['id'], minecraft_dir, launchOptions)
-				finalLaunchCommand = ''
-				for i in launchCommand:
-				    finalLaunchCommand += ' ' + i
-				os.system('cd '+minecraft_dir+'&& screen -dm '+finalLaunchCommand)
+				try:
+					launch(versions[selected]['id'])
+				except:
+					display.append('Couldn\'t launch '+version)
 			except:
-				display.homeSet('Version not avaliable!')
+				display.homeSet('Option not avaliable!')
+				time.sleep(2)
 
 
 #########################################################
@@ -114,11 +124,8 @@ def set_max(new_max: int):
 #########################################################
 
 def auth(userPassword,userSelected):
-	#try:
+	try:
 		display.homeSet('Authentificating...')
-		with open(homePath+'/.config/minceraft/users.bin','rb') as f:
-			userDic = pickle.load(f)
-			
 		email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
 		msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
 		resp = msmcauth.login(email, msPassword)
@@ -127,11 +134,26 @@ def auth(userPassword,userSelected):
 		userDic[userSelected]['last_played']['time']=time.time()
 		
 		with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-			pickle.dump(userDic,homePath+'/.config/minceraft/users.bin')
-	#except:
+			pickle.dump(userDic,f)
+	except:
 		display.homeSet('Authentification failed!')
 		time.sleep(2)
 
 #########################################################
-#Start
+#Launch
 #########################################################
+
+def launch(version):
+	launchOptions = userDic[userSelected]['launchOptions']
+	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
+	finalLaunchCommand = ''
+	for i in launchCommand:
+	    finalLaunchCommand += ' ' + i
+	os.system('cd '+minecraft_dir+'&& screen -dm '+finalLaunchCommand)
+	userDic[userSelected]['last_played']['time']=time.time()
+	userDic[userSelected]['last_played']['version']=version
+	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
+		pickle.dump(userDic,f)
+	display.homeSet('Starting '+version)
+	time.sleep(3)
+	quit()

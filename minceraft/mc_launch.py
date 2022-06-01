@@ -17,7 +17,7 @@ def mc_launch(dspl,userPassword,usr):
 	global minecraft_dir
 	minecraft_dir = homePath+'/.minceraft'
 	while True:
-		display.homeSet('Select Option',2)
+		display.homeSet('Select Option',1)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
 		versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
@@ -35,19 +35,22 @@ def mc_launch(dspl,userPassword,usr):
 			version = userDic[userSelected]['last_played']['version']
 			if version != '':
 				launch(userDic[userSelected]['last_played']['version'])
+				break
 			else:
-				display.homeSet('No version played last!')
+				display.homeSet('No version played last!',1)
 				time.sleep(2)
 		else:
 			try:
-				selected = int(selectet)
+				selected = int(selected)
 				try:
 					launch(versions[selected]['id'])
+					break
 				except:
 					display.append('Couldn\'t launch '+version)
 			except:
-				display.homeSet('Option not avaliable!')
+				display.homeSet('Option not avaliable!',1)
 				time.sleep(2)
+	quit()
 
 
 #########################################################
@@ -78,18 +81,18 @@ def install():
 			try:
 				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir)
 			except UnsupportedVersion:
-				display.homeSet('Version not supportet by fabric!')
+				display.homeSet('Version not supportet by fabric!',1)
 		elif mod == '2':
 			forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
 			if forge_version is None:
-				display.homeSet("This Minecraft Version is not supported by Forge")
+				display.homeSet("This Minecraft Version is not supported by Forge",1)
 			else:
 				minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir)
 		else:
-			display.homeSet('Selection not valid!')
+			display.homeSet('Selection not valid!',1)
 	except:
-		display.homeSet('Version not avaliable!')
-	display.homeSet('Download finished!')
+		display.homeSet('Version not avaliable!',1)
+	display.homeSet('Download finished!',1)
 	time.sleep(2)
 		
 	
@@ -110,7 +113,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+'-'
 	bar = bar+']'
-	display.homeSet(downloading+'\n'+bar+prog)
+	display.homeSet(downloading+'\n'+bar+prog,1)
 	a
 	
 
@@ -125,7 +128,7 @@ def set_max(new_max: int):
 
 def auth(userPassword,userSelected):
 	try:
-		display.homeSet('Authentificating...')
+		display.homeSet('Authentificating...',1)
 		email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
 		msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
 		resp = msmcauth.login(email, msPassword)
@@ -136,7 +139,7 @@ def auth(userPassword,userSelected):
 		with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 			pickle.dump(userDic,f)
 	except:
-		display.homeSet('Authentification failed!')
+		display.homeSet('Authentification failed!',1)
 		time.sleep(2)
 
 #########################################################
@@ -154,6 +157,5 @@ def launch(version):
 	userDic[userSelected]['last_played']['version']=version
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 		pickle.dump(userDic,f)
-	display.homeSet('Starting '+version)
+	display.homeSet('Starting '+version,1)
 	time.sleep(3)
-	quit()

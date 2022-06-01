@@ -19,50 +19,53 @@ def hashValue(inputString):
 
 
 def returnNewUser():
-	userDic = {}
-	display.append("please choose a username")
-	userDic["username"] = display.userInput()
-	display.append("please choose a password")
-	userPassword = getpass.getpass()
-	userDic["passwordHash"] = hashValue(userPassword)
+	newUserDic = {}
+	display.homeSet("please choose a username",1)
+	newUserDic["username"] = display.userInput()
+	display.homeSet("please choose a password",1)
+	userPassword = getpass.getpass('    ')
+	newUserDic["passwordHash"] = hashValue(userPassword)
 	while(True):
-		display.append("please enter your microsoft email adress")
-		userDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
-		display.append("please enter your microsoft email password")
-		userDic["msPassword"] = ec.encrypt(getpass.getpass(), userPassword)
+		display.homeSet("please enter your microsoft email adress",1)
+		newUserDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
+		display.homeSet("please enter your microsoft email password",1)
+		newUserDic["msPassword"] = ec.encrypt(getpass.getpass('    '), userPassword)
 		try:
-			msEmail = ec.decrypt(userDic["msEmail"], userPassword)
-			msPassword = ec.decrypt(userDic["msPassword"], userPassword)
+			msEmail = ec.decrypt(newUserDic["msEmail"], userPassword)
+			msPassword = ec.decrypt(newUserDic["msPassword"], userPassword)
 			resp = msmcauth.login(msEmail, msPassword)
 			launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
-			userDic['launchOptions']=launchOptions
+			newUserDic['launchOptions']=launchOptions
 			t = time.time()
 			last_played = {}
 			last_played['time']=t
 			last_played['version']=''
-			userDic['last_played']=last_played
+			newUserDic['last_played']=last_played
 			break
 		except:
-			display.set(['not a correct microsoft account', 'please try again',e])
-	return(userDic)
+			display.listSet(['not a correct microsoft account', 'please try again',e])
+	return(newUserDic)
 
 
 def createDirectory():
-    display.set(['not found valid config file or directory', 'creating new config directory'])
+    display.listSet(['not found valid config file or directory', 'creating new config directory'])
     try:
         os.mkdir(os.path.join(homePath, ".config/minceraft"))
     except:
-        display.set(['could not create directory', 'press ENTER to exit'])
+        display.homeSet(['could not create directory', 'press ENTER to exit'])
 
 
 def login():
     configPath = os.path.join(homePath, ".config/minceraft/users.bin")
+    userDic={}
+    userPassword = ''
+    userSelected= 0
     try:
         configFile = open(configPath, "rb")
         configFileList = pickle.load(configFile)
         configFile.close()
     except:
-        display.set(['not found valid config file', 'creating new config file and user'])
+        display.listSet(['not found valid config file', 'creating new config file and user'])
         configFileList = [returnNewUser()]
         createDirectory()
         configFile = open(configPath, "wb")
@@ -75,11 +78,12 @@ def login():
         print('DEBUG', configFileList)
         for i in range(len(configFileList)):
             userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
-        display.set(userSelection + ['', 'please choose your user profile'])
+        display.listSet(userSelection)
+        display.homeSet('please choose your user profile',1)
         while(True):
             userSelected = int(readchar.readchar())
             if(userSelected == 0):
-                display.set('creating new user')
+                display.listSet('creating new user')
                 configFile = open(configPath, "rb")
                 configList = pickle.load(configFile)
                 configList.append(returnNewUser())
@@ -90,18 +94,19 @@ def login():
                 break
             try:
                 userDic = configFileList[userSelected - 1]
-                display.set('please enter your password for user ' + userDic['username'])
+                display.homeSet('please enter your password for user ' + userDic['username'],1)
                 while(True):
                     userPassword = getpass.getpass()
                     if(hashValue(userPassword) == userDic['passwordHash']):
                         break
                     else:
-                        display.set('not correct, try again')
+                        display.homeSet('not correct, try again',1)
                 break
             except:
-                display.set(userSelection + ['', 'not a valid user, please choose another option'])
+                display.listSet(userSelection)
+                display.homeSet('not a valid user, please choose another option',1)
 		    
-    display.set("you successfully logged in")
+    display.homeSet("you successfully logged in")
     return(userDic, userPassword, userSelected-1)
 
 
@@ -126,34 +131,29 @@ def simpleLaunch(email, password):
 ###############################################################
 
 homePath = os.path.expanduser('~')
-display = terminalDisplay.terminalDisplay()
-advancedDisplay = terminalDisplay.advancedDisplay()
-createDirectory()
+display = terminalDisplay.advancedDisplay()
 os.system('cd .config/minceraft/')
-userDic, userPassword, userSelected = login()
+CurrentUserDic, userPassword, userSelected = login()
 
 
-display.set(['', 'select an option'])
-display.appendTop('[2]    enter the text editor mode')
-display.appendTop('[1]    enter the launch menu')
-display.appendTop('[0]    exit minceraft')
+
 while(True):
+	display.homeSet('Select an option',1)
+	display.listSet('[2]    enter the text editor mode')
+	display.listAppendTop('[1]    enter the launch menu')
+	display.listAppendTop('[0]    exit minceraft')
 	userInput = readchar.readchar()
 
 	if(userInput == '0'):
-	    break
-	elif(userInput == '1')or userInput == '\r':
-	    mc_launch.mc_launch(advancedDisplay,userPassword,userSelected)
-	elif(userInput == '2'):
+			display.clear()
+			break
+	elif userInput == '1' or userInput == '\r':
+	    mc_launch.mc_launch(display,userPassword,userSelected)
+	elif userInput == '2':
 	    mcedit.startEditor()
-	elif(userInput == ''):
+	elif userInput == '\r':
 	    pass
 	    #open preferences file and do the thing
 	    #userInput = preferencesDic['mainMenuSelection']
-	else:
-	    display.set(['', 'not a valid option, select another option'])
-	    display.appendTop('[2]    enter the text editor mode')
-	    display.appendTop('[1]    enter the launch menu')
-	    display.appendTop('[0]    exit minceraft')
 		
 del display

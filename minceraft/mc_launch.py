@@ -50,14 +50,11 @@ def mc_launch(dspl,passwd,usr):
 				try:
 					launch(versions[selected]['id'])
 					break
-				except Exception as ex:
+				except:
 					display.homeSet('Couldn\'t launch '+versions[selected]['id'],1)
-					print(ex)
-					print(userPassword)
 					time.sleep(2)
-			except Exception as e:
+			except:
 				display.homeSet('Option not avaliable!',1)
-				print(e)
 				time.sleep(2)
 	quit()
 
@@ -85,6 +82,7 @@ def install():
 	}
 	try:
 		success = False
+		display.clear
 		if mod == '0':
 			minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
 			success = True
@@ -111,6 +109,10 @@ def install():
 				if os.path.isdir(versionPath+'/'+d):
 					dirs.append(versionPath+'/'+d)
 			new_version = sorted(dirs, key=lambda x: os.path.getctime(x), reverse=True)[:1][0]
+			try:
+				os.mkdir(os.path.join(minecraft_dir,'gameDirs'))
+			except:
+				pass
 			try:
 				os.mkdir(os.path.join(minecraft_dir,'gameDirs',version))
 			except:
@@ -176,7 +178,7 @@ def auth(userSelected):
 #########################################################
 
 def launch(version):
-	launchOptions = userDic[userSelected]['launchOptions']
+	launchOptions = list(userDic[userSelected]['launchOptions'])
 	game_dir = os.path.join(minecraft_dir,'gameDirs',version)
 	launchOptions["gameDirectory"] = game_dir
 	access_token = str(launchOptions['token'])

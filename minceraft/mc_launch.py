@@ -4,9 +4,11 @@ import terminalDisplay
 import encryption as ec
 import readchar
 
-def mc_launch(dspl,userPassword,usr):
+def mc_launch(dspl,passwd,usr):
 	global homePath
 	homePath = os.path.expanduser('~')
+	global userPassword
+	userPassword = passwd
 	global userDic
 	with open(homePath+'/.config/minceraft/users.bin','rb') as f:
 		userDic = pickle.load(f)
@@ -20,17 +22,20 @@ def mc_launch(dspl,userPassword,usr):
 		display.homeSet('Select Option',1)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
-		versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
-		i=0
-		for version in versions:
-			display.listAppend('['+str(i)+']  '+version['id'])
-			i += 1
+		try:
+			versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
+			i=0
+			for version in versions:
+				display.listAppend('['+str(i)+']  '+version['id'])
+				i += 1
+		except:
+			pass
 		
 		selected = readchar.readchar()
 		if selected == 'i':
 			install()
 		elif selected == 'r':
-			auth(userPassword,userSelected)
+			auth(userSelected)
 		elif selected == '\r':
 			version = userDic[userSelected]['last_played']['version']
 			if version != '':
@@ -46,9 +51,10 @@ def mc_launch(dspl,userPassword,usr):
 					launch(versions[selected]['id'])
 					break
 				except:
-					display.append('Couldn\'t launch '+version)
-			except:
+					display.listAppend('Couldn\'t launch '+version)
+			except Exception as e:
 				display.homeSet('Option not avaliable!',1)
+				print(e)
 				time.sleep(2)
 	quit()
 
@@ -67,10 +73,6 @@ def install():
 	display.listAppend('[1]  fabric')
 	display.listAppend('[2]  forge')
 	mod = display.userInput()
-	display.homeSet(['Select subdirectory for install','Leave empty for default directory'],2)
-	subdir = display.userInput.strip('/')
-	if subdir != '':
-		minecraft_dir = homePath +'/.minceraft/'+subdir
 	
 	current_max = 390
 	callback = {
@@ -79,11 +81,14 @@ def install():
 	  "setMax": set_max
 	}
 	try:
+		success = False
 		if mod == '0':
 			minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
+			success = True
 		elif mod == '1':
 			try:
 				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir)
+				success=True
 			except UnsupportedVersion:
 				display.homeSet('Version not supportet by fabric!',1)
 		elif mod == '2':
@@ -92,11 +97,15 @@ def install():
 				display.homeSet("This Minecraft Version is not supported by Forge",1)
 			else:
 				minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir)
+				success=True
 		else:
 			display.homeSet('Selection not valid!',1)
+			time.sleep(2)
+		if success:
+			os.mkdir(os.path.join(minecraft_dir,version))
+			display.homeSet('Download finished!',1)
 	except:
 		display.homeSet('Version not avaliable!',1)
-	display.homeSet('Download finished!',1)
 	time.sleep(2)
 		
 	
@@ -111,14 +120,14 @@ def set_progress(progress: int):
 	size = int(os.get_terminal_size()[0])
 	barsize = size-len(prog)-len(str(current_max))-2-4
 	barlen = int(round(barsize/current_max,0)*progress)
-	bar='['
+	bar='['+'\x1b[37m'
 	for i in range(barlen):
 		bar = bar+'='
+	bar = bar + '\x1b[0m'
 	for i in range(barsize-barlen):
-		bar = bar+'-'
+		bar = bar+' '
 	bar = bar+']'
 	display.homeSet(downloading+'\n'+bar+prog,1)
-	a
 	
 
 
@@ -130,7 +139,7 @@ def set_max(new_max: int):
 #Authenticate
 #########################################################
 
-def auth(userPassword,userSelected):
+def auth(userSelected):
 	try:
 		display.homeSet('Authentificating...',1)
 		email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
@@ -152,14 +161,19 @@ def auth(userPassword,userSelected):
 
 def launch(version):
 	launchOptions = userDic[userSelected]['launchOptions']
+	game_dir = minecraft_dir + '/' + version
+	launchOptions["gameDirectory"] = game_dir
+	launchOptions['token']=ec.decrypt(launchOptions['token'],userPassword)
 	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
 	finalLaunchCommand = ''
 	for i in launchCommand:
 	    finalLaunchCommand += ' ' + i
-	os.system('cd '+minecraft_dir+'&& screen -dm '+finalLaunchCommand)
+	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand
+	os.system(finalLaunchCommand)
 	userDic[userSelected]['last_played']['time']=time.time()
 	userDic[userSelected]['last_played']['version']=version
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 		pickle.dump(userDic,f)
 	display.homeSet('Starting '+version,1)
+	print(finalLaunchCommand)
 	time.sleep(3)

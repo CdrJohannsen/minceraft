@@ -25,14 +25,10 @@ def mc_launch(dspl,passwd,usr):
 		display.homeSet('Select Option',1)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
-		try:
-			versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
-			i=0
-			for version in versions:
-				display.listAppend('['+str(i)+']  '+version['id'])
-				i += 1
-		except:
-			pass
+		for version in versions:
+			display.listAppend('['+str(i)+']  '+version['id'])
+			i += 1
+
 		
 		selected = readchar.readchar()
 		if selected == 'i':

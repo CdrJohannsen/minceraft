@@ -56,69 +56,70 @@ def createDirectory():
 
 
 def login():
-		configPath = os.path.join(homePath, ".config/minceraft/users.bin")
-		versionsPath = os.path.join(homePath, ".config/minceraft/versions.bin")
-		userDic={}
-		userPassword = ''
-		userSelected= 0
-		try:
+	configPath = os.path.join(homePath, ".config/minceraft/users.bin")
+	versionsPath = os.path.join(homePath, ".config/minceraft/versions.bin")
+	userDic={}
+	userPassword = ''
+	userSelected= 0
+	try:
+		with open(configPath, "rb") as configFile:
+			configFileList = pickle.load(configFile)
+
+	except:
+		display.listSet(['not found valid config file', 'creating new config file and user'])
+		configFileList = [returnNewUser()]
+		createDirectory()
+
+		with open(configPath, "wb") as configFile:
+			pickle.dump(configFileList, configFile)
+
+	try:
+		with open(versionsPath, "rb") as versionFile:
+			versionFileList = pickle.load(versionFile)
+	except:
+		versionFileList = [{}]
+		with open(versionsPath, "wb") as versionFile:
+			pickle.dump(versionFileList, versionFile)
+
+
+	else:
+		userSelection = ['[0]    create new user']
+		print('DEBUG', configFileList)
+		for i in range(len(configFileList)):
+			userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
+		display.listSet(userSelection)
+		display.homeSet('please choose your user profile',1)
+		while(True):
+			userSelected = int(readchar.readchar())
+			if(userSelected == 0):
+				display.listSet('creating new user')
 				with open(configPath, "rb") as configFile:
-					configFileList = pickle.load(configFile)
-				
+					configList = pickle.load(configFile)
+				configList.append(returnNewUser())
+				with open(configPath, "wb") as configFile:
+					pickle.dump(configList, configFile)
+
 				with open(versionPath, "rb") as versionFile:
 					versionFileList = pickle.load(versionFile)
-				
-		except:
-				display.listSet(['not found valid config file', 'creating new config file and user'])
-				configFileList = [returnNewUser()]
-				createDirectory()
-				
-				with open(configPath, "wb") as configFile:
-					pickle.dump(configFileList, configFile)
-				
-				versionFileList = [{}]
 				with open(versionPath, "wb") as versionFile:
-					versionFileList = pickle.load(versionFile)
-
-
-		else:
-				userSelection = ['[0]    create new user']
-				print('DEBUG', configFileList)
-				for i in range(len(configFileList)):
-						userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
-				display.listSet(userSelection)
-				display.homeSet('please choose your user profile',1)
-				while(True):
-					userSelected = int(readchar.readchar())
-					if(userSelected == 0):
-							display.listSet('creating new user')
-							with open(configPath, "rb") as configFile:
-								configList = pickle.load(configFile)
-							configList.append(returnNewUser())
-							with open(configPath, "wb") as configFile:
-								pickle.dump(configList, configFile)
-
-							with open(versionPath, "rb") as versionFile:
-								versionFileList = pickle.load(versionFile)
-							with open(versionPath, "wb") as versionFile:
-									versionFileList = pickle.load(versionFile)
-							break
-					try:
-                userDic = configFileList[userSelected - 1]
-                display.homeSet('please enter your password for user ' + userDic['username'],1)
-                while(True):
-                    userPassword = getpass.getpass()
-                    if(hashValue(userPassword) == userDic['passwordHash']):
-                        break
-                    else:
-                        display.homeSet('not correct, try again',1)
-                break
-            except:
-                display.listSet(userSelection)
-                display.homeSet('not a valid user, please choose another option',1)
-		    
-    display.homeSet("you successfully logged in")
-    return(userDic, userPassword, userSelected-1)
+						versionFileList = pickle.load(versionFile)
+				break
+			try:
+					userDic = configFileList[userSelected - 1]
+					display.homeSet('please enter your password for user ' + userDic['username'],1)
+					while(True):
+							userPassword = getpass.getpass()
+							if(hashValue(userPassword) == userDic['passwordHash']):
+									break
+							else:
+									display.homeSet('not correct, try again',1)
+					break
+			except:
+					display.listSet(userSelection)
+					display.homeSet('not a valid user, please choose another option',1)
+		  
+	display.homeSet("you successfully logged in")
+	return(userDic, userPassword, userSelected-1)
 
 
 '''

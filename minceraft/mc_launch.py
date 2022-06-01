@@ -50,12 +50,13 @@ def mc_launch(dspl,passwd,usr):
 				try:
 					launch(versions[selected]['id'])
 					break
-				except:
-					display.listAppend('Couldn\'t launch '+version)
+				except Exception as ex:
+					display.homeSet('Couldn\'t launch '+versions[selected]['id'])
+					print(ex)
+					time.sleep(2)
 			except Exception as e:
 				display.homeSet('Option not avaliable!',1)
 				print(e)
-				raise Exception(e)
 				time.sleep(2)
 	quit()
 
@@ -88,7 +89,7 @@ def install():
 			success = True
 		elif mod == '1':
 			try:
-				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir)
+				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
 				success=True
 			except UnsupportedVersion:
 				display.homeSet('Version not supportet by fabric!',1)
@@ -97,13 +98,23 @@ def install():
 			if forge_version is None:
 				display.homeSet("This Minecraft Version is not supported by Forge",1)
 			else:
-				minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir)
+				minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
 				success=True
 		else:
 			display.homeSet('Selection not valid!',1)
 			time.sleep(2)
 		if success:
-			os.mkdir(os.path.join(minecraft_dir,version))
+			dirs = []
+			versionPath=os.path.join(minecraft_dir,'versions')
+			for d in os.listdir(versionPath):
+				if os.path.isdir(versionPath+'/'+d):
+					dirs.append(versionPath+'/'+d)
+			new_version = sorted(dirs, key=lambda x: os.path.getctime(x), reverse=True)[:1][0]
+			try:
+				os.mkdir(os.path.join(minecraft_dir,version))
+				os.mkdir(os.path.join(minecraft_dir,os.path.basename(new_version)))
+			except:
+				pass
 			display.homeSet('Download finished!',1)
 	except:
 		display.homeSet('Version not avaliable!',1)
@@ -164,12 +175,20 @@ def launch(version):
 	launchOptions = userDic[userSelected]['launchOptions']
 	game_dir = minecraft_dir + '/' + version
 	launchOptions["gameDirectory"] = game_dir
-	access_token = launchOptions['token']
-	print(type(access_token))
+	try:
+		access_token = str(launchOptions['token'])
+		display.listAppend(type(access_token))
+	except Exception as e:
+		display.listAppend(e)
+	time.sleep(5)
 	try:
 		launchOptions['token']=ec.decrypt(access_token,userPassword)
 	except:
+		display.listAppend(type(access_token))
 		display.listAppend('Couldn\'t decrypt access_token')
+		display.listAppend(access_token)
+	launchOptions['launcherName']='minceraft-launcher'
+	launchOptions['launcherVersion']='1.0'
 	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
 	finalLaunchCommand = ''
 	for i in launchCommand:

@@ -43,7 +43,7 @@ def returnNewUser():
 			userDic['last_played']=last_played
 			break
 		except:
-			display.set(['not a correct microsoft account', 'please try again'])
+			display.set(['not a correct microsoft account', 'please try again',e])
 	return(userDic)
 
 

@@ -55,6 +55,7 @@ def mc_launch(dspl,passwd,usr):
 			except Exception as e:
 				display.homeSet('Option not avaliable!',1)
 				print(e)
+				raise Exception(e)
 				time.sleep(2)
 	quit()
 
@@ -163,12 +164,17 @@ def launch(version):
 	launchOptions = userDic[userSelected]['launchOptions']
 	game_dir = minecraft_dir + '/' + version
 	launchOptions["gameDirectory"] = game_dir
-	launchOptions['token']=ec.decrypt(launchOptions['token'],userPassword)
+	access_token = launchOptions['token']
+	print(type(access_token))
+	try:
+		launchOptions['token']=ec.decrypt(access_token,userPassword)
+	except:
+		display.listAppend('Couldn\'t decrypt access_token')
 	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
 	finalLaunchCommand = ''
 	for i in launchCommand:
 	    finalLaunchCommand += ' ' + i
-	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand
+	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
 	os.system(finalLaunchCommand)
 	userDic[userSelected]['last_played']['time']=time.time()
 	userDic[userSelected]['last_played']['version']=version

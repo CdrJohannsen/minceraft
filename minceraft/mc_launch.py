@@ -15,8 +15,8 @@ def mc_launch(dspl,userPassword,usr):
 	userSelected = usr
 	display = dspl
 	global minecraft_dir
-	minecraft_dir = homePath+'/.minceraft'
 	while True:
+		minecraft_dir = homePath+'/.minceraft'
 		display.homeSet('Select Option',1)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
@@ -67,6 +67,10 @@ def install():
 	display.listAppend('[1]  fabric')
 	display.listAppend('[2]  forge')
 	mod = display.userInput()
+	display.homeSet(['Select subdirectory for install','Leave empty for default directory'],2)
+	subdir = display.userInput.strip('/')
+	if subdir != '':
+		minecraft_dir = homePath +'/.minceraft/'+subdir
 	
 	current_max = 390
 	callback = {

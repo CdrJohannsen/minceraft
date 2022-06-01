@@ -12,6 +12,9 @@ def mc_launch(dspl,passwd,usr):
 	global userDic
 	with open(homePath+'/.config/minceraft/users.bin','rb') as f:
 		userDic = pickle.load(f)
+	global versionDic
+	with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
+		versionDic = pickle.load(f)
 	global display
 	global userSelected
 	userSelected = usr
@@ -52,6 +55,7 @@ def mc_launch(dspl,passwd,usr):
 					break
 				except:
 					display.homeSet('Couldn\'t launch '+versions[selected]['id'],1)
+					print(e)
 					time.sleep(2)
 			except:
 				display.homeSet('Option not avaliable!',1)
@@ -114,10 +118,6 @@ def install():
 			except:
 				pass
 			try:
-				os.mkdir(os.path.join(minecraft_dir,'gameDirs',version))
-			except:
-				pass
-			try:
 				os.mkdir(os.path.join(minecraft_dir,'gameDirs',os.path.basename(new_version)))
 			except:
 				pass
@@ -138,10 +138,9 @@ def set_progress(progress: int):
 	size = int(os.get_terminal_size()[0])
 	barsize = size-len(prog)-len(str(current_max))-2-4
 	barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
-	bar='['+'\x1b[37m'
+	bar='['
 	for i in range(barlen):
-		bar = bar+'='
-	bar = bar + '\x1b[0m'
+		bar = bar+'■'
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
@@ -178,10 +177,10 @@ def auth(userSelected):
 #########################################################
 
 def launch(version):
-	launchOptions = list(userDic[userSelected]['launchOptions'])
+	launchOptions = dict(userDic[userSelected]['launchOptions'])
 	game_dir = os.path.join(minecraft_dir,'gameDirs',version)
 	launchOptions["gameDirectory"] = game_dir
-	access_token = str(launchOptions['token'])
+	access_token = launchOptions['token']
 	launchOptions['token']=ec.decrypt(access_token,userPassword)
 	launchOptions['launcherName']='minceraft-launcher'
 	launchOptions['launcherVersion']='1.0'
@@ -190,12 +189,12 @@ def launch(version):
 	for i in launchCommand:
 	    finalLaunchCommand += ' ' + i
 	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
+	finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, but only when not fabric will launch
 	os.system(finalLaunchCommand)
-	launchOptions['TESTETSTESTETSTETSTETSTETSTETSTE']='////////////////////////////////////////////////////////////////////////////////////'
 	userDic[userSelected]['last_played']['time']=time.time()
 	userDic[userSelected]['last_played']['version']=version
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 		pickle.dump(userDic,f)
 	display.homeSet('Starting '+version,1)
-	print(finalLaunchCommand)
+	#print(finalLaunchCommand)
 	time.sleep(3)

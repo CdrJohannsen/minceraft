@@ -51,8 +51,9 @@ def mc_launch(dspl,passwd,usr):
 					launch(versions[selected]['id'])
 					break
 				except Exception as ex:
-					display.homeSet('Couldn\'t launch '+versions[selected]['id'])
+					display.homeSet('Couldn\'t launch '+versions[selected]['id'],1)
 					print(ex)
+					print(userPassword)
 					time.sleep(2)
 			except Exception as e:
 				display.homeSet('Option not avaliable!',1)
@@ -111,8 +112,11 @@ def install():
 					dirs.append(versionPath+'/'+d)
 			new_version = sorted(dirs, key=lambda x: os.path.getctime(x), reverse=True)[:1][0]
 			try:
-				os.mkdir(os.path.join(minecraft_dir,version))
-				os.mkdir(os.path.join(minecraft_dir,os.path.basename(new_version)))
+				os.mkdir(os.path.join(minecraft_dir,'gameDirs',version))
+			except:
+				pass
+			try:
+				os.mkdir(os.path.join(minecraft_dir,'gameDirs',os.path.basename(new_version)))
 			except:
 				pass
 			display.homeSet('Download finished!',1)
@@ -131,7 +135,7 @@ def set_progress(progress: int):
 	prog = f"{progress}/{current_max}"
 	size = int(os.get_terminal_size()[0])
 	barsize = size-len(prog)-len(str(current_max))-2-4
-	barlen = int(round(barsize/current_max,0)*progress)
+	barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
 	bar='['+'\x1b[37m'
 	for i in range(barlen):
 		bar = bar+'='
@@ -173,20 +177,10 @@ def auth(userSelected):
 
 def launch(version):
 	launchOptions = userDic[userSelected]['launchOptions']
-	game_dir = minecraft_dir + '/' + version
+	game_dir = os.path.join(minecraft_dir,'gameDirs',version)
 	launchOptions["gameDirectory"] = game_dir
-	try:
-		access_token = str(launchOptions['token'])
-		display.listAppend(type(access_token))
-	except Exception as e:
-		display.listAppend(e)
-	time.sleep(5)
-	try:
-		launchOptions['token']=ec.decrypt(access_token,userPassword)
-	except:
-		display.listAppend(type(access_token))
-		display.listAppend('Couldn\'t decrypt access_token')
-		display.listAppend(access_token)
+	access_token = str(launchOptions['token'])
+	launchOptions['token']=ec.decrypt(access_token,userPassword)
 	launchOptions['launcherName']='minceraft-launcher'
 	launchOptions['launcherVersion']='1.0'
 	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
@@ -195,6 +189,7 @@ def launch(version):
 	    finalLaunchCommand += ' ' + i
 	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
 	os.system(finalLaunchCommand)
+	launchOptions['TESTETSTESTETSTETSTETSTETSTETSTE']='////////////////////////////////////////////////////////////////////////////////////'
 	userDic[userSelected]['last_played']['time']=time.time()
 	userDic[userSelected]['last_played']['version']=version
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:

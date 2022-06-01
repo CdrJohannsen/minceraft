@@ -77,7 +77,7 @@ def login():
 		with open(versionsPath, "rb") as versionFile:
 			versionFileList = pickle.load(versionFile)
 	except:
-		versionFileList = [{}]
+		versionFileList = [[]]
 		with open(versionsPath, "wb") as versionFile:
 			pickle.dump(versionFileList, versionFile)
 
@@ -101,8 +101,9 @@ def login():
 
 				with open(versionPath, "rb") as versionFile:
 					versionFileList = pickle.load(versionFile)
+				versionFileList.append([])
 				with open(versionPath, "wb") as versionFile:
-						versionFileList = pickle.load(versionFile)
+					pickle.dump(versionFileList, versionFile)
 				break
 			try:
 					userDic = configFileList[userSelected - 1]

@@ -1,3 +1,7 @@
-[x] add version → <fabric>/<forge>/<vanilla> + version
+[] add version → <fabric>/<forge>/<vanilla> + version
 [] start minceraft
-[] reauthenticate
+[x] reauthenticate
+
+aufbau versionDic:	[[{name:<name>,id:<id>},{name:<name>,id:<id>}],[{name:<name>,id:<id>},{name:<name>,id:<id>}]]
+										[{<name>:<id>,<name>:<id>,<name>:<id>},{<name>:<id>,<name>:<id>,<name>:<id>}]
+										[[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]

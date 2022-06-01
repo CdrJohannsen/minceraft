@@ -12,9 +12,10 @@ def mc_launch(dspl,passwd,usr):
 	global userDic
 	with open(homePath+'/.config/minceraft/users.bin','rb') as f:
 		userDic = pickle.load(f)
-	global versionDic
+	global versionList
 	with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
-		versionDic = pickle.load(f)
+		versionList = pickle.load(f)
+	versionList = versionList[usr]
 	global display
 	global userSelected
 	userSelected = usr
@@ -25,8 +26,9 @@ def mc_launch(dspl,passwd,usr):
 		display.homeSet('Select Option',1)
 		display.listSet('[i]  install version')
 		display.listAppend('[r]  reauthenticate')
-		for version in versions:
-			display.listAppend('['+str(i)+']  '+version['id'])
+		i = 0
+		for version in versionList:
+			display.listAppend('['+str(i)+']  '+versionList[i])
 			i += 1
 
 		
@@ -47,10 +49,10 @@ def mc_launch(dspl,passwd,usr):
 			try:
 				selected = int(selected)
 				try:
-					launch(versions[selected]['id'])
+					launch(versionList[selected][1])
 					break
 				except:
-					display.homeSet('Couldn\'t launch '+versions[selected]['id'],1)
+					display.homeSet('Couldn\'t launch '+versionList[selected][0],1)
 					print(e)
 					time.sleep(2)
 			except:
@@ -73,6 +75,9 @@ def install():
 	display.listAppend('[1]  fabric')
 	display.listAppend('[2]  forge')
 	mod = display.userInput()
+	display.clear()
+	display.homeSet(['Default is version','Select Name'],2)
+	name = display.userInput()
 	
 	current_max = 390
 	callback = {
@@ -117,6 +122,13 @@ def install():
 				os.mkdir(os.path.join(minecraft_dir,'gameDirs',os.path.basename(new_version)))
 			except:
 				pass
+			try:
+				versionList.append([name,os.path.basename(new_version)])
+				with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
+					pickle.dump(versionList, versionFile)
+			except Exception as e:
+				print(e)
+				time.sleep(2)
 			display.homeSet('Download finished!',1)
 	except:
 		display.homeSet('Version not avaliable!',1)

@@ -6,76 +6,78 @@ import readchar
 import subprocess
 
 def mc_launch(dspl,passwd,usr):
-	global homePath
-	homePath = os.path.expanduser('~')
-	global userPassword
-	userPassword = passwd
-	global userDic
-	with open(homePath+'/.config/minceraft/users.bin','rb') as f:
-		userDic = pickle.load(f)
-	global versionList
-	with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
-		versionList = pickle.load(f)
-	global display
-	global userSelected
-	userSelected = usr
-	display = dspl
-	global minecraft_dir
-	while True:
-		minecraft_dir = homePath+'/.minceraft'
-		display.homeSet('Select Option',1)
-		display.listSet('[i]  install version')
-		display.listAppend('[r]  reauthenticate')
-		display.listAppend('[d]  delete version')
-		i=0
-		for v in list(versionList[userSelected]):
-			version = str(v[0])
-			display.listAppend('['+str(i)+']  '+version)
-			i+=1
-		
-		selected = readchar.readchar()
-		if selected == 'i':
-			install()
-		elif selected == 'r':
-			auth(userSelected)
-			
-		elif selected == 'd':
-			display.homeSet('Select version to delete',1)
-			display.listSet('[q]  quit')
-			i = 0
-			for version in versionList[userSelected]:
-				display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
-				i += 1
-			userInput = display.userInput()
-			if userInput != 'q':
-				try:
-					userInput = int(userInput)
-					del versionList[userSelected][userInput]
-				except:
-					display.homeSet('Invalid selection!')
-			
-		elif selected == '\r':
-			version = userDic[userSelected]['last_played']['version']
-			if version != '':
-				launch(userDic[userSelected]['last_played']['version'])
-				break
-			else:
-				display.homeSet('No version played last!',1)
-				time.sleep(2)
-		else:
-			try:
-				selected = int(selected)
-				try:
-					launch(versionList[userSelected][selected][1])
-					break
-				except Exception as e:
-					display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
-					print(e)
-					time.sleep(2)
-			except:
-				display.homeSet('Option not avaliable!',1)
-				time.sleep(2)
-	quit()
+    global homePath
+    homePath = os.path.expanduser('~')
+    global userPassword
+    userPassword = passwd
+    global userDic
+    with open(homePath+'/.config/minceraft/users.bin','rb') as f:
+	    userDic = pickle.load(f)
+    global versionList
+    with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
+	    versionList = pickle.load(f)
+    global display
+    global userSelected
+    userSelected = usr
+    display = dspl
+    global minecraft_dir
+    while True:
+        minecraft_dir = homePath+'/.minceraft'
+        display.homeSet('Select Option',1)
+        display.listSet('[i]  install version')
+        display.listAppend('[r]  reauthenticate')
+        display.listAppend('[d]  delete version')
+        i=0
+        for v in list(versionList[userSelected]):
+            version = str(v[0])
+            display.listAppend('['+str(i)+']  '+version)
+            i+=1
+
+        selected = readchar.readchar()
+        if selected == 'i':
+            install()
+        elif selected == 'r':
+            auth(userSelected)
+	        
+        elif selected == 'd':
+            display.homeSet('Select version to delete',1)
+            display.listSet('[q]  quit')
+            i = 0
+            for version in versionList[userSelected]:
+                display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
+                i += 1
+            userInput = display.userInput()
+            if userInput != 'q':
+                try:
+                    userInput = int(userInput)
+                    del versionList[userSelected][userInput]
+                    with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
+                        pickle.dump(versionList, versionFile)
+                except:
+                    display.homeSet('Invalid selection!')
+
+        elif selected == '\r':
+            version = userDic[userSelected]['last_played']['version']
+            if version != '':
+                launch(userDic[userSelected]['last_played']['version'])
+                break
+            else:
+                display.homeSet('No version played last!',1)
+                time.sleep(2)
+        else:
+            try:
+                selected = int(selected)
+                try:
+                    launch(versionList[userSelected][selected][1])
+                    break
+                except Exception as e:
+                    display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
+                    print(e)
+                    time.sleep(2)
+            except:
+                display.homeSet('Option not avaliable!',1)
+                time.sleep(2)
+    quit()
 
 
 #########################################################

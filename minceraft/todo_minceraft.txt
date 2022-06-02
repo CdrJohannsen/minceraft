@@ -2,6 +2,4 @@
 [] start minceraft
 [x] reauthenticate
 
-aufbau versionDic:	[[{name:<name>,id:<id>},{name:<name>,id:<id>}],[{name:<name>,id:<id>},{name:<name>,id:<id>}]]
-										[{<name>:<id>,<name>:<id>,<name>:<id>},{<name>:<id>,<name>:<id>,<name>:<id>}]
-										[[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]
+aufbau versionDic:	[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]

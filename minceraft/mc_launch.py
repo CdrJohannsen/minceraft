@@ -115,6 +115,11 @@ def install():
 					dirs.append(versionPath+'/'+d)
 			new_version = sorted(dirs, key=lambda x: os.path.getctime(x), reverse=True)[:1][0]
 			try:
+				os.rename(new_version,new_version.replace('fabric_loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-','fabric_')
+			except:
+				display.homeSet('Couldn\'t rename dir',1)
+				time.sleep(2)
+			try:
 				os.mkdir(os.path.join(minecraft_dir,'gameDirs'))
 			except:
 				pass

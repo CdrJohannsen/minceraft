@@ -15,7 +15,6 @@ def mc_launch(dspl,passwd,usr):
 	global versionList
 	with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
 		versionList = pickle.load(f)
-	versionList = list(versionList[usr])
 	global display
 	global userSelected
 	userSelected = usr
@@ -28,11 +27,10 @@ def mc_launch(dspl,passwd,usr):
 		display.listAppend('[r]  reauthenticate')
 		display.listAppend('[d]  delete version')
 		i=0
-		for v in versionList:
-			version = v[0][0]
+		for v in list(versionList[userSelected]):
+			version = str(v[0])
 			display.listAppend('['+str(i)+']  '+version)
 			i+=1
-
 		
 		selected = readchar.readchar()
 		if selected == 'i':
@@ -44,14 +42,14 @@ def mc_launch(dspl,passwd,usr):
 			display.homeSet('Select version to delete',1)
 			display.listSet('[q]  quit')
 			i = 0
-			for version in versionList:
-				display.listAppend('['+str(i)+']  '+versionList[i][0])
+			for version in versionList[userSelected]:
+				display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
 				i += 1
 			userInput = display.userInput()
 			if userInput != 'q':
 				try:
 					userInput = int(userInput)
-					del versionList[userInput]
+					del versionList[userSelected][userInput]
 				except:
 					display.homeSet('Invalid selection!')
 			
@@ -67,11 +65,10 @@ def mc_launch(dspl,passwd,usr):
 			try:
 				selected = int(selected)
 				try:
-					launch(versionList[selected][1])
+					launch(versionList[userSelected][selected][1])
 					break
 				except:
-					display.homeSet('Couldn\'t launch '+versionList[selected][0],1)
-					print(e)
+					display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
 					time.sleep(2)
 			except:
 				display.homeSet('Option not avaliable!',1)
@@ -137,7 +134,7 @@ def install():
 			versionPath=os.path.join(minecraft_dir,'versions')
 			if mod == '1':
 				try:
-					os.rename(os.path.join(versionPath, new_version),'fabric_'+version)
+					os.system('mv '+versionPath+'/'+new_version+' '+versionPath+'/fabric_'+version)
 				except:
 					display.homeSet('Couldn\'t rename dir',1)
 					time.sleep(2)
@@ -146,11 +143,11 @@ def install():
 			except:
 				pass
 			try:
-				os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
+				os.mkdir(os.path.join(minecraft_dir,'gameDirs','fabric_'+version))
 			except:
 				pass
 			try:
-				versionList.append([name,new_version])
+				versionList[userSelected].append([name,new_version])
 				with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
 					pickle.dump(versionList, versionFile)
 			except Exception as e:
@@ -173,7 +170,7 @@ def set_progress(progress: int):
 	size = int(os.get_terminal_size()[0])
 	barsize = size-len(prog)-len(str(current_max))-2-4
 	barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
-	bar='['
+	bar='   ['
 	for i in range(barlen):
 		bar = bar+'■'
 	for i in range(barsize-barlen):

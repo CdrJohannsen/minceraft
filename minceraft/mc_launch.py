@@ -3,6 +3,7 @@ import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
 import readchar
+import subprocess
 
 def mc_launch(dspl,passwd,usr):
 	global homePath
@@ -67,8 +68,9 @@ def mc_launch(dspl,passwd,usr):
 				try:
 					launch(versionList[userSelected][selected][1])
 					break
-				except:
+				except Exception as e:
 					display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
+					print(e)
 					time.sleep(2)
 			except:
 				display.homeSet('Option not avaliable!',1)
@@ -112,7 +114,7 @@ def install():
 		
 		elif mod == '1':
 			try:
-				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
+				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback, loader_version='1.14.6')
 				success=True
 				new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
 			except UnsupportedVersion:
@@ -134,18 +136,11 @@ def install():
 			versionPath=os.path.join(minecraft_dir,'versions')
 			if mod == '1':
 				try:
-					os.system('mv '+versionPath+'/'+new_version+' '+versionPath+'/fabric_'+version)
+					os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
 				except:
 					display.homeSet('Couldn\'t rename dir',1)
 					time.sleep(2)
-			try:
-				os.mkdir(os.path.join(minecraft_dir,'gameDirs'))
-			except:
-				pass
-			try:
-				os.mkdir(os.path.join(minecraft_dir,'gameDirs','fabric_'+version))
-			except:
-				pass
+					
 			try:
 				versionList[userSelected].append([name,new_version])
 				with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
@@ -176,7 +171,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
-	display.homeSet(downloading+'\n'+bar+prog,1)
+	display.homeSet([bar+prog,downloading],2)
 	
 
 
@@ -228,5 +223,5 @@ def launch(version):
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 		pickle.dump(userDic,f)
 	display.homeSet('Starting '+version,1)
-	#print(finalLaunchCommand)
+	print(finalLaunchCommand)
 	time.sleep(3)

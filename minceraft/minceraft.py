@@ -51,6 +51,7 @@ def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])
     try:
         os.mkdir(os.path.join(homePath, ".config/minceraft"))
+        os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
     except:
         display.homeSet(['could not create directory', 'press ENTER to exit'])
 

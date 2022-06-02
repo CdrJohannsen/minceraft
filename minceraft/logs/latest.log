@@ -1,0 +1,26 @@
+[12:09:37] [Client thread/INFO]: Setting user: Cdr_Johannsen
+[12:09:37] [Client thread/INFO]: (Session ID is token:eyJhbGciOiJIUzI1NiJ9.eyJ4dWlkIjoiMjUzNTQ0NzMwMTA3MjE2NSIsImFnZyI6IkFkdWx0Iiwic3ViIjoiODNhZDg1OTYtODFjOS00ZGFhLTliNmEtYzUzMzcwZmU3Mjg1IiwibmJmIjoxNjU0MTU3NjQ1LCJhdXRoIjoiWEJPWCIsInJvbGVzIjpbXSwiaXNzIjoiYXV0aGVudGljYXRpb24iLCJleHAiOjE2NTQyNDQwNDUsImlhdCI6MTY1NDE1NzY0NSwicGxhdGZvcm0iOiJVTktOT1dOIiwieXVpZCI6ImMwY2IzNDdmZmJmMGUwZTcyMjc0MDkxMjdhOTU4ZGY5In0.zS5QoRHspv4CKQy6t4SRgJitDShQyXF62H_TsDT5H-E:17ddfc2e63ee4bc79f367e1c690f9d8f)
+[12:09:40] [Client thread/INFO]: LWJGL Version: 2.9.4
+[12:09:41] [Client thread/INFO]: Reloading ResourceManager: Default, default-1-16-3-for-1-8-9-v2.zip, Default-Dark-Mode-1.8-(v1.3.1).zip, wool, CleanGUI
+[12:09:42] [Client thread/ERROR]: Couldn't initialize twitch stream
+[12:09:42] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[12:09:42] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[12:09:42] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[12:09:42] [Thread-5/INFO]: OpenAL initialized.
+[12:09:42] [Sound Library Loader/INFO]: Sound engine started
+[12:09:44] [Client thread/INFO]: Created: 512x512 textures-atlas
+[12:09:49] [Client thread/FATAL]: Unreported exception thrown!
+java.lang.ArrayIndexOutOfBoundsException: 0
+	at org.lwjgl.opengl.LinuxMouse.handleButton(LinuxMouse.java:245) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.LinuxMouse.handleButtonPress(LinuxMouse.java:270) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.LinuxMouse.handleButtonEvent(LinuxMouse.java:282) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.LinuxMouse.filterEvent(LinuxMouse.java:308) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.LinuxDisplay.processEvents(LinuxDisplay.java:864) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.LinuxDisplay.update(LinuxDisplay.java:922) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.Display.processMessages(Display.java:600) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.Display.update(Display.java:666) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at org.lwjgl.opengl.Display.update(Display.java:628) ~[lwjgl-2.9.4-nightly-20150209.jar:?]
+	at ave.h(SourceFile:995) ~[1.8.9.jar:?]
+	at ave.av(SourceFile:944) ~[1.8.9.jar:?]
+	at ave.a(SourceFile:325) [1.8.9.jar:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [1.8.9.jar:?]

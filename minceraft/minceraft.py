@@ -88,7 +88,7 @@ def login():
 		with open(prefsPath, "rb") as prefFile:
 			preferences = pickle.load(prefFile)
 	except:
-		preferences = [{'last_user':configFileList[0]['username']}]
+		preferences = [{'last_user':len(configFileList)-1}]
 		with open(prefsPath, "wb") as prefFile:
 			pickle.dump(preferences, prefFile)
 
@@ -120,12 +120,14 @@ def login():
 				with open(prefsPath, "rb") as prefFile:
 					preferences = pickle.load(prefFile)
 				preferences.append({})
-				preferences[0]['last_user'] = configList[0]['username']
+				preferences[0]['last_user'] = len(configList)-1
 				with open(prefsPath, "wb") as prefFile:
 					pickle.dump(preferences, prefFile)
 				break
 			try:
 					userDic = configFileList[userSelected - 1]
+					if preferences[0]['last_user'] != 0:
+						userDic = configFileList[preferences[0]['last_user']]
 					display.homeSet('please enter your password for user ' + userDic['username'],1)
 					while(True):
 							userPassword = getpass.getpass()

@@ -219,7 +219,7 @@ def launch(version):
 	for i in launchCommand:
 	    finalLaunchCommand += ' ' + i
 	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
-	finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, but only when not fabric will launch
+	finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
 	os.system(finalLaunchCommand)
 	userDic[userSelected]['last_played']['time']=time.time()
 	userDic[userSelected]['last_played']['version']=version

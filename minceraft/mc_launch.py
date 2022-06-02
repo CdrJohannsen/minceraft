@@ -83,76 +83,79 @@ def mc_launch(dspl,passwd,usr):
 #########################################################
 
 def install():
-	display.clear()
-	display.homeSet('Select Version',1)
-	version = display.userInput()
-	display.homeSet('',0)
-	display.homeSet('Select Modloader',1)
-	display.listSet('[0]  vanilla')
-	display.listAppend('[1]  fabric')
-	display.listAppend('[2]  forge')
-	mod = display.userInput()
-	display.clear()
-	display.homeSet(['Default is version','Select Name'],2)
-	name = display.userInput()
-	
-	current_max = 390
-	callback = {
-	  "setStatus": set_status,
-	  "setProgress": set_progress,
-	  "setMax": set_max
-	}
-	try:
-		success = False
-		display.clear()
-		
-		if mod == '0':
-			minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
-			success = True
-			new_version = version
-		
-		
-		elif mod == '1':
-			try:
-				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
-				success=True
-				new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
-			except Exception as exe:
-				display.homeSet('Version not supportet by fabric!',1)
-				print(exe)
-				raise exe
-				time.sleep(30)
-		
-		########################  Forge is not testet
-		elif mod == '2':
-			forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
-			if forge_version is None:
-				display.homeSet("This Minecraft Version is not supported by Forge",1)
-			else:
-				minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
-				success=True
-		############################
-		else:
-			display.homeSet('Selection not valid!',1)
-			time.sleep(2)
-		if success:
-			versionPath=os.path.join(minecraft_dir,'versions')    
-			try:
-				os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
-			except:
-				display.homeSet('Couldn\'t rename dir',1)
-				time.sleep(2)
-					
-			try:
-				versionList[userSelected].append([name,new_version])
-				with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
-					pickle.dump(versionList, versionFile)
-			except:
-				time.sleep(2)
-			display.homeSet('Download finished!',1)
-	except:
-		display.homeSet('Version not avaliable!',1)
-	time.sleep(5)
+    display.clear()
+    display.homeSet('Select Version',1)
+    version = display.userInput()
+    display.homeSet('',0)
+    display.homeSet('Select Modloader',1)
+    display.listSet('[0]  vanilla')
+    display.listAppend('[1]  fabric')
+    display.listAppend('[2]  forge')
+    mod = display.userInput()
+    display.clear()
+    display.homeSet(['Default is version','Select Name'],2)
+    name = display.userInput()
+
+    current_max = 390
+    callback = {
+      "setStatus": set_status,
+      "setProgress": set_progress,
+      "setMax": set_max
+    }
+    try:
+        success = False
+        display.clear()
+
+        if mod == '0':
+            try:
+                minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
+                success = True
+                new_version = version
+            except:
+                display.homeSet('Version not avaliable!')
+
+
+        elif mod == '1':
+            try:
+	            minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
+	            success=True
+	            new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
+            except Exception as exe:
+	            display.homeSet('Version not supportet by fabric!',1)
+	            print(exe)
+	            raise exe
+	            time.sleep(30)
+
+        ########################  Forge is not testet
+        elif mod == '2':
+            forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
+            if forge_version is None:
+	            display.homeSet("This Minecraft Version is not supported by Forge",1)
+            else:
+	            minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
+	            success=True
+        ############################
+        else:
+            display.homeSet('Selection not valid!',1)
+            time.sleep(2)
+        if success:
+            versionPath=os.path.join(minecraft_dir,'versions')    
+            try:
+	            os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
+            except:
+	            display.homeSet('Couldn\'t rename dir',1)
+	            time.sleep(2)
+		            
+            try:
+	            versionList[userSelected].append([name,new_version])
+	            with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
+		            pickle.dump(versionList, versionFile)
+            except:
+	            time.sleep(2)
+            display.homeSet('Download finished!',1)
+    except:
+        display.homeSet('Couldn\'t install version',1)
+    time.sleep(5)
 		
 	
 	

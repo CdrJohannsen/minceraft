@@ -114,11 +114,14 @@ def install():
 		
 		elif mod == '1':
 			try:
-				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback, loader_version='1.14.6')
+				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
 				success=True
 				new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
-			except:
+			except Exception as exe:
 				display.homeSet('Version not supportet by fabric!',1)
+				print(exe)
+				raise exe
+				time.sleep(30)
 		
 		########################  Forge is not testet
 		elif mod == '2':

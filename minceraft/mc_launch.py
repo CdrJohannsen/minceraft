@@ -174,7 +174,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
-	print(bar+prog)
+	print('\r'+bar+prog,end='\r')
 	
 
 

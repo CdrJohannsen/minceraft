@@ -147,13 +147,11 @@ def install():
 				versionList[userSelected].append([name,new_version])
 				with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
 					pickle.dump(versionList, versionFile)
-			except Exception as e:
-				print(e)
+			except:
 				time.sleep(2)
 			display.homeSet('Download finished!',1)
-	except Exception as ex:
+	except:
 		display.homeSet('Version not avaliable!',1)
-		print(ex)
 	time.sleep(5)
 		
 	
@@ -173,7 +171,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
-	print('\r'+bar+prog,end='\r')
+	display.homeAppend(bar+prog)
 	
 
 

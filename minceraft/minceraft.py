@@ -48,17 +48,19 @@ def returnNewUser():
 
 
 def createDirectory():
-    display.listSet(['not found valid config file or directory', 'creating new config directory'])
-    try:
-        os.mkdir(os.path.join(homePath, ".config/minceraft"))
-        os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
-    except:
-        display.homeSet(['could not create directory', 'press ENTER to exit'])
+	display.listSet(['not found valid config file or directory', 'creating new config directory'])
+	try:
+		os.mkdir(os.path.join(homePath, ".minceraft"))
+		os.mkdir(os.path.join(homePath, ".config/minceraft"))
+		os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
+	except:
+		display.homeSet(['could not create directory', 'press ENTER to exit'])
 
 
 def login():
 	configPath = os.path.join(homePath, ".config/minceraft/users.bin")
 	versionsPath = os.path.join(homePath, ".config/minceraft/versions.bin")
+	prefsPath = os.path.join(homePath, ".config/minceraft/preferences.bin")
 	userDic={}
 	userPassword = ''
 	userSelected= 0
@@ -81,6 +83,14 @@ def login():
 		versionFileList = [[]]
 		with open(versionsPath, "wb") as versionFile:
 			pickle.dump(versionFileList, versionFile)
+	
+	try:
+		with open(prefsPath, "rb") as prefFile:
+			preferences = pickle.load(prefFile)
+	except:
+		preferences = [{'last_user':configFileList[0]['username']}]
+		with open(prefsPath, "wb") as prefFile:
+			pickle.dump(preferences, prefFile)
 
 
 	else:
@@ -96,7 +106,8 @@ def login():
 				display.listSet('creating new user')
 				with open(configPath, "rb") as configFile:
 					configList = pickle.load(configFile)
-				configList.append(returnNewUser())
+				newUser = returnNewUser()
+				configList.append(newUser)
 				with open(configPath, "wb") as configFile:
 					pickle.dump(configList, configFile)
 
@@ -105,6 +116,13 @@ def login():
 				versionFileList.append([])
 				with open(versionPath, "wb") as versionFile:
 					pickle.dump(versionFileList, versionFile)
+				
+				with open(prefsPath, "rb") as prefFile:
+					preferences = pickle.load(prefFile)
+				preferences.append({})
+				preferences[0]['last_user'] = configList[0]['username']
+				with open(prefsPath, "wb") as prefFile:
+					pickle.dump(preferences, prefFile)
 				break
 			try:
 					userDic = configFileList[userSelected - 1]

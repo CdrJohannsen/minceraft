@@ -41,7 +41,7 @@ def mc_launch(dspl,passwd,usr):
         elif selected == 'r':
             auth(userSelected)
         elif selected == 'e':
-            mcedit.startEditor(display)
+            mc_edit.startEditor(display)
 	        
         elif selected == 'd':
             display.homeSet('Select version to delete',1)

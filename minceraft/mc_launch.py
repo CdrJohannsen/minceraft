@@ -223,5 +223,5 @@ def launch(version):
 	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
 		pickle.dump(userDic,f)
 	display.homeSet('Starting '+version,1)
-	print(finalLaunchCommand)
+	#print(finalLaunchCommand)
 	time.sleep(3)

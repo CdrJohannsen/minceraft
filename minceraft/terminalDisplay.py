@@ -1,4 +1,4 @@
-import os, math, time
+import os, math
 
 class advancedDisplay():
 
@@ -37,14 +37,14 @@ class advancedDisplay():
         self.output()
         
     
-    def homeSet(self, homeObject, homeLength = 5):
+    def homeSet(self, homeObject, homeLength = 1):
         self.homeList = []
         if(type(homeObject) is str):
             self.homeList += [homeObject]
         else:
             self.homeList += homeObject
         spacer = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
-        self.homeListFinal = [''] + spacer[:homeLength - 1] + self.homeList + ['']
+        self.homeListFinal = [''] + spacer[:max(0, homeLength - len(self.homeList))] + self.homeList + ['']
         self.output()
 
     def output(self):

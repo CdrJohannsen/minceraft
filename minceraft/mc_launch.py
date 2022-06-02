@@ -40,7 +40,7 @@ def mc_launch(dspl,passwd,usr):
             install()
         elif selected == 'r':
             auth(userSelected)
-        elif selectet == 'e':
+        elif selected == 'e':
             mcedit.startEditor(display)
 	        
         elif selected == 'd':

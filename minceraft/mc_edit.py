@@ -1,4 +1,4 @@
-def startEditor(dspl)
+def startEditor(dspl):
 	global display
 	display = dspl
-	display.homeSet('Not avaliable :('
+	display.homeSet('Not avaliable :(')

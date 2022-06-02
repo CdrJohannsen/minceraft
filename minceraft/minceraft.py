@@ -77,7 +77,7 @@ def login():
 		with open(versionsPath, "rb") as versionFile:
 			versionFileList = pickle.load(versionFile)
 	except:
-		versionFileList = [[]]
+		versionFileList = [[[]]]
 		with open(versionsPath, "wb") as versionFile:
 			pickle.dump(versionFileList, versionFile)
 

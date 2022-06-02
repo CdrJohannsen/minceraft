@@ -174,7 +174,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
-	display.homeAppend(bar+prog)
+	print(bar+prog)
 	
 
 

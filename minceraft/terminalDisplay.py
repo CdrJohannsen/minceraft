@@ -1,11 +1,10 @@
-import os, math
+import os, math, time
 
 class advancedDisplay():
 
     def __init__(self):
-        self.homeLength = 5
         self.outputList = []
-        self.homeList = []
+        self.homeListFinal = ['', '', '']
         self.logo = True
         self.longSpacer = '                                                                                                                                                                                  '
     
@@ -37,14 +36,15 @@ class advancedDisplay():
         self.outputList.reverse()
         self.output()
         
+    
     def homeSet(self, homeObject, homeLength = 5):
-        self.homeList = ['']
-        self.homeLength = homeLength + 2
+        self.homeList = []
         if(type(homeObject) is str):
             self.homeList += [homeObject]
         else:
             self.homeList += homeObject
-        self.homeList.append('')
+        spacer = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+        self.homeListFinal = [''] + spacer[:homeLength - 1] + self.homeList + ['']
         self.output()
 
     def output(self):
@@ -55,27 +55,20 @@ class advancedDisplay():
 " / /  / / / / / / /__/  __/ /  / /_/ / __/ /_  ",
 "/_/  /_/_/_/ /_/\___/\___/_/   \____/_/  \__/  "]
         os.system('clear')
-        self.homeList.reverse()
-        while(True):
-            if(len(self.homeList) < self.homeLength):
-                self.homeList.append('')
-            else:
-                break
-        self.homeList.reverse()
-        if(terminalLength > (len(self.homeList) + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
+        if(terminalLength > (len(self.homeListFinal) + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
             for i in range(math.ceil(terminalLength/2) - len(logoLines) - 1):
                 print()
             spacer = self.longSpacer[:math.floor((terminalWidth - 48) / 2)]
             for i in logoLines:
                 print(spacer, i)
-            for i in range(math.floor(terminalLength / 2) - len(self.outputList) - len(self.homeList)):
+            for i in range(math.floor(terminalLength / 2) - len(self.outputList) - len(self.homeListFinal)):
                 print()
         else:
-            for i in range(terminalLength - self.homeLength - len(self.outputList)):
+            for i in range(terminalLength - len(self.homeListFinal) - len(self.outputList) - 1):
                 print()
         for i in self.outputList:
-            print('   ' + i)
-        for i in self.homeList:
+            print('    ' + i)
+        for i in self.homeListFinal:
             print('    ' + i)
             
     def userInput(self):

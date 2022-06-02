@@ -148,9 +148,9 @@ homePath = os.path.expanduser('~')
 display = terminalDisplay.advancedDisplay()
 os.system('cd .config/minceraft/')
 CurrentUserDic, userPassword, userSelected = login()
+mc_launch.mc_launch(display,userPassword,userSelected)
 
-
-
+'''
 while(True):
 	display.homeSet('Select an option',1)
 	display.listSet('[2]    enter the text editor mode')
@@ -169,5 +169,5 @@ while(True):
 	    pass
 	    #open preferences file and do the thing
 	    #userInput = preferencesDic['mainMenuSelection']
-		
+		'''
 del display

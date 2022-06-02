@@ -4,6 +4,7 @@ import terminalDisplay
 import encryption as ec
 import readchar
 import subprocess
+import mc_edit
 
 def mc_launch(dspl,passwd,usr):
     global homePath
@@ -27,6 +28,7 @@ def mc_launch(dspl,passwd,usr):
         display.listSet('[i]  install version')
         display.listAppend('[r]  reauthenticate')
         display.listAppend('[d]  delete version')
+        display.listAppend('[e]  text editor')
         i=0
         for v in list(versionList[userSelected]):
             version = str(v[0])
@@ -38,6 +40,8 @@ def mc_launch(dspl,passwd,usr):
             install()
         elif selected == 'r':
             auth(userSelected)
+        elif selectet == 'e':
+            mcedit.startEditor(display)
 	        
         elif selected == 'd':
             display.homeSet('Select version to delete',1)

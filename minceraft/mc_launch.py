@@ -117,7 +117,7 @@ def install():
 				minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback, loader_version='1.14.6')
 				success=True
 				new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
-			except UnsupportedVersion:
+			except:
 				display.homeSet('Version not supportet by fabric!',1)
 		
 		########################  Forge is not testet
@@ -133,13 +133,12 @@ def install():
 			display.homeSet('Selection not valid!',1)
 			time.sleep(2)
 		if success:
-			versionPath=os.path.join(minecraft_dir,'versions')
-			if mod == '1':
-				try:
-					os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
-				except:
-					display.homeSet('Couldn\'t rename dir',1)
-					time.sleep(2)
+			versionPath=os.path.join(minecraft_dir,'versions')    
+			try:
+				os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
+			except:
+				display.homeSet('Couldn\'t rename dir',1)
+				time.sleep(2)
 					
 			try:
 				versionList[userSelected].append([name,new_version])
@@ -149,16 +148,16 @@ def install():
 				print(e)
 				time.sleep(2)
 			display.homeSet('Download finished!',1)
-	except:
+	except Exception as ex:
 		display.homeSet('Version not avaliable!',1)
-	time.sleep(2)
+		print(ex)
+	time.sleep(5)
 		
 	
 	
 	
 def set_status(status: str):
-	  global downloading
-	  downloading = status
+	  display.homeSet(status,1)
 
 def set_progress(progress: int):
 	prog = f"{progress}/{current_max}"
@@ -171,7 +170,7 @@ def set_progress(progress: int):
 	for i in range(barsize-barlen):
 		bar = bar+' '
 	bar = bar+']'
-	display.homeSet([bar+prog,downloading],2)
+	print('\r'+bar+prog,end='\r')
 	
 
 

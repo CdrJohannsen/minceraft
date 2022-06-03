@@ -33,6 +33,7 @@ def mc_launch(dspl,passwd,usr):
         display.listAppend('[i]  install version')
         display.listAppend('[r]  reauthenticate')
         display.listAppend('[d]  delete version')
+        display.listAppend('[p]  manage preferences')
         display.listAppend('[e]  text editor')
         i=0
         for v in list(versionList[userSelected]):
@@ -47,6 +48,9 @@ def mc_launch(dspl,passwd,usr):
             auth()
         elif selected == 'e':
             mc_edit.startEditor(display)
+        
+        elif selected == 'p':
+            managePrefs()
             
         elif selected == 'd':
             display.homeSet('Select version to delete',1)
@@ -245,7 +249,7 @@ def launch(version):
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
-    preferences[userSelected]['last_played']=version
+    preferences[userSelected+1]['last_played']=version
     with open(homePath+'/.config/minceraft/users.bin','wb') as f:
         pickle.dump(userDic,f)
     with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
@@ -253,3 +257,25 @@ def launch(version):
     display.homeSet('Starting '+version,1)
     #print(finalLaunchCommand)
     time.sleep(3)
+
+#########################################################
+#Manage your preferences
+#########################################################
+
+def managePrefs():
+    display.listSet(userDic[userSelected]['username'])
+    display.homeSet('Select version to modify',1)
+    i=0
+    for v in list(versionList[userSelected]):
+        version = str(v[0])
+        display.listAppend('['+str(i)+']  '+version)
+        i+=1
+    userInput = readchar.readchar()
+    
+    display.listSet(userDic[userSelected]['username'])
+    display.listAppend('[0] manage RAM allocation')
+    display.listAppend('[1] manage servers to connect after launching')
+    print(preferences[1])
+    time.sleep(100)
+    
+    

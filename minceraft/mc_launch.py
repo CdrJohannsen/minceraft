@@ -13,10 +13,10 @@ def mc_launch(dspl,passwd,usr):
     userPassword = passwd
     global userDic
     with open(homePath+'/.config/minceraft/users.bin','rb') as f:
-	    userDic = pickle.load(f)
+        userDic = pickle.load(f)
     global versionList
     with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
-	    versionList = pickle.load(f)
+        versionList = pickle.load(f)
     global display
     global userSelected
     userSelected = usr
@@ -42,7 +42,7 @@ def mc_launch(dspl,passwd,usr):
             auth(userSelected)
         elif selected == 'e':
             mc_edit.startEditor(display)
-	        
+            
         elif selected == 'd':
             display.homeSet('Select version to delete',1)
             display.listSet('[q]  quit')
@@ -123,23 +123,23 @@ def install():
 
         elif mod == '1':
             try:
-	            minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
-	            success=True
-	            new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
+                minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
+                success=True
+                new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
             except Exception as exe:
-	            display.homeSet('Version not supportet by fabric!',1)
-	            print(exe)
-	            raise exe
-	            time.sleep(30)
+                display.homeSet('Version not supportet by fabric!',1)
+                print(exe)
+                raise exe
+                time.sleep(30)
 
         ########################  Forge is not testet
         elif mod == '2':
             forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
             if forge_version is None:
-	            display.homeSet("This Minecraft Version is not supported by Forge",1)
+                display.homeSet("This Minecraft Version is not supported by Forge",1)
             else:
-	            minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
-	            success=True
+                minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
+                success=True
         ############################
         else:
             display.homeSet('Selection not valid!',1)
@@ -147,90 +147,90 @@ def install():
         if success:
             versionPath=os.path.join(minecraft_dir,'versions')    
             try:
-	            os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
+                os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
             except:
-	            display.homeSet('Couldn\'t rename dir',1)
-	            time.sleep(2)
-		            
+                display.homeSet('Couldn\'t rename dir',1)
+                time.sleep(2)
+                    
             try:
-	            versionList[userSelected].append([name,new_version])
-	            with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
-		            pickle.dump(versionList, versionFile)
+                versionList[userSelected].append([name,new_version])
+                with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
+                    pickle.dump(versionList, versionFile)
             except:
-	            time.sleep(2)
+                time.sleep(2)
             display.homeSet('Download finished!',1)
     except:
         display.homeSet('Couldn\'t install version',1)
     time.sleep(5)
-		
-	
-	
-	
+        
+    
+    
+    
 def set_status(status: str):
-	  display.homeSet(status,1)
+      display.homeSet(status,1)
 
 def set_progress(progress: int):
-	prog = f"{progress}/{current_max}"
-	size = int(os.get_terminal_size()[0])
-	barsize = size-len(prog)-len(str(current_max))-2-4
-	barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
-	bar='   ['
-	for i in range(barlen):
-		bar = bar+'■'
-	for i in range(barsize-barlen):
-		bar = bar+' '
-	bar = bar+']'
-	print('\r'+bar+prog,end='\r')
-	
+    prog = f"{progress}/{current_max}"
+    size = int(os.get_terminal_size()[0])
+    barsize = size-len(prog)-len(str(current_max))-2-4
+    barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
+    bar='   ['
+    for i in range(barlen):
+        bar = bar+'■'
+    for i in range(barsize-barlen):
+        bar = bar+' '
+    bar = bar+']'
+    print('\r'+bar+prog,end='\r')
+    
 
 
 def set_max(new_max: int):
-	  global current_max
-	  current_max = new_max
+      global current_max
+      current_max = new_max
 
 #########################################################
 #Authenticate
 #########################################################
 
 def auth(userSelected):
-	try:
-		display.homeSet('Authentificating...',1)
-		email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
-		msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
-		resp = msmcauth.login(email, msPassword)
-		launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
-		userDic[userSelected]['launchOptions'] = launchOptions
-		userDic[userSelected]['last_played']['time']=time.time()
-		
-		with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-			pickle.dump(userDic,f)
-	except:
-		display.homeSet('Authentification failed!',1)
-		time.sleep(2)
+    try:
+        display.homeSet('Authentificating...',1)
+        email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
+        msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
+        resp = msmcauth.login(email, msPassword)
+        launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
+        userDic[userSelected]['launchOptions'] = launchOptions
+        userDic[userSelected]['last_played']['time']=time.time()
+        
+        with open(homePath+'/.config/minceraft/users.bin','wb') as f:
+            pickle.dump(userDic,f)
+    except:
+        display.homeSet('Authentification failed!',1)
+        time.sleep(2)
 
 #########################################################
 #Launch
 #########################################################
 
 def launch(version):
-	launchOptions = dict(userDic[userSelected]['launchOptions'])
-	game_dir = os.path.join(minecraft_dir,'gameDirs',version)
-	launchOptions["gameDirectory"] = game_dir
-	access_token = launchOptions['token']
-	launchOptions['token']=ec.decrypt(access_token,userPassword)
-	launchOptions['launcherName']='minceraft-launcher'
-	launchOptions['launcherVersion']='1.0'
-	launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
-	finalLaunchCommand = ''
-	for i in launchCommand:
-	    finalLaunchCommand += ' ' + i
-	finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
-	finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
-	os.system(finalLaunchCommand)
-	userDic[userSelected]['last_played']['time']=time.time()
-	userDic[userSelected]['last_played']['version']=version
-	with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-		pickle.dump(userDic,f)
-	display.homeSet('Starting '+version,1)
-	#print(finalLaunchCommand)
-	time.sleep(3)
+    launchOptions = dict(userDic[userSelected]['launchOptions'])
+    game_dir = os.path.join(minecraft_dir,'gameDirs',version)
+    launchOptions["gameDirectory"] = game_dir
+    access_token = launchOptions['token']
+    launchOptions['token']=ec.decrypt(access_token,userPassword)
+    launchOptions['launcherName']='minceraft-launcher'
+    launchOptions['launcherVersion']='1.0'
+    launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
+    finalLaunchCommand = ''
+    for i in launchCommand:
+        finalLaunchCommand += ' ' + i
+    finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
+    finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
+    os.system(finalLaunchCommand)
+    userDic[userSelected]['last_played']['time']=time.time()
+    userDic[userSelected]['last_played']['version']=version
+    with open(homePath+'/.config/minceraft/users.bin','wb') as f:
+        pickle.dump(userDic,f)
+    display.homeSet('Starting '+version,1)
+    #print(finalLaunchCommand)
+    time.sleep(3)

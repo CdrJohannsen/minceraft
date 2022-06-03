@@ -12,147 +12,147 @@ import getpass
 
 
 def hashValue(inputString):
-	hash = hashlib.new('sha256')
-	encodedString = inputString.encode()
-	hash.update(encodedString)
-	return(hash.hexdigest())
+    hash = hashlib.new('sha256')
+    encodedString = inputString.encode()
+    hash.update(encodedString)
+    return(hash.hexdigest())
 
 
 def returnNewUser():
-	newUserDic = {}
-	display.homeSet("please choose a username",1)
-	newUserDic["username"] = display.userInput()
-	display.homeSet("please choose a password",1)
-	userPassword = getpass.getpass('    ')
-	newUserDic["passwordHash"] = hashValue(userPassword)
-	while(True):
-		display.homeSet("please enter your microsoft email adress",1)
-		newUserDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
-		display.homeSet("please enter your microsoft email password",1)
-		newUserDic["msPassword"] = ec.encrypt(getpass.getpass('    '), userPassword)
-		try:
-			msEmail = ec.decrypt(newUserDic["msEmail"], userPassword)
-			msPassword = ec.decrypt(newUserDic["msPassword"], userPassword)
-			resp = msmcauth.login(msEmail, msPassword)
-			launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
-			newUserDic['launchOptions']=launchOptions
-			t = time.time()
-			last_played = {}
-			last_played['time']=t
-			last_played['version']=''
-			newUserDic['last_played']=last_played
-			break
-		except:
-			display.listSet(['not a correct microsoft account', 'please try again',e])
-	return(newUserDic)
+    newUserDic = {}
+    display.homeSet("please choose a username",1)
+    newUserDic["username"] = display.userInput()
+    display.homeSet("please choose a password",1)
+    userPassword = getpass.getpass('    ')
+    newUserDic["passwordHash"] = hashValue(userPassword)
+    while(True):
+        display.homeSet("please enter your microsoft email adress",1)
+        newUserDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
+        display.homeSet("please enter your microsoft email password",1)
+        newUserDic["msPassword"] = ec.encrypt(getpass.getpass('    '), userPassword)
+        try:
+            msEmail = ec.decrypt(newUserDic["msEmail"], userPassword)
+            msPassword = ec.decrypt(newUserDic["msPassword"], userPassword)
+            resp = msmcauth.login(msEmail, msPassword)
+            launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
+            newUserDic['launchOptions']=launchOptions
+            t = time.time()
+            last_played = {}
+            last_played['time']=t
+            last_played['version']=''
+            newUserDic['last_played']=last_played
+            break
+        except:
+            display.listSet(['not a correct microsoft account', 'please try again',e])
+    return(newUserDic)
 
 
 def createDirectory():
-	display.listSet(['not found valid config file or directory', 'creating new config directory'])
-	try:
-		os.mkdir(os.path.join(homePath, ".minceraft"))
-		os.mkdir(os.path.join(homePath, ".config/minceraft"))
-		os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
-	except:
-		display.homeSet(['could not create directory', 'press ENTER to exit'])
+    display.listSet(['not found valid config file or directory', 'creating new config directory'])
+    try:
+        os.mkdir(os.path.join(homePath, ".minceraft"))
+        os.mkdir(os.path.join(homePath, ".config/minceraft"))
+        os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
+    except:
+        display.homeSet(['could not create directory', 'press ENTER to exit'])
 
 
 def login():
-	configPath = os.path.join(homePath, ".config/minceraft/users.bin")
-	versionsPath = os.path.join(homePath, ".config/minceraft/versions.bin")
-	prefsPath = os.path.join(homePath, ".config/minceraft/preferences.bin")
-	userDic={}
-	userPassword = ''
-	userSelected= 0
-	try:
-		with open(configPath, "rb") as configFile:
-			configFileList = pickle.load(configFile)
+    configPath = os.path.join(homePath, ".config/minceraft/users.bin")
+    versionsPath = os.path.join(homePath, ".config/minceraft/versions.bin")
+    prefsPath = os.path.join(homePath, ".config/minceraft/preferences.bin")
+    userDic={}
+    userPassword = ''
+    userSelected= 0
+    try:
+        with open(configPath, "rb") as configFile:
+            configFileList = pickle.load(configFile)
 
-	except:
-		display.listSet(['not found valid config file', 'creating new config file and user'])
-		configFileList = [returnNewUser()]
-		createDirectory()
+    except:
+        display.listSet(['not found valid config file', 'creating new config file and user'])
+        configFileList = [returnNewUser()]
+        createDirectory()
 
-		with open(configPath, "wb") as configFile:
-			pickle.dump(configFileList, configFile)
+        with open(configPath, "wb") as configFile:
+            pickle.dump(configFileList, configFile)
 
-	try:
-		with open(versionsPath, "rb") as versionFile:
-			versionFileList = pickle.load(versionFile)
-	except:
-		versionFileList = [[]]
-		with open(versionsPath, "wb") as versionFile:
-			pickle.dump(versionFileList, versionFile)
-	
-	try:
-		with open(prefsPath, "rb") as prefFile:
-			preferences = pickle.load(prefFile)
-	except:
-		preferences = [{'last_user':len(configFileList)-1}]
-		with open(prefsPath, "wb") as prefFile:
-			pickle.dump(preferences, prefFile)
+    try:
+        with open(versionsPath, "rb") as versionFile:
+            versionFileList = pickle.load(versionFile)
+    except:
+        versionFileList = [[]]
+        with open(versionsPath, "wb") as versionFile:
+            pickle.dump(versionFileList, versionFile)
+    
+    try:
+        with open(prefsPath, "rb") as prefFile:
+            preferences = pickle.load(prefFile)
+    except:
+        preferences = [{'last_user':len(configFileList)-1}]
+        with open(prefsPath, "wb") as prefFile:
+            pickle.dump(preferences, prefFile)
 
 
-	else:
-		userSelection = ['[0]    create new user']
-		print('DEBUG', configFileList)
-		
-		while(True):
-			for i in range(len(configFileList)):
-				userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
-				display.listSet(userSelection)
-				display.homeSet('please choose your user profile',1)
-			if preferences[0]['last_user'] != -1:
-				userDic = configFileList[int(preferences[0]['last_user'])]
-				userSelected = int(preferences[0]['last_user'])
-			else:
-				userSelected = int(readchar.readchar())
-				if(userSelected == 0):
-					display.listSet('creating new user')
-					with open(configPath, "rb") as configFile:
-						configList = pickle.load(configFile)
-					newUser = returnNewUser()
-					configList.append(newUser)
-					with open(configPath, "wb") as configFile:
-						pickle.dump(configList, configFile)
+    else:
+        print('DEBUG', configFileList)
+        
+        while(True):
+            userSelection = ['[0]    create new user']
+            for i in range(len(configFileList)):
+                userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
+                display.listSet(userSelection)
+                display.homeSet('please choose your user profile',1)
+            if preferences[0]['last_user'] != -1:
+                userDic = configFileList[int(preferences[0]['last_user'])]
+                userSelected = int(preferences[0]['last_user'])
+            else:
+                userSelected = int(readchar.readchar())
+                if(userSelected == 0):
+                    display.listSet('creating new user')
+                    with open(configPath, "rb") as configFile:
+                        configList = pickle.load(configFile)
+                    newUser = returnNewUser()
+                    configList.append(newUser)
+                    with open(configPath, "wb") as configFile:
+                        pickle.dump(configList, configFile)
 
-					with open(versionPath, "rb") as versionFile:
-						versionFileList = pickle.load(versionFile)
-					versionFileList.append([])
-					with open(versionPath, "wb") as versionFile:
-						pickle.dump(versionFileList, versionFile)
-					
-					with open(prefsPath, "rb") as prefFile:
-						preferences = pickle.load(prefFile)
-					preferences.append({})
-					preferences[0]['last_user'] = len(configList)-1
-					with open(prefsPath, "wb") as prefFile:
-						pickle.dump(preferences, prefFile)
-					userDic = configFileList[userSelected - 1]
-					break
-			try:
-					display.listSet('')
-					display.homeSet('please enter your password for user ' + userDic['username'],1)
-					while(True):
-							userPassword = getpass.getpass()
-							loginCorrect = False
-							if(hashValue(userPassword) == userDic['passwordHash']):
-								loginCorrect = True
-								break
-							elif userPassword == '':
-								preferences[0]['last_user'] = -1
-								loginCorrect = False
-								break
-							else:
-									display.homeSet('not correct, try again',1)
-					if loginCorrect:
-						break
-			except:
-					display.listSet(userSelection)
-					display.homeSet('not a valid user, please choose another option',1)
-		  
-	display.homeSet("you successfully logged in")
-	return(userDic, userPassword, userSelected-1)
+                    with open(versionPath, "rb") as versionFile:
+                        versionFileList = pickle.load(versionFile)
+                    versionFileList.append([])
+                    with open(versionPath, "wb") as versionFile:
+                        pickle.dump(versionFileList, versionFile)
+                    
+                    with open(prefsPath, "rb") as prefFile:
+                        preferences = pickle.load(prefFile)
+                    preferences.append({})
+                    preferences[0]['last_user'] = len(configList)-1
+                    with open(prefsPath, "wb") as prefFile:
+                        pickle.dump(preferences, prefFile)
+                    userDic = configFileList[userSelected - 1]
+                    break
+            try:
+                    display.listSet('')
+                    display.homeSet('please enter your password for user ' + userDic['username'],1)
+                    while(True):
+                            userPassword = getpass.getpass()
+                            loginCorrect = False
+                            if(hashValue(userPassword) == userDic['passwordHash']):
+                                loginCorrect = True
+                                break
+                            elif userPassword == '':
+                                preferences[0]['last_user'] = -1
+                                loginCorrect = False
+                                break
+                            else:
+                                    display.homeSet('Not correct, try again',1)
+                    if loginCorrect:
+                        break
+            except:
+                    display.listSet(userSelection)
+                    display.homeSet('not a valid user, please choose another option',1)
+          
+    display.homeSet("you successfully logged in")
+    return(userDic, userPassword, userSelected-1)
 
 
 '''
@@ -183,22 +183,22 @@ mc_launch.mc_launch(display,userPassword,userSelected)
 
 '''
 while(True):
-	display.homeSet('Select an option',1)
-	display.listSet('[2]    enter the text editor mode')
-	display.listAppendTop('[1]    enter the launch menu')
-	display.listAppendTop('[0]    exit minceraft')
-	userInput = readchar.readchar()
+    display.homeSet('Select an option',1)
+    display.listSet('[2]    enter the text editor mode')
+    display.listAppendTop('[1]    enter the launch menu')
+    display.listAppendTop('[0]    exit minceraft')
+    userInput = readchar.readchar()
 
-	if(userInput == '0'):
-			display.clear()
-			break
-	elif userInput == '1' or userInput == '\r':
-	    mc_launch.mc_launch(display,userPassword,userSelected)
-	elif userInput == '2':
-	    mcedit.startEditor()
-	elif userInput == '\r':
-	    pass
-	    #open preferences file and do the thing
-	    #userInput = preferencesDic['mainMenuSelection']
-		'''
+    if(userInput == '0'):
+            display.clear()
+            break
+    elif userInput == '1' or userInput == '\r':
+        mc_launch.mc_launch(display,userPassword,userSelected)
+    elif userInput == '2':
+        mcedit.startEditor()
+    elif userInput == '\r':
+        pass
+        #open preferences file and do the thing
+        #userInput = preferencesDic['mainMenuSelection']
+        '''
 del display

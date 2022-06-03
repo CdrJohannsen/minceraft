@@ -17,11 +17,15 @@ def mc_launch(dspl,passwd,usr):
     global versionList
     with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
         versionList = pickle.load(f)
+    global preferences
+    with open(homePath+'/.config/minceraft/preferences.bin','rb') as f:
+        preferences = pickle.load(f)
     global display
     global userSelected
     userSelected = usr
     display = dspl
     global minecraft_dir
+    #authIfNeeded()
     while True:
         minecraft_dir = homePath+'/.minceraft'
         display.homeSet('Select Option',1)
@@ -207,6 +211,11 @@ def auth(userSelected):
     except:
         display.homeSet('Authentification failed!',1)
         time.sleep(2)
+
+
+def authIfNeeded():
+    if preferences[userSelected+1]['last_played']['time']+82800 < time.time():
+        print('hi')
 
 #########################################################
 #Launch

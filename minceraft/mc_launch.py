@@ -71,7 +71,7 @@ def mc_launch(dspl,passwd,usr):
 
         elif selected == '\r':
             try:
-                version = preferences[userSelected]['last_played']
+                version = preferences[userSelected+1]['last_played']
                 launch(version)
             except:
                 display.homeSet('No version played last!',1)
@@ -271,11 +271,12 @@ def managePrefs():
         display.listAppend('['+str(i)+']  '+version)
         i+=1
     userInput = readchar.readchar()
+    for i in preferences[userSelected+1]['versions']
     
     display.listSet(userDic[userSelected]['username'])
     display.listAppend('[0] manage RAM allocation')
     display.listAppend('[1] manage servers to connect after launching')
-    print(preferences[1])
+    print(preferences)
     time.sleep(100)
     
     

@@ -86,6 +86,7 @@ def login():
         preferences = [{'last_user':len(configFileList)-1}]
         preferences.append({})
         preferences[1]['last_time']=0
+        preferences[1]['versions']=[]
         with open(prefsPath, "wb") as prefFile:
             pickle.dump(preferences, prefFile)
 
@@ -123,6 +124,8 @@ def login():
                         preferences = pickle.load(prefFile)
                     preferences.append({})
                     preferences[0]['last_user'] = len(configList)-1
+                    preferences[len(configList)]['last_time']=0
+                    preferences[len(configList)]['versions']=[]
                     with open(prefsPath, "wb") as prefFile:
                         pickle.dump(preferences, prefFile)
                     userDic = configFileList[userSelected - 1]

@@ -36,11 +36,6 @@ def returnNewUser():
             resp = msmcauth.login(msEmail, msPassword)
             launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
             newUserDic['launchOptions']=launchOptions
-            t = time.time()
-            last_played = {}
-            last_played['time']=t
-            last_played['version']=''
-            newUserDic['last_played']=last_played
             break
         except:
             display.listSet(['not a correct microsoft account', 'please try again',e])
@@ -69,7 +64,7 @@ def login():
             configFileList = pickle.load(configFile)
 
     except:
-        display.listSet(['not found valid config file', 'creating new config file and user'])
+        display.listSet(['Not found valid config file', 'Creating new config file and user'])
         configFileList = [returnNewUser()]
         createDirectory()
 
@@ -89,12 +84,14 @@ def login():
             preferences = pickle.load(prefFile)
     except:
         preferences = [{'last_user':len(configFileList)-1}]
+        preferences.append({})
+        preferences[1]['last_time']=0
         with open(prefsPath, "wb") as prefFile:
             pickle.dump(preferences, prefFile)
 
 
     else:
-        print('DEBUG', configFileList)
+        print('[DEBUG] ', configFileList)
         
         while(True):
             userSelection = ['[0]    create new user']

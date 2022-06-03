@@ -25,11 +25,12 @@ def mc_launch(dspl,passwd,usr):
     userSelected = usr
     display = dspl
     global minecraft_dir
-    #authIfNeeded()
+    authIfNeeded()
     while True:
         minecraft_dir = homePath+'/.minceraft'
         display.homeSet('Select Option',1)
-        display.listSet('[i]  install version')
+        display.listSet(userDic[userSelected]['username'])
+        display.listAppend('[i]  install version')
         display.listAppend('[r]  reauthenticate')
         display.listAppend('[d]  delete version')
         display.listAppend('[e]  text editor')
@@ -196,26 +197,28 @@ def set_max(new_max: int):
 #Authenticate
 #########################################################
 
-def auth(userSelected):
+def auth():
     try:
-        display.homeSet('Authentificating...',1)
+        display.homeSet('Authenticating...',1)
         email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
         msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
         resp = msmcauth.login(email, msPassword)
         launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
-        userDic[userSelected]['last_played']['time']=time.time()
+        preferences[userSelected+1]['last_time']=time.time()
         
         with open(homePath+'/.config/minceraft/users.bin','wb') as f:
             pickle.dump(userDic,f)
+        with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
+            pickle.dump(preferences,f)
     except:
         display.homeSet('Authentification failed!',1)
         time.sleep(2)
 
 
 def authIfNeeded():
-    if preferences[userSelected+1]['last_played']['time']+82800 < time.time():
-        print('hi')
+    if preferences[userSelected+1]['last_time']+82800 < time.time():
+        auth()
 
 #########################################################
 #Launch
@@ -236,10 +239,12 @@ def launch(version):
     finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
     os.system(finalLaunchCommand)
-    userDic[userSelected]['last_played']['time']=time.time()
+    preferences[userSelected+1]['last_time']=time.time()
     userDic[userSelected]['last_played']['version']=version
     with open(homePath+'/.config/minceraft/users.bin','wb') as f:
         pickle.dump(userDic,f)
+    with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
+            pickle.dump(preferences,f)
     display.homeSet('Starting '+version,1)
     #print(finalLaunchCommand)
     time.sleep(3)

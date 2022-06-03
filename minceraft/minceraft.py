@@ -101,7 +101,7 @@ def login():
                 display.homeSet('please choose your user profile',1)
             if preferences[0]['last_user'] != -1:
                 userDic = configFileList[int(preferences[0]['last_user'])]
-                userSelected = int(preferences[0]['last_user'])
+                userSelected = int(preferences[0]['last_user'])+1
             else:
                 userSelected = int(readchar.readchar())
                 if(userSelected == 0):

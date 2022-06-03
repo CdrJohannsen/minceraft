@@ -44,7 +44,7 @@ def mc_launch(dspl,passwd,usr):
         if selected == 'i':
             install()
         elif selected == 'r':
-            auth(userSelected)
+            auth()
         elif selected == 'e':
             mc_edit.startEditor(display)
             
@@ -66,11 +66,10 @@ def mc_launch(dspl,passwd,usr):
                     display.homeSet('Invalid selection!')
 
         elif selected == '\r':
-            version = userDic[userSelected]['last_played']['version']
-            if version != '':
-                launch(userDic[userSelected]['last_played']['version'])
-                break
-            else:
+            try:
+                version = preferences[userSelected]['last_played']
+                launch(version)
+            except:
                 display.homeSet('No version played last!',1)
                 time.sleep(2)
         else:
@@ -240,7 +239,7 @@ def launch(version):
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
-    userDic[userSelected]['last_played']['version']=version
+    preferences[userSelected]['last_played']=version
     with open(homePath+'/.config/minceraft/users.bin','wb') as f:
         pickle.dump(userDic,f)
     with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:

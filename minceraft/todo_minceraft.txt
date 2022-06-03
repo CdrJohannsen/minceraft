@@ -1,7 +1,7 @@
 [x] add version → <fabric>/<forge>/<vanilla> + version
 [x] start minceraft
 [x] reauthenticate
-[] preferences
+[x] preferences
 aufbau versionDic:	[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]
 
 preferences aufbau: [{'login':<username>,'version':<version>}, {'login':<username>,'version':<version>}]

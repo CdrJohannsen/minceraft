@@ -7,6 +7,7 @@ class advancedDisplay():
         self.homeListFinal = ['', '', '']
         self.logo = True
         self.longSpacer = '                                                                                                                                                                                  '
+        self.big_spacer = ''
     
     def clear(self):
         self.outputList = []
@@ -35,6 +36,15 @@ class advancedDisplay():
             self.outputList += appendObject
         self.outputList.reverse()
         self.output()
+    
+    def quickSetOptions(self):
+        terminalWidth, terminalLength = os.get_terminal_size(0)
+        self.big_spacer = (terminalLength-2) * '\n'
+    
+    def quickSet(self, appendList):
+        print(self.big_spacer, end='')
+        print(appendList[0])
+        print(appendList[1])
         
     
     def homeSet(self, homeObject, homeLength = 1):

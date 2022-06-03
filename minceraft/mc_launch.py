@@ -118,6 +118,7 @@ def install():
 
         if mod == '0':
             try:
+                display.quickSetOptions()
                 minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
                 success = True
                 new_version = version
@@ -127,6 +128,7 @@ def install():
 
         elif mod == '1':
             try:
+                display.quickSetOptions()
                 minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
                 success=True
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
@@ -142,6 +144,7 @@ def install():
             if forge_version is None:
                 display.homeSet("This Minecraft Version is not supported by Forge",1)
             else:
+                display.quickSetOptions()
                 minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
                 success=True
         ############################
@@ -171,7 +174,9 @@ def install():
     
     
 def set_status(status: str):
-      display.homeSet(status,1)
+      #display.homeSet(status,1)
+      global stat
+      stat = '   '+status
 
 def set_progress(progress: int):
     prog = f"{progress}/{current_max}"
@@ -184,7 +189,8 @@ def set_progress(progress: int):
     for i in range(barsize-barlen):
         bar = bar+' '
     bar = bar+']'
-    print('\r'+bar+prog,end='\r')
+    #print('\r'+bar+prog,end='\r')
+    display.quickSet([stat,bar])
     
 
 

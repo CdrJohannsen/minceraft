@@ -62,10 +62,22 @@ def mc_launch(dspl,passwd,usr):
             userInput = display.userInput()
             if userInput != 'q':
                 try:
-                    userInput = int(userInput)
-                    del versionList[userSelected][userInput]
+                    delInput = int(userInput)
+                    del_version = versionList[userSelected][delInput][1]
+                    b = 0
+                    for i in preferences[userSelected+1]['versions']:
+                        if i['version'] == del_version:
+                            del preferences[userSelected+1]['versions'][b]
+                            break
+                        b += 1
+
+                    if preferences[userSelected+1]['last_played'] == del_version:
+                        preferences[userSelected+1]['last_played'] = ''
+                    del versionList[userSelected][delInput]
                     with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
                         pickle.dump(versionList, versionFile)
+                    with open(homePath+'/.config/minceraft/preferences.bin', "wb") as prefFile:
+                        pickle.dump(preferences, prefFile)
                 except:
                     display.homeSet('Invalid selection!')
 
@@ -82,9 +94,8 @@ def mc_launch(dspl,passwd,usr):
                 try:
                     launch(versionList[userSelected][selected][1])
                     break
-                except Exception as e:
+                except:
                     display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
-                    print(e)
                     time.sleep(2)
             except:
                 display.homeSet('Option not avaliable!',1)
@@ -136,11 +147,9 @@ def install():
                 minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
                 success=True
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
-            except Exception as exe:
+            except:
                 display.homeSet('Version not supportet by fabric!',1)
-                print(exe)
-                raise exe
-                time.sleep(30)
+                time.sleep(2)
 
         ########################  Forge is not testet
         elif mod == '2':
@@ -160,7 +169,7 @@ def install():
             try:
                 os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
             except:
-                display.homeSet('Couldn\'t rename dir',1)
+                display.homeSet('Couldn\'t make game directory',1)
                 time.sleep(2)
                     
             try:
@@ -168,11 +177,13 @@ def install():
                 with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
                     pickle.dump(versionList, versionFile)
             except:
+                display.homeSet('Couldn\'t save version',1)
                 time.sleep(2)
+            
             display.homeSet('Download finished!',1)
     except:
         display.homeSet('Couldn\'t install version',1)
-    time.sleep(5)
+    time.sleep(2)
         
     
     
@@ -253,14 +264,14 @@ def launch(version):
             if i['version'] == version:
                 pref_index = b
                 break
-        b += 1
+            b += 1
         version_prefs = preferences[userSelected+1]['versions'][pref_index]
         launchOptions['jvmArguments'] = version_prefs['RAM']
         if version_prefs['server'] != '':
             launchOptions['server'] = version_prefs['server']
             if version_prefs['port'] != '':
                 launchOptions['port'] = version_prefs['port']
-    except Exception as e:
+    except:
         pass
     
     
@@ -270,7 +281,7 @@ def launch(version):
     for i in launchCommand:
         finalLaunchCommand += ' ' + i
     finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')
-    finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
+    finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
     preferences[userSelected+1]['last_played']=version
@@ -346,10 +357,10 @@ def managePrefs():
                     version_prefs['RAM'][0] = '-Xmx'+str(max_ram)+'G'
                     version_prefs['RAM'][1] = '-Xms'+str(min_ram)+'G'
                 except:
-                    display.homeSet(min_ram+' is not a number')
+                    display.homeSet('Not a number')
                     time.sleep(2)
             except:
-                display.homeSet(max_ram+' is not a number')
+                display.homeSet('Not a number')
                 time.sleep(2)
         elif action == '2':
             display.homeSet('Set server ip')

@@ -42,9 +42,7 @@ class advancedDisplay():
         self.big_spacer = (terminalLength-2) * '\n'
     
     def quickSet(self, appendList):
-        print(self.big_spacer, end='')
-        print(appendList[0])
-        print(appendList[1])
+        print(self.big_spacer,appendList[0]+'\n'+appendList[1]+'\n')
         
     
     def homeSet(self, homeObject, homeLength = 1):

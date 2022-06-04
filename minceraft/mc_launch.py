@@ -299,9 +299,9 @@ def managePrefs():
         time.sleep(2)
         return
     b = 0
-    pref_index = -1
+    pref_index = (-2)
     for i in preferences[userSelected+1]['versions']:
-        if i == versionList[userSelected][userInput][1]:
+        if i['version'] == versionList[userSelected][userInput][1]:
             pref_index = b
             break
         b += 1

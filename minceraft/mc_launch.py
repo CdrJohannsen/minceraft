@@ -271,8 +271,8 @@ def managePrefs():
         display.listAppend('['+str(i)+']  '+version)
         i+=1
     userInput = readchar.readchar()
-    for i in preferences[userSelected+1]['versions']
-    
+    for i in preferences[userSelected+1]['versions']:
+        display.listAppend(i)
     display.listSet(userDic[userSelected]['username'])
     display.listAppend('[0] manage RAM allocation')
     display.listAppend('[1] manage servers to connect after launching')

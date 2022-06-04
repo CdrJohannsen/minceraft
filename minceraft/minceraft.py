@@ -83,7 +83,7 @@ def login():
         with open(prefsPath, "rb") as prefFile:
             preferences = pickle.load(prefFile)
     except:
-        preferences = [{'last_user':len(configFileList)-1}]
+        preferences = [{'last_user':-1}]
         preferences.append({})
         preferences[len(configFileList)]['last_time']=0
         preferences[len(configFileList)]['versions']=[]
@@ -91,7 +91,7 @@ def login():
             pickle.dump(preferences, prefFile)
 
 
-    else:
+    finally:
         print('[DEBUG] ', configFileList)
         
         while(True):
@@ -105,6 +105,7 @@ def login():
                 userSelected = int(preferences[0]['last_user'])+1
             else:
                 userSelected = int(readchar.readchar())
+                userDic = configFileList[userSelected - 1]
                 if(userSelected == 0):
                     display.listSet('creating new user')
                     with open(configPath, "rb") as configFile:
@@ -137,14 +138,19 @@ def login():
                             userPassword = getpass.getpass()
                             loginCorrect = False
                             if(hashValue(userPassword) == userDic['passwordHash']):
+                                preferences[0]['last_user'] = userSelected-1
+                                with open(prefsPath, "wb") as prefFile:
+                                    pickle.dump(preferences, prefFile)
                                 loginCorrect = True
                                 break
                             elif userPassword == '':
                                 preferences[0]['last_user'] = -1
+                                with open(prefsPath, "wb") as prefFile:
+                                    pickle.dump(preferences, prefFile)
                                 loginCorrect = False
                                 break
                             else:
-                                    display.homeSet('Not correct, try again',1)
+                                display.homeSet('Not correct, try again',1)
                     if loginCorrect:
                         break
             except:

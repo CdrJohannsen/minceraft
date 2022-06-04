@@ -293,17 +293,16 @@ def managePrefs():
     userInput = readchar.readchar()
     try:
         userInput = int(userInput)
+        version_to_change = versionList[userSelected][userInput][1]
     except:
         display.homeSet('Not a number')
         time.sleep(2)
         return
     b = 0
     pref_index = -1
-    version_to_change = ''
     for i in preferences[userSelected+1]['versions']:
-        if i == versionList[userSelected][userInput]:
+        if i == versionList[userSelected][userInput][1]:
             pref_index = b
-            version_to_change = versionList[userSelected][userInput]
             break
         b += 1
     
@@ -328,7 +327,6 @@ def managePrefs():
         print(preferences)
         action = readchar.readchar()
         if action == '0':
-            version_prefs['version'] = version_to_change
             with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
                 pickle.dump(preferences,f)
             return

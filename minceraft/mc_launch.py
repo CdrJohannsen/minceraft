@@ -247,16 +247,20 @@ def launch(version):
     launchOptions['launcherVersion']='1.0'
     
     try:
-        pref_index = -1
-        version_to_change = ''
+        b = 0
+        pref_index = (-2)
         for i in preferences[userSelected+1]['versions']:
-            if i == versionList[userSelected][userInput]:
+            if i['version'] == version:
                 pref_index = b
-                version_to_change = versionList[userSelected][userInput]
                 break
-            b += 1
-            version_prefs = preferences[userSelected+1]['versions'][pref_index]
-    except:
+        b += 1
+        version_prefs = preferences[userSelected+1]['versions'][pref_index]
+        launchOptions['jvmArguments'] = version_prefs['RAM']
+        if version_prefs['server'] != '':
+            launchOptions['server'] = version_prefs['server']
+            if version_prefs['port'] != '':
+                launchOptions['port'] = version_prefs['port']
+    except Exception as e:
         pass
     
     
@@ -324,7 +328,7 @@ def managePrefs():
         display.listAppend('[0] save & quit')
         display.listAppend('[1] manage RAM allocation\t\t\t\tCurrent: '+version_prefs['RAM'][0]+' '+version_prefs['RAM'][1])
         display.listAppend('[2] manage servers to connect after launching\tCurrent: '+server_prefs)
-        print(preferences)
+        #print(preferences)
         action = readchar.readchar()
         if action == '0':
             with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:

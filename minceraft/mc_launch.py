@@ -29,7 +29,7 @@ def mc_launch(dspl,passwd,usr):
     while True:
         minecraft_dir = homePath+'/.minceraft'
         display.homeSet('Select Option',1)
-        display.listSet(userDic[userSelected]['username'])
+        display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
         display.listAppend('[i]  install version')
         display.listAppend('[r]  reauthenticate')
         display.listAppend('[d]  delete version')
@@ -263,7 +263,7 @@ def launch(version):
 #########################################################
 
 def managePrefs():
-    display.listSet(userDic[userSelected]['username'])
+    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
     display.homeSet('Select version to modify',1)
     i=0
     for v in list(versionList[userSelected]):
@@ -271,12 +271,26 @@ def managePrefs():
         display.listAppend('['+str(i)+']  '+version)
         i+=1
     userInput = readchar.readchar()
+    b = 0
+    pref_index = -1
     for i in preferences[userSelected+1]['versions']:
-        display.listAppend(i)
-    display.listSet(userDic[userSelected]['username'])
+        if i == versionList[userSelected][userInput]:
+            pref_index = b
+            version = versionList[userSelected][userInput]
+            break
+        b += 1
+    action = readchar.readchar()
+    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+    try:
+        version_prefs = preferences[userSelected+1]['versions'][pref_index]
+    except:
+        preferences[userSelected+1]['versions'].append(getDefaultPrefs(version))
     display.listAppend('[0] manage RAM allocation')
     display.listAppend('[1] manage servers to connect after launching')
     print(preferences)
     time.sleep(100)
     
-    
+
+def getDefaultPrefs(version):
+    defaultPrefs = {'version':version, 'RAM':'', 'server': '', 'port' : '', 'demo': False}
+    return defaultPrefs

@@ -226,7 +226,11 @@ def auth():
 
 
 def authIfNeeded():
-    if preferences[userSelected+1]['last_time']+82800 < time.time():
+    try:
+        last_time = preferences[userSelected+1]['last_time']
+    except:
+        last_time = preferences[userSelected+1]['last_time'] = 0
+    if last_time+82800 < time.time():
         auth()
 
 #########################################################
@@ -241,11 +245,27 @@ def launch(version):
     launchOptions['token']=ec.decrypt(access_token,userPassword)
     launchOptions['launcherName']='minceraft-launcher'
     launchOptions['launcherVersion']='1.0'
+    
+    try:
+        pref_index = -1
+        version_to_change = ''
+        for i in preferences[userSelected+1]['versions']:
+            if i == versionList[userSelected][userInput]:
+                pref_index = b
+                version_to_change = versionList[userSelected][userInput]
+                break
+            b += 1
+            version_prefs = preferences[userSelected+1]['versions'][pref_index]
+    except:
+        pass
+    
+    
+    
     launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
     finalLaunchCommand = ''
     for i in launchCommand:
         finalLaunchCommand += ' ' + i
-    finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','')
+    finalLaunchCommand = 'cd '+game_dir+' && screen -dm '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
@@ -271,26 +291,74 @@ def managePrefs():
         display.listAppend('['+str(i)+']  '+version)
         i+=1
     userInput = readchar.readchar()
+    try:
+        userInput = int(userInput)
+    except:
+        display.homeSet('Not a number')
+        time.sleep(2)
+        return
     b = 0
     pref_index = -1
+    version_to_change = ''
     for i in preferences[userSelected+1]['versions']:
         if i == versionList[userSelected][userInput]:
             pref_index = b
-            version = versionList[userSelected][userInput]
+            version_to_change = versionList[userSelected][userInput]
             break
         b += 1
-    action = readchar.readchar()
-    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+    
     try:
         version_prefs = preferences[userSelected+1]['versions'][pref_index]
     except:
-        preferences[userSelected+1]['versions'].append(getDefaultPrefs(version))
-    display.listAppend('[0] manage RAM allocation')
-    display.listAppend('[1] manage servers to connect after launching')
-    print(preferences)
-    time.sleep(100)
+        preferences[userSelected+1]['versions'].append(getDefaultPrefs(version_to_change))
+        version_prefs = preferences[userSelected+1]['versions'][len(preferences[userSelected+1]['versions'])-1]
+    while True:
+        display.homeSet('Select option to modify',1)
+        display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+        if version_prefs['server'] != '':
+            server_prefs = version_prefs['server']
+            if version_prefs['port'] != '':
+                server_prefs += ' on port: '+version_prefs['port']
+        else:
+            server_prefs = 'None'
+        
+        display.listAppend('[0] save & quit')
+        display.listAppend('[1] manage RAM allocation\t\t\t\tCurrent: '+version_prefs['RAM'][0]+' '+version_prefs['RAM'][1])
+        display.listAppend('[2] manage servers to connect after launching\tCurrent: '+server_prefs)
+        print(preferences)
+        action = readchar.readchar()
+        if action == '0':
+            version_prefs['version'] = version_to_change
+            with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
+                pickle.dump(preferences,f)
+            return
+        elif action == '1':
+            display.homeSet('Specify max RAM allocation in GB')
+            max_ram = display.userInput()
+            try:
+                max_ram = int(max_ram)
+                display.homeSet('Specify min RAM allocation in GB')
+                min_ram = display.userInput()
+                try:
+                    min_ram = int(min_ram)
+                    version_prefs['RAM'][0] = '-Xmx'+str(max_ram)+'G'
+                    version_prefs['RAM'][1] = '-Xms'+str(min_ram)+'G'
+                except:
+                    display.homeSet(min_ram+' is not a number')
+                    time.sleep(2)
+            except:
+                display.homeSet(max_ram+' is not a number')
+                time.sleep(2)
+        elif action == '2':
+            display.homeSet('Set server ip')
+            ip = display.userInput()
+            display.homeSet('If needed set server port')
+            port = display.userInput()
+            version_prefs['server'] = ip
+            version_prefs['port'] = port
+
     
 
-def getDefaultPrefs(version):
-    defaultPrefs = {'version':version, 'RAM':'', 'server': '', 'port' : '', 'demo': False}
+def getDefaultPrefs(version_to_change):
+    defaultPrefs = {'version':version_to_change, 'RAM':['-Xmx2G', '-Xms2G'], 'server': '', 'port' : ''}
     return defaultPrefs

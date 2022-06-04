@@ -85,8 +85,8 @@ def login():
     except:
         preferences = [{'last_user':len(configFileList)-1}]
         preferences.append({})
-        preferences[1]['last_time']=0
-        preferences[1]['versions']=[]
+        preferences[len(configFileList)]['last_time']=0
+        preferences[len(configFileList)]['versions']=[]
         with open(prefsPath, "wb") as prefFile:
             pickle.dump(preferences, prefFile)
 

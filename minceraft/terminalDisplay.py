@@ -56,12 +56,16 @@ class advancedDisplay():
         self.output()
 
     def output(self):
-        terminalWidth, terminalLength = os.get_terminal_size(0)  
+        terminalWidth, terminalLength = os.get_terminal_size(0)
+        '''
         logoLines = ["    __  ____                            ______ ",
 "   /  |/  (_)___  ________  _________ _/ __/ /_",
 "  / /|_/ / / __ \/ ___/ _ \/ ___/ __ `/ /_/ __/",
 " / /  / / / / / / /__/  __/ /  / /_/ / __/ /_  ",
 "/_/  /_/_/_/ /_/\___/\___/_/   \____/_/  \__/  "]
+        '''
+        with open(os.path.dirname(os.path.abspath(__file__))+'/logo.txt','r') as logo:
+            logoLines = logo.read().split('\n')
         os.system('clear')
         if(terminalLength > (len(self.homeListFinal) + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
             for i in range(math.ceil(terminalLength/2) - len(logoLines) - 1):

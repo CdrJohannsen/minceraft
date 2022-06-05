@@ -93,44 +93,51 @@ def login():
 
     finally:
         print('[DEBUG] ', configFileList)
-        
+        loginCorrect = True
         while(True):
             userSelection = ['[0]    create new user']
             for i in range(len(configFileList)):
                 userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
                 display.listSet(userSelection)
                 display.homeSet('please choose your user profile',1)
-            if preferences[0]['last_user'] != -1:
+            if preferences[0]['last_user'] != -1 and loginCorrect:
                 userDic = configFileList[int(preferences[0]['last_user'])]
                 userSelected = int(preferences[0]['last_user'])+1
             else:
-                userSelected = int(readchar.readchar())
-                userDic = configFileList[userSelected - 1]
-                if(userSelected == 0):
-                    display.listSet('creating new user')
-                    with open(configPath, "rb") as configFile:
-                        configList = pickle.load(configFile)
-                    newUser = returnNewUser()
-                    configList.append(newUser)
-                    with open(configPath, "wb") as configFile:
-                        pickle.dump(configList, configFile)
-
-                    with open(versionPath, "rb") as versionFile:
-                        versionFileList = pickle.load(versionFile)
-                    versionFileList.append([])
-                    with open(versionPath, "wb") as versionFile:
-                        pickle.dump(versionFileList, versionFile)
-                    
-                    with open(prefsPath, "rb") as prefFile:
-                        preferences = pickle.load(prefFile)
-                    preferences.append({})
-                    preferences[0]['last_user'] = len(configList)-1
-                    preferences[len(configList)]['last_time']=0
-                    preferences[len(configList)]['versions']=[]
-                    with open(prefsPath, "wb") as prefFile:
-                        pickle.dump(preferences, prefFile)
+                userSelected = readchar.readchar()
+                try:
+                    userSelected = int(userSelected)
                     userDic = configFileList[userSelected - 1]
-                    break
+                    if(userSelected == 0):
+                        display.listSet('creating new user')
+                        with open(configPath, "rb") as configFile:
+                            configList = pickle.load(configFile)
+                        newUser = returnNewUser()
+                        configList.append(newUser)
+                        with open(configPath, "wb") as configFile:
+                            pickle.dump(configList, configFile)
+
+                        with open(versionPath, "rb") as versionFile:
+                            versionFileList = pickle.load(versionFile)
+                        versionFileList.append([])
+                        with open(versionPath, "wb") as versionFile:
+                            pickle.dump(versionFileList, versionFile)
+                        
+                        with open(prefsPath, "rb") as prefFile:
+                            preferences = pickle.load(prefFile)
+                        preferences.append({})
+                        preferences[0]['last_user'] = len(configList)-1
+                        preferences[len(configList)]['last_time']=0
+                        preferences[len(configList)]['versions']=[]
+                        with open(prefsPath, "wb") as prefFile:
+                            pickle.dump(preferences, prefFile)
+                        userDic = configFileList[userSelected - 1]
+                        break
+                except:
+                    if userSelected == '\r':
+                        if preferences[0]['last_user'] != -1:
+                            userDic = configFileList[int(preferences[0]['last_user'])]
+                            userSelected = int(preferences[0]['last_user'])+1
             try:
                     display.listSet('')
                     display.homeSet('please enter your password for user ' + userDic['username'],1)
@@ -139,14 +146,9 @@ def login():
                             loginCorrect = False
                             if(hashValue(userPassword) == userDic['passwordHash']):
                                 preferences[0]['last_user'] = userSelected-1
-                                with open(prefsPath, "wb") as prefFile:
-                                    pickle.dump(preferences, prefFile)
                                 loginCorrect = True
                                 break
                             elif userPassword == '':
-                                preferences[0]['last_user'] = -1
-                                with open(prefsPath, "wb") as prefFile:
-                                    pickle.dump(preferences, prefFile)
                                 loginCorrect = False
                                 break
                             else:
@@ -158,6 +160,8 @@ def login():
                     display.homeSet('not a valid user, please choose another option',1)
           
     display.homeSet("you successfully logged in")
+    with open(prefsPath, "wb") as prefFile:
+        pickle.dump(preferences, prefFile)
     return(userDic, userPassword, userSelected-1)
 
 

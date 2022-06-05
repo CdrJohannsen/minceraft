@@ -35,6 +35,7 @@ def mc_launch(dspl,passwd,usr):
         display.listAppend('[d]  delete version')
         display.listAppend('[p]  manage preferences')
         display.listAppend('[e]  text editor')
+        display.listAppend('[q]  quit')
         i=0
         for v in list(versionList[userSelected]):
             version = str(v[0])
@@ -44,13 +45,18 @@ def mc_launch(dspl,passwd,usr):
         selected = readchar.readchar()
         if selected == 'i':
             install()
+        
         elif selected == 'r':
             auth()
+        
         elif selected == 'e':
             mc_edit.startEditor(display)
         
         elif selected == 'p':
             managePrefs()
+        
+        if selected == 'q':
+            return
             
         elif selected == 'd':
             display.homeSet('Select version to delete',1)
@@ -101,7 +107,7 @@ def mc_launch(dspl,passwd,usr):
             except:
                 display.homeSet('Option not avaliable!',1)
                 time.sleep(2)
-    quit()
+    return
 
 
 #########################################################
@@ -131,10 +137,11 @@ def install():
     try:
         success = False
         display.clear()
+        display.homeSet('')
 
         if mod == '0':
             try:
-                display.quickSetOptions()
+                #display.quickSetOptions()
                 minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
                 success = True
                 new_version = version
@@ -144,7 +151,7 @@ def install():
 
         elif mod == '1':
             try:
-                display.quickSetOptions()
+                #display.quickSetOptions()
                 minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
                 success=True
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
@@ -158,7 +165,7 @@ def install():
             if forge_version is None:
                 display.homeSet("This Minecraft Version is not supported by Forge",1)
             else:
-                display.quickSetOptions()
+                #display.quickSetOptions()
                 minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
                 success=True
         ############################
@@ -190,23 +197,25 @@ def install():
     
     
 def set_status(status: str):
-      #display.homeSet(status,1)
       global stat
-      stat = '   '+status
+      stat = "{:<25}".format(status)
+
 
 def set_progress(progress: int):
     prog = f"{progress}/{current_max}"
     size = int(os.get_terminal_size()[0])
-    barsize = size-len(prog)-len(str(current_max))-2-4
+    barsize = size-len(prog)-len(str(current_max))-2-4-28
     barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
-    bar='   ['
+    bar='  ['
     for i in range(barlen):
         bar = bar+'■'
     for i in range(barsize-barlen):
         bar = bar+' '
     bar = bar+']'
-    #print('\r'+bar+prog,end='\r')
-    display.quickSet([stat,bar])
+    out = '('+prog+')'+((11-len(prog))*' ')+stat+bar
+    final = out+(size-len(out)-2)*' '
+    print(final+'\r', end='')
+
     
 
 

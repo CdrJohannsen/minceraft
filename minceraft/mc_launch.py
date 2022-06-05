@@ -85,6 +85,7 @@ def mc_launch(dspl,passwd,usr):
             try:
                 version = preferences[userSelected+1]['last_played']
                 launch(version)
+                return
             except:
                 display.homeSet('No version played last!',1)
                 time.sleep(2)

@@ -356,6 +356,7 @@ def managePrefs():
     while True:
         display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
         display.homeSet('Select version to modify',1)
+        display.listAppend('[q] quit')
         display.listAppend('[d] manage delay for messages\t\t\tCurrent: '+str(preferences[userSelected+1]['delay']))
         i=0
         for v in list(versionList[userSelected]):
@@ -365,6 +366,8 @@ def managePrefs():
         userInput = readchar.readchar()
         if userInput == 'd':
             manageDelay()
+            return
+        if userInput == 'q':
             return
         try:
             userInput = int(userInput)

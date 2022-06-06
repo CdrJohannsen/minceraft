@@ -1,4 +1,4 @@
-import time, os, msmcauth, pickle
+import time, os, msmcauth,json
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
@@ -12,14 +12,14 @@ def mc_launch(dspl,passwd,usr):
     global userPassword
     userPassword = passwd
     global userDic
-    with open(homePath+'/.config/minceraft/users.bin','rb') as f:
-        userDic = pickle.load(f)
+    with open(homePath+'/.config/minceraft/users.json','r') as f:
+        userDic = json.load(f)
     global versionList
-    with open(homePath+'/.config/minceraft/versions.bin','rb') as f:
-        versionList = pickle.load(f)
+    with open(homePath+'/.config/minceraft/versions.json','r') as f:
+        versionList = json.load(f)
     global preferences
-    with open(homePath+'/.config/minceraft/preferences.bin','rb') as f:
-        preferences = pickle.load(f)
+    with open(homePath+'/.config/minceraft/preferences.json','r') as f:
+        preferences = json.load(f)
     global display
     display = dspl
     global userSelected
@@ -122,10 +122,10 @@ def deleteVersion():
             if preferences[userSelected+1]['last_played'] == del_version:
                 preferences[userSelected+1]['last_played'] = ''
             del versionList[userSelected][delInput]
-            with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
-                pickle.dump(versionList, versionFile)
-            with open(homePath+'/.config/minceraft/preferences.bin', "wb") as prefFile:
-                pickle.dump(preferences, prefFile)
+            with open(homePath+'/.config/minceraft/versions.json', "w") as versionFile:
+                json.dump(versionList, versionFile,indent=4)
+            with open(homePath+'/.config/minceraft/preferences.json', "w") as prefFile:
+                json.dump(preferences, prefFile,indent=4)
         except:
             display.homeSet('Invalid selection!')
 
@@ -203,8 +203,8 @@ def install():
                     
             try:
                 versionList[userSelected].append([name,new_version])
-                with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
-                    pickle.dump(versionList, versionFile)
+                with open(homePath+'/.config/minceraft/versions.json', "w") as versionFile:
+                    json.dump(versionList, versionFile,indent=4)
             except:
                 display.homeSet('Couldn\'t save version',1)
                 time.sleep(2)
@@ -259,10 +259,10 @@ def auth():
         time.sleep(2)
         
     preferences[userSelected+1]['last_time']=time.time()
-    with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-        pickle.dump(userDic,f)
-    with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
-        pickle.dump(preferences,f)
+    with open(homePath+'/.config/minceraft/users.json','w') as f:
+        json.dump(userDic,f,indent=4)
+    with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+        json.dump(preferences,f,indent=4)
 
 
 def normalAuth():
@@ -338,10 +338,10 @@ def launch(version):
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
     preferences[userSelected+1]['last_played']=version
-    with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-        pickle.dump(userDic,f)
-    with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
-            pickle.dump(preferences,f)
+    with open(homePath+'/.config/minceraft/users.json','w') as f:
+        json.dump(userDic,f,indent=4)
+    with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+            json.dump(preferences,f,indent=4)
     display.homeSet('Starting '+version,1)
     #print(finalLaunchCommand)
     time.sleep(3)
@@ -395,8 +395,8 @@ def managePrefs():
         #print(preferences)
         action = readchar.readchar()
         if action == '0':
-            with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
-                pickle.dump(preferences,f)
+            with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+                json.dump(preferences,f,indent=4)
             return
         elif action == '1':
             display.homeSet('Specify max RAM allocation in GB')

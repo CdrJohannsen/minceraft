@@ -26,6 +26,8 @@ def mc_launch(dspl,passwd,usr):
     userSelected = usr
     global minecraft_dir
     minecraft_dir = homePath+'/.minceraft'
+    global delay
+    delay = preferences[userSelected+1]['delay']
     authIfNeeded()
     while True:
         if selectOption(display):
@@ -81,7 +83,7 @@ def selectOption(display):
             return True
         except:
             display.homeSet('No version played last!',1)
-            time.sleep(2)
+            time.sleep(delay)
         return False
     else:
         try:
@@ -91,10 +93,10 @@ def selectOption(display):
                 return True
             except:
                 display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
-                time.sleep(2)
+                time.sleep(delay)
         except:
             display.homeSet('Option not avaliable!',1)
-            time.sleep(2)
+            time.sleep(delay)
 
 #########################################################
 #Delete a version
@@ -176,7 +178,7 @@ def install():
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
             except:
                 display.homeSet('Version not supportet by fabric!',1)
-                time.sleep(2)
+                time.sleep(delay)
 
         ########################  Forge is not testet
         elif mod == '2':
@@ -190,7 +192,7 @@ def install():
         ############################
         else:
             display.homeSet('Selection not valid!',1)
-            time.sleep(2)
+            time.sleep(delay)
         if name == '':
             name = new_version
         if success:
@@ -199,7 +201,7 @@ def install():
                 os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
             except:
                 display.homeSet('Couldn\'t make game directory',1)
-                time.sleep(2)
+                time.sleep(delay)
                     
             try:
                 versionList[userSelected].append([name,new_version])
@@ -207,12 +209,12 @@ def install():
                     json.dump(versionList, versionFile,indent=4)
             except:
                 display.homeSet('Couldn\'t save version',1)
-                time.sleep(2)
+                time.sleep(delay)
             
             display.homeSet('Download finished!',1)
     except:
         display.homeSet('Couldn\'t install version',1)
-    time.sleep(2)
+    time.sleep(delay)
         
     
     
@@ -256,7 +258,7 @@ def auth():
         twoFactorAuth()
     else:
         display.homeSet('Couldn\'t authenticate because something weird happened…')
-        time.sleep(2)
+        time.sleep(delay)
         
     preferences[userSelected+1]['last_time']=time.time()
     with open(homePath+'/.config/minceraft/users.json','w') as f:
@@ -275,7 +277,7 @@ def normalAuth():
         userDic[userSelected]['launchOptions'] = launchOptions
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
-        time.sleep(2)
+        time.sleep(delay)
 
 
 def twoFactorAuth():
@@ -287,7 +289,7 @@ def twoFactorAuth():
         userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
-        time.sleep(2)
+        time.sleep(delay)
     
 def authIfNeeded():
     try:
@@ -351,80 +353,93 @@ def launch(version):
 #########################################################
 
 def managePrefs():
-    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
-    display.homeSet('Select version to modify',1)
-    i=0
-    for v in list(versionList[userSelected]):
-        version = str(v[0])
-        display.listAppend('['+str(i)+']  '+version)
-        i+=1
-    userInput = readchar.readchar()
-    try:
-        userInput = int(userInput)
-        version_to_change = versionList[userSelected][userInput][1]
-    except:
-        display.homeSet('Not a number')
-        time.sleep(2)
-        return
-    b = 0
-    pref_index = (-2)
-    for i in preferences[userSelected+1]['versions']:
-        if i['version'] == versionList[userSelected][userInput][1]:
-            pref_index = b
-            break
-        b += 1
-    
-    try:
-        version_prefs = preferences[userSelected+1]['versions'][pref_index]
-    except:
-        preferences[userSelected+1]['versions'].append(getDefaultPrefs(version_to_change))
-        version_prefs = preferences[userSelected+1]['versions'][len(preferences[userSelected+1]['versions'])-1]
     while True:
-        display.homeSet('Select option to modify',1)
         display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
-        if version_prefs['server'] != '':
-            server_prefs = version_prefs['server']
-            if version_prefs['port'] != '':
-                server_prefs += ' on port: '+version_prefs['port']
-        else:
-            server_prefs = 'None'
-        
-        display.listAppend('[0] save & quit')
-        display.listAppend('[1] manage RAM allocation\t\t\t\tCurrent: '+version_prefs['RAM'][0]+' '+version_prefs['RAM'][1])
-        display.listAppend('[2] manage servers to connect after launching\tCurrent: '+server_prefs)
-        #print(preferences)
-        action = readchar.readchar()
-        if action == '0':
-            with open(homePath+'/.config/minceraft/preferences.json','w') as f:
-                json.dump(preferences,f,indent=4)
+        display.homeSet('Select version to modify',1)
+        display.listAppend('[d] manage delay for messages\t\t\tCurrent: '+str(preferences[userSelected+1]['delay']))
+        i=0
+        for v in list(versionList[userSelected]):
+            version = str(v[0])
+            display.listAppend('['+str(i)+']  '+version)
+            i+=1
+        userInput = readchar.readchar()
+        if userInput == 'd':
+            manageDelay()
             return
-        elif action == '1':
-            display.homeSet('Specify max RAM allocation in GB')
-            max_ram = display.userInput()
-            try:
-                max_ram = int(max_ram)
-                display.homeSet('Specify min RAM allocation in GB')
-                min_ram = display.userInput()
+        try:
+            userInput = int(userInput)
+            version_to_change = versionList[userSelected][userInput][1]
+        except:
+            display.homeSet('Not a valid Option')
+            time.sleep(delay)
+            return
+        b = 0
+        pref_index = (-2)
+        for i in preferences[userSelected+1]['versions']:
+            if i['version'] == versionList[userSelected][userInput][1]:
+                pref_index = b
+                break
+            b += 1
+        
+        try:
+            version_prefs = preferences[userSelected+1]['versions'][pref_index]
+        except:
+            preferences[userSelected+1]['versions'].append(getDefaultPrefs(version_to_change))
+            version_prefs = preferences[userSelected+1]['versions'][len(preferences[userSelected+1]['versions'])-1]
+        while True:
+            display.homeSet('Select option to modify',1)
+            display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+            if version_prefs['server'] != '':
+                server_prefs = version_prefs['server']
+                if version_prefs['port'] != '':
+                    server_prefs += ' on port: '+version_prefs['port']
+            else:
+                server_prefs = 'None'
+            
+            display.listAppend('[q] save & quit')
+            display.listAppend('[0] manage RAM allocation\t\t\t\tCurrent: '+version_prefs['RAM'][0]+' '+version_prefs['RAM'][1])
+            display.listAppend('[1] manage servers to connect after launching\tCurrent: '+server_prefs)
+            #print(preferences)
+            action = readchar.readchar()
+            if action == 'q':
+                with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+                    json.dump(preferences,f,indent=4)
+                return
+            elif action == '0':
+                display.homeSet('Specify max RAM allocation in GB')
+                max_ram = display.userInput()
                 try:
-                    min_ram = int(min_ram)
-                    version_prefs['RAM'][0] = '-Xmx'+str(max_ram)+'G'
-                    version_prefs['RAM'][1] = '-Xms'+str(min_ram)+'G'
+                    max_ram = int(max_ram)
+                    display.homeSet('Specify min RAM allocation in GB')
+                    min_ram = display.userInput()
+                    try:
+                        min_ram = int(min_ram)
+                        version_prefs['RAM'][0] = '-Xmx'+str(max_ram)+'G'
+                        version_prefs['RAM'][1] = '-Xms'+str(min_ram)+'G'
+                    except:
+                        display.homeSet('Not a number')
+                        time.sleep(delay)
                 except:
                     display.homeSet('Not a number')
-                    time.sleep(2)
-            except:
-                display.homeSet('Not a number')
-                time.sleep(2)
-        elif action == '2':
-            display.homeSet('Set server ip')
-            ip = display.userInput()
-            display.homeSet('If needed set server port')
-            port = display.userInput()
-            version_prefs['server'] = ip
-            version_prefs['port'] = port
+                    time.sleep(delay)
+            elif action == '1':
+                display.homeSet('Set server ip')
+                ip = display.userInput()
+                display.homeSet('If needed set server port')
+                port = display.userInput()
+                version_prefs['server'] = ip
+                version_prefs['port'] = port
 
     
 
 def getDefaultPrefs(version_to_change):
     defaultPrefs = {'version':version_to_change, 'RAM':['-Xmx2G', '-Xms2G'], 'server': '', 'port' : ''}
     return defaultPrefs
+
+
+def manageDelay():
+    display.homeSet('Delay in seconds')
+    display.listSet('Current: '+str(preferences[userSelected+1]['delay']))
+    preferences[userSelected+1]['delay'] = delay = float(display.userInput().replace(',','.'))
+    with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+        json.dump(preferences,f,indent=4)

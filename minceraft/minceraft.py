@@ -62,7 +62,7 @@ def newNormalAuth(userPassword,newUserDic):
 
 def newTwoFactorAuth(userPassword,newUserDic):
     while True:
-        with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f
+        with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f:
             azure = json.load(f)
         client_id = azure['client_id']
         client_secret = azure['client_secret']
@@ -133,7 +133,8 @@ def login():
     except:
         preferences = [{'last_user':-1}]
         preferences.append({})
-        preferences[len(configFileList)]['last_time']=0
+        preferences[len(configFileList)]['last_time']=time.time()
+        preferences[len(configFileList)]['delay']=2
         preferences[len(configFileList)]['versions']=[]
         with open(prefsPath, "w") as prefFile:
             json.dump(preferences, prefFile,indent=4)

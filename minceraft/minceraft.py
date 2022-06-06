@@ -25,6 +25,22 @@ def returnNewUser():
     display.homeSet("please choose a password",1)
     userPassword = getpass.getpass('    ')
     newUserDic["passwordHash"] = hashValue(userPassword)
+    while True:
+        display.homeSet("Select your microsoft authentcation",1)
+        display.listSet('[0]  normal (email & password)')
+        display.listAppend('[1]  two factor (only for weirdos)')
+        auth_type = readchar.readchar()
+        if auth_type == '0':
+            return normalAuth()
+            
+        elif auth_type == '1':
+            return twoFactorAuth()
+            
+        else:
+            display.homeSet("Not an Option",1)
+            time.sleep(2)
+
+def normalAuth():
     while(True):
         display.homeSet("please enter your microsoft email adress",1)
         newUserDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
@@ -39,8 +55,10 @@ def returnNewUser():
             break
         except:
             display.listSet(['not a correct microsoft account', 'please try again',e])
-    return(newUserDic)
+    return newUserDic
 
+def twoFactorAuth():
+    print('hi')
 
 def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])

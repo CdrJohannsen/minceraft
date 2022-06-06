@@ -21,94 +21,113 @@ def mc_launch(dspl,passwd,usr):
     with open(homePath+'/.config/minceraft/preferences.bin','rb') as f:
         preferences = pickle.load(f)
     global display
+    display = dspl
     global userSelected
     userSelected = usr
-    display = dspl
     global minecraft_dir
+    minecraft_dir = homePath+'/.minceraft'
     authIfNeeded()
     while True:
-        minecraft_dir = homePath+'/.minceraft'
-        display.homeSet('Select Option',1)
-        display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
-        display.listAppend('[i]  install version')
-        display.listAppend('[r]  reauthenticate')
-        display.listAppend('[d]  delete version')
-        display.listAppend('[p]  manage preferences')
-        display.listAppend('[e]  text editor')
-        display.listAppend('[q]  quit')
-        i=0
-        for v in list(versionList[userSelected]):
-            version = str(v[0])
-            display.listAppend('['+str(i)+']  '+version)
-            i+=1
-
-        selected = readchar.readchar()
-        if selected == 'i':
-            install()
-        
-        elif selected == 'r':
-            auth()
-        
-        elif selected == 'e':
-            mc_edit.startEditor(display)
-        
-        elif selected == 'p':
-            managePrefs()
-        
-        if selected == 'q':
+        if selectOption(display):
             return
-            
-        elif selected == 'd':
-            display.homeSet('Select version to delete',1)
-            display.listSet('[q]  quit')
-            i = 0
-            for version in versionList[userSelected]:
-                display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
-                i += 1
-            userInput = display.userInput()
-            if userInput != 'q':
-                try:
-                    delInput = int(userInput)
-                    del_version = versionList[userSelected][delInput][1]
-                    b = 0
-                    for i in preferences[userSelected+1]['versions']:
-                        if i['version'] == del_version:
-                            del preferences[userSelected+1]['versions'][b]
-                            break
-                        b += 1
 
-                    if preferences[userSelected+1]['last_played'] == del_version:
-                        preferences[userSelected+1]['last_played'] = ''
-                    del versionList[userSelected][delInput]
-                    with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
-                        pickle.dump(versionList, versionFile)
-                    with open(homePath+'/.config/minceraft/preferences.bin', "wb") as prefFile:
-                        pickle.dump(preferences, prefFile)
-                except:
-                    display.homeSet('Invalid selection!')
+#########################################################
+#Select option
+#########################################################
 
-        elif selected == '\r':
+def selectOption(display):
+    display.homeSet('Select Option',1)
+    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+    display.listAppend('[i]  install version')
+    display.listAppend('[r]  reauthenticate')
+    display.listAppend('[d]  delete version')
+    display.listAppend('[p]  manage preferences')
+    display.listAppend('[e]  text editor')
+    display.listAppend('[q]  quit')
+    i=0
+    for v in list(versionList[userSelected]):
+        version = str(v[0])
+        display.listAppend('['+str(i)+']  '+version)
+        i+=1
+
+    selected = readchar.readchar()
+    if selected == 'i':
+        install()
+        return False
+
+    elif selected == 'r':
+        auth()
+        return False
+
+    elif selected == 'e':
+        mc_edit.startEditor(display)
+        return False
+
+    elif selected == 'p':
+        managePrefs()
+        return
+
+    if selected == 'q':
+        return True
+        
+    elif selected == 'd':
+        deleteVersion()
+        return False
+
+    elif selected == '\r':
+        try:
+            version = preferences[userSelected+1]['last_played']
+            launch(version)
+            return True
+        except:
+            display.homeSet('No version played last!',1)
+            time.sleep(2)
+        return False
+    else:
+        try:
+            selected = int(selected)
             try:
-                version = preferences[userSelected+1]['last_played']
-                launch(version)
-                return
+                launch(versionList[userSelected][selected][1])
+                return True
             except:
-                display.homeSet('No version played last!',1)
+                display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
                 time.sleep(2)
-        else:
-            try:
-                selected = int(selected)
-                try:
-                    launch(versionList[userSelected][selected][1])
+        except:
+            display.homeSet('Option not avaliable!',1)
+            time.sleep(2)
+
+#########################################################
+#Delete a version
+#########################################################
+
+def deleteVersion():
+    display.homeSet('Select version to delete',1)
+    display.listSet('[q]  quit')
+    i = 0
+    for version in versionList[userSelected]:
+        display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
+        i += 1
+    userInput = display.userInput()
+    if userInput != 'q':
+        try:
+            delInput = int(userInput)
+            del_version = versionList[userSelected][delInput][1]
+            b = 0
+            for i in preferences[userSelected+1]['versions']:
+                if i['version'] == del_version:
+                    del preferences[userSelected+1]['versions'][b]
                     break
-                except:
-                    display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
-                    time.sleep(2)
-            except:
-                display.homeSet('Option not avaliable!',1)
-                time.sleep(2)
-    return
+                b += 1
 
+            if preferences[userSelected+1]['last_played'] == del_version:
+                preferences[userSelected+1]['last_played'] = ''
+            del versionList[userSelected][delInput]
+            with open(homePath+'/.config/minceraft/versions.bin', "wb") as versionFile:
+                pickle.dump(versionList, versionFile)
+            with open(homePath+'/.config/minceraft/preferences.bin', "wb") as prefFile:
+                pickle.dump(preferences, prefFile)
+        except:
+            display.homeSet('Invalid selection!')
 
 #########################################################
 #Install
@@ -204,8 +223,8 @@ def set_status(status: str):
 def set_progress(progress: int):
     prog = f"{progress}/{current_max}"
     size = int(os.get_terminal_size()[0])
-    barsize = size-len(prog)-len(str(current_max))-2-4-28
-    barlen = int(round(((float(barsize)/(float(current_max)/10))*(progress/10)),0))
+    barsize = size-len(prog)-len(str(current_max))-2-4-30
+    barlen = int(((float(barsize)/(float(current_max)/10))*(progress/10)))
     bar='  ['
     for i in range(barlen):
         bar = bar+'■'
@@ -213,7 +232,7 @@ def set_progress(progress: int):
         bar = bar+' '
     bar = bar+']'
     out = '('+prog+')'+((11-len(prog))*' ')+stat+bar
-    final = out+(size-len(out)-2)*' '
+    final = out+(size-len(out))*' '
     print(final+'\r', end='')
 
     
@@ -241,6 +260,7 @@ def auth():
             pickle.dump(userDic,f)
         with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
             pickle.dump(preferences,f)
+        time.sleep(2)
     except:
         display.homeSet('Authentification failed!',1)
         time.sleep(2)
@@ -251,7 +271,7 @@ def authIfNeeded():
         last_time = preferences[userSelected+1]['last_time']
     except:
         last_time = preferences[userSelected+1]['last_time'] = 0
-    if last_time+82800 < time.time():
+    if last_time+42069 <= time.time():#42690
         auth()
 
 #########################################################

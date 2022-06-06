@@ -155,7 +155,7 @@ def login():
                             preferences = pickle.load(prefFile)
                         preferences.append({})
                         preferences[0]['last_user'] = len(configList)-1
-                        preferences[len(configList)]['last_time']=0
+                        preferences[len(configList)]['last_time']=time.time()
                         preferences[len(configList)]['versions']=[]
                         with open(prefsPath, "wb") as prefFile:
                             pickle.dump(preferences, prefFile)

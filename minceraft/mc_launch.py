@@ -158,7 +158,7 @@ def install():
         display.clear()
         display.homeSet('')
 
-        if mod == '0':
+        if mod == '0' or mod == '':
             try:
                 #display.quickSetOptions()
                 minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
@@ -191,6 +191,8 @@ def install():
         else:
             display.homeSet('Selection not valid!',1)
             time.sleep(2)
+        if name == '':
+            name = new_version
         if success:
             versionPath=os.path.join(minecraft_dir,'versions')    
             try:
@@ -217,7 +219,8 @@ def install():
     
 def set_status(status: str):
       global stat
-      stat = "{:<25}".format(status)
+      temp_stat = "{:<25}".format(status)
+      stat = temp_stat[:25]
 
 
 def set_progress(progress: int):

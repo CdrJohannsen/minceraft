@@ -91,8 +91,8 @@ def selectOption(display):
             try:
                 launch(versionList[userSelected][selected][1])
                 return True
-            except:
-                display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1],1)
+            except Exception as e:
+                display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1]+'because: '+str(e),1)
                 time.sleep(delay)
         except:
             display.homeSet('Option not avaliable!',1)
@@ -311,6 +311,11 @@ def launch(version):
     launchOptions['token']=ec.decrypt(access_token,userPassword)
     launchOptions['launcherName']='minceraft-launcher'
     launchOptions['launcherVersion']='1.0'
+    
+    launchOptions['customResolution']=True
+    screen = display.getScreenSize()
+    launchOptions['resolutionWidth']=screen[0]
+    launchOptions['resolutionHeight']=screen[1]
     
     try:
         b = 0

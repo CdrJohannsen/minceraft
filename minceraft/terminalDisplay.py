@@ -37,13 +37,11 @@ class advancedDisplay():
         self.outputList.reverse()
         self.output()
     
-    def quickSetOptions(self):
-        terminalWidth, terminalLength = os.get_terminal_size(0)
-        self.big_spacer = (terminalLength-2) * '\n'
-    
-    def quickSet(self, appendList):
-        print(self.big_spacer,appendList[0]+'\n'+appendList[1]+'\n')
-        
+    def getScreenSize(self):
+        screen = os.popen("xrandr -q -d :0").readlines()[0]
+        width = screen.split()[7]
+        height = screen.split()[9][:-1]
+        return width, height
     
     def homeSet(self, homeObject, homeLength = 1):
         self.homeList = []

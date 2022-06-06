@@ -21,7 +21,7 @@ with open('/usr/share/applications/minceraft.desktop','w') as f:
 	f.writelines('[Desktop Entry]\n')
 	f.writelines('Name=Minceraft\n')
 	f.writelines('StartupWMClass=Minceraft\n')
-	f.writelines('Exec=gnome-terminal -t Minceraft --maximise -- python3 '+os.path.dirname(os.path.abspath(__file__))+'/minceraft.py\n')
+	f.writelines('Exec=gnome-terminal -t Minceraft --maximize -- python3 '+os.path.dirname(os.path.abspath(__file__))+'/minceraft.py\n')
 	f.writelines('Icon='+os.path.dirname(os.path.abspath(__file__))+'/minceraft-icon.png\n')
 	f.writelines('Type=Application\n')
 	f.writelines('Categories=Games;\n')

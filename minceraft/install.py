@@ -14,19 +14,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-def encrypt(string, key):
-    while(len(key) < len(string)):
-        key += key
-    encryptedString = ""
-    for i in range(len(string)):
-        encryptedString += chr(ord(string[i]) + ord(key[i]))
-    return(encryptedString)
+import os
+import sys
 
+with open('/usr/share/applications/minceraft.desktop','w') as f:
+	f.writelines('[Desktop Entry]\n')
+	f.writelines('Name=Minceraft\n')
+	f.writelines('StartupWMClass=Minceraft\n')
+	f.writelines('Exec=gnome-terminal -t Minceraft --maximise -- python3 '+os.path.dirname(os.path.abspath(__file__))+'/minceraft.py\n')
+	f.writelines('Icon='+os.path.dirname(os.path.abspath(__file__))+'/minceraft-icon.png\n')
+	f.writelines('Type=Application\n')
+	f.writelines('Categories=Games;\n')
+	f.writelines('Keywords=Minceraft, Python, Quick, Fast, Minecraft;\n')
 
-def decrypt(string, key):
-    while(len(key) < len(string)):
-        key += key
-    decryptedString = ""
-    for i in range(len(string)):
-        decryptedString += chr(ord(string[i]) - ord(key[i]))
-    return(decryptedString)
+print('Installed sucsessfully!')
+print('You might need to install modules "msmcauth", "readchar", "minecraft_launcher_lib"')

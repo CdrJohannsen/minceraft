@@ -2,7 +2,7 @@
 [x] start minceraft
 [x] reauthenticate
 [x] preferences
-[ ] timer config
+[x] timer config
 [ ] finish azure
 aufbau versionDic:	[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]
 

@@ -6,7 +6,7 @@ import mc_launch
 import mc_edit
 import readchar
 import getpass
-
+import webbrowser
 
 ###############################################################
 
@@ -31,16 +31,16 @@ def returnNewUser():
         display.listAppend('[1]  two factor (only for weirdos)')
         auth_type = readchar.readchar()
         if auth_type == '0':
-            return normalAuth(userPassword,newUserDic)
+            return newNormalAuth(userPassword,newUserDic)
             
         elif auth_type == '1':
-            return twoFactorAuth(userPassword,newUserDic)
+            return newTwoFactorAuth(userPassword,newUserDic)
             
         else:
             display.homeSet("Not an Option",1)
             time.sleep(2)
 
-def normalAuth(userPassword,newUserDic):
+def newNormalAuth(userPassword,newUserDic):
     while(True):
         display.listSet('Normal authentication')
         display.homeSet("please enter your microsoft email adress",1)
@@ -54,13 +54,31 @@ def normalAuth(userPassword,newUserDic):
             resp = msmcauth.login(msEmail, msPassword)
             launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
             newUserDic['launchOptions']=launchOptions
+            newUserDic['authType'] = 'normal'
             break
         except:
             display.listSet(['not a correct microsoft account', 'please try again',e])
     return newUserDic
 
-def twoFactorAuth(userPassword,newUserDic):
-    print('hi')
+def newTwoFactorAuth(userPassword,newUserDic):
+    while True:
+        client_id = ''
+        redirect_uri = ''
+        display.homeSet('Please press ENTER and copy the url you will be redirectet to below
+        display.userInput()
+        webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
+        code_url = display.userInput()
+        
+        if not minecraft_launcher_lib.microsoft_account.url_contains_auth_code(code_url):
+            display.homeSet("The url is not valid")
+            time.sleep(2)
+        else:
+            auth_code = minecraft_launcher_lib.microsoft_account.get_auth_code_from_url(code_url)
+            login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id, secret, redirect_uri, auth_code)
+            launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
+            newUserDic['launchOptions']=launchOptions
+            newUserDic['authType'] = '2fa'
+            newUserDic['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
 
 def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])

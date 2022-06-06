@@ -250,6 +250,22 @@ def set_max(new_max: int):
 #########################################################
 
 def auth():
+    if userDic[userSelected]['authType'] == 'normal':
+        normalAuth()
+    elif userDic[userSelected]['authType'] == '2fa':
+        twoFactorAuth()
+    else:
+        display.homeSet('Couldn\'t authenticate because something weird happened…')
+        time.sleep(2)
+        
+    preferences[userSelected+1]['last_time']=time.time()
+    with open(homePath+'/.config/minceraft/users.bin','wb') as f:
+        pickle.dump(userDic,f)
+    with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
+        pickle.dump(preferences,f)
+
+
+def normalAuth():
     try:
         display.homeSet('Authenticating...',1)
         email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
@@ -257,24 +273,28 @@ def auth():
         resp = msmcauth.login(email, msPassword)
         launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
-        preferences[userSelected+1]['last_time']=time.time()
-        
-        with open(homePath+'/.config/minceraft/users.bin','wb') as f:
-            pickle.dump(userDic,f)
-        with open(homePath+'/.config/minceraft/preferences.bin','wb') as f:
-            pickle.dump(preferences,f)
-        time.sleep(2)
-    except:
-        display.homeSet('Authentification failed!',1)
+    except Exception as e:
+        display.homeSet('Authentification failed because of: '+str(e),1)
         time.sleep(2)
 
 
+def twoFactorAuth():
+    try:
+        refresh_token = ec.decrypt(userDic[userSelected]['refresh_token'], userPassword)
+        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, client_secret, redirect_uri, refresh_token)
+        launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
+        userDic[userSelected]['launchOptions'] = launchOptions
+        userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
+    except Exception as e:
+        display.homeSet('Authentification failed because of: '+str(e),1)
+        time.sleep(2)
+    
 def authIfNeeded():
     try:
         last_time = preferences[userSelected+1]['last_time']
     except:
         last_time = preferences[userSelected+1]['last_time'] = 0
-    if last_time+42069 <= time.time():#42690
+    if last_time+42069 <= time.time():
         auth()
 
 #########################################################

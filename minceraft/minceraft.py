@@ -62,8 +62,12 @@ def newNormalAuth(userPassword,newUserDic):
 
 def newTwoFactorAuth(userPassword,newUserDic):
     while True:
-        client_id = ''
-        redirect_uri = ''
+        with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f
+            azure = json.load(f)
+        client_id = azure['client_id']
+        client_secret = azure['client_secret']
+        redirect_uri = azure['redirect_uri']
+        
         display.homeSet('Please press ENTER and copy the url you will be redirectet to below')
         display.userInput()
         webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))

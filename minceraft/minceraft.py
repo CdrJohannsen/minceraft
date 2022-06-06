@@ -26,22 +26,23 @@ def returnNewUser():
     userPassword = getpass.getpass('    ')
     newUserDic["passwordHash"] = hashValue(userPassword)
     while True:
-        display.homeSet("Select your microsoft authentcation",1)
+        display.homeSet("Select your microsoft authentication",1)
         display.listSet('[0]  normal (email & password)')
         display.listAppend('[1]  two factor (only for weirdos)')
         auth_type = readchar.readchar()
         if auth_type == '0':
-            return normalAuth()
+            return normalAuth(userPassword,newUserDic)
             
         elif auth_type == '1':
-            return twoFactorAuth()
+            return twoFactorAuth(userPassword,newUserDic)
             
         else:
             display.homeSet("Not an Option",1)
             time.sleep(2)
 
-def normalAuth():
+def normalAuth(userPassword,newUserDic):
     while(True):
+        display.listSet('Normal authentication')
         display.homeSet("please enter your microsoft email adress",1)
         newUserDic["msEmail"] = ec.encrypt(display.userInput(), userPassword)
         display.homeSet("please enter your microsoft email password",1)
@@ -49,6 +50,7 @@ def normalAuth():
         try:
             msEmail = ec.decrypt(newUserDic["msEmail"], userPassword)
             msPassword = ec.decrypt(newUserDic["msPassword"], userPassword)
+            display.homeSet("Verifying...",1)
             resp = msmcauth.login(msEmail, msPassword)
             launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
             newUserDic['launchOptions']=launchOptions
@@ -57,17 +59,23 @@ def normalAuth():
             display.listSet(['not a correct microsoft account', 'please try again',e])
     return newUserDic
 
-def twoFactorAuth():
+def twoFactorAuth(userPassword,newUserDic):
     print('hi')
 
 def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])
     try:
         os.mkdir(os.path.join(homePath, ".minceraft"))
-        os.mkdir(os.path.join(homePath, ".config/minceraft"))
-        os.mkdir(os.path.join(homePath, ".config/minceraft",'gameDirs'))
     except:
-        display.homeSet(['could not create directory', 'press ENTER to exit'])
+        pass
+    try:
+        os.mkdir(os.path.join(homePath, ".config/minceraft"))
+    except:
+        pass
+    try:
+        os.mkdir(os.path.join(homePath, ".minceraft",'gameDirs'))
+    except:
+        pass
 
 
 def login():
@@ -113,6 +121,8 @@ def login():
         print('[DEBUG] ', configFileList)
         loginCorrect = True
         while(True):
+            with open(configPath, "rb") as configFile:
+                configFileList = pickle.load(configFile)
             userSelection = ['[0]    create new user']
             for i in range(len(configFileList)):
                 userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
@@ -135,10 +145,10 @@ def login():
                         with open(configPath, "wb") as configFile:
                             pickle.dump(configList, configFile)
 
-                        with open(versionPath, "rb") as versionFile:
+                        with open(versionsPath, "rb") as versionFile:
                             versionFileList = pickle.load(versionFile)
                         versionFileList.append([])
-                        with open(versionPath, "wb") as versionFile:
+                        with open(versionsPath, "wb") as versionFile:
                             pickle.dump(versionFileList, versionFile)
                         
                         with open(prefsPath, "rb") as prefFile:

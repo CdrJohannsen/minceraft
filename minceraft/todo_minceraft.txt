@@ -4,7 +4,3 @@
 [x] preferences
 [x] timer config
 [ ] finish azure
-aufbau versionDic:	[[name>,<id>][name>,<id>]][[name>,<id>][name>,<id>]]]
-
-preferences aufbau: [{'last_user': 0}, {'last_time': <time>, 'last_played': <version>, 'versions':[{'id':<version>, 'RAM':<ram>}]}]
-                    []

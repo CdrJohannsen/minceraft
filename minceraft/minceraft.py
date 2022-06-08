@@ -73,7 +73,7 @@ def newNormalAuth(userPassword,newUserDic):
             newUserDic['authType'] = 'normal'
             break
         except:
-            display.listSet(['not a correct microsoft account', 'please try again',e])
+            display.listSet(['not a correct microsoft account', 'please try again'])
     return newUserDic
 
 def newTwoFactorAuth(userPassword,newUserDic):

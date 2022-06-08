@@ -251,9 +251,9 @@ def set_progress(progress: int):
         bar = bar+'■'
     for i in range(barsize-barlen):
         bar = bar+' '
-    bar = bar+']'
+    bar = bar
     out = '('+prog+')'+((11-len(prog))*' ')+stat+bar
-    final = out+(size-len(out))*' '
+    final = out+(size-len(out)-1)*' '+']'
     print(final+'\r', end='')
 
     

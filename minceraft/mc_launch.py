@@ -42,8 +42,8 @@ def mc_launch(dspl,passwd,usr):
     userSelected = usr
     global minecraft_dir
     minecraft_dir = homePath+'/.minceraft'
-    global delay
-    delay = preferences[userSelected+1]['delay']
+    temp_usr = userSelected+1
+    display.getDelay(temp_usr)
     authIfNeeded()
     while True:
         if selectOption(display):
@@ -99,7 +99,7 @@ def selectOption(display):
             return True
         except:
             display.homeSet('No version played last!',1)
-            time.sleep(delay)
+            time.sleep(display.delay)
         return False
     else:
         try:
@@ -109,10 +109,10 @@ def selectOption(display):
                 return True
             except Exception as e:
                 display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1]+'because: '+str(e),1)
-                time.sleep(delay)
+                time.sleep(display.delay)
         except:
             display.homeSet('Option not avaliable!',1)
-            time.sleep(delay)
+            time.sleep(display.delay)
 
 #########################################################
 #Delete a version
@@ -194,7 +194,7 @@ def install():
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
             except:
                 display.homeSet('Version not supportet by fabric!',1)
-                time.sleep(delay)
+                time.sleep(display.delay)
 
         ########################  Forge is not testet
         elif mod == '2':
@@ -208,7 +208,7 @@ def install():
         ############################
         else:
             display.homeSet('Selection not valid!',1)
-            time.sleep(delay)
+            time.sleep(display.delay)
         if name == '':
             name = new_version
         if success:
@@ -217,7 +217,7 @@ def install():
                 os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
             except:
                 display.homeSet('Couldn\'t make game directory',1)
-                time.sleep(delay)
+                time.sleep(display.delay)
                     
             try:
                 versionList[userSelected].append([name,new_version])
@@ -225,12 +225,12 @@ def install():
                     json.dump(versionList, versionFile,indent=4)
             except:
                 display.homeSet('Couldn\'t save version',1)
-                time.sleep(delay)
+                time.sleep(display.delay)
             
             display.homeSet('Download finished!',1)
     except:
         display.homeSet('Couldn\'t install version',1)
-    time.sleep(delay)
+    time.sleep(display.delay)
         
     
     
@@ -274,7 +274,7 @@ def auth():
         twoFactorAuth()
     else:
         display.homeSet('Couldn\'t authenticate because something weird happened…')
-        time.sleep(delay)
+        time.sleep(display.delay)
         
     preferences[userSelected+1]['last_time']=time.time()
     with open(homePath+'/.config/minceraft/users.json','w') as f:
@@ -293,7 +293,7 @@ def normalAuth():
         userDic[userSelected]['launchOptions'] = launchOptions
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
-        time.sleep(delay)
+        time.sleep(display.delay)
 
 
 def twoFactorAuth():
@@ -305,7 +305,7 @@ def twoFactorAuth():
         userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
-        time.sleep(delay)
+        time.sleep(display.delay)
     
 def authIfNeeded():
     try:
@@ -396,7 +396,7 @@ def managePrefs():
                 version_to_change = versionList[userSelected][userInput][1]
             except:
                 display.homeSet('Not a valid Option')
-                time.sleep(delay)
+                time.sleep(display.delay)
                 break
                 
             b = 0
@@ -444,10 +444,10 @@ def managePrefs():
                             version_prefs['RAM'][1] = '-Xms'+str(min_ram)+'G'
                         except:
                             display.homeSet('Not a number')
-                            time.sleep(delay)
+                            time.sleep(display.delay)
                     except:
                         display.homeSet('Not a number')
-                        time.sleep(delay)
+                        time.sleep(display.delay)
                 elif action == '1':
                     display.homeSet('Set server ip')
                     ip = display.userInput()
@@ -470,3 +470,4 @@ def manageDelay():
     delay = preferences[userSelected+1]['delay']
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
         json.dump(preferences,f,indent=4)
+    display.getDelay((userSelected+1))

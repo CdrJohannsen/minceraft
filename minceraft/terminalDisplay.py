@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os, math
+import os, math, json
 
 class advancedDisplay():
 
@@ -24,6 +24,11 @@ class advancedDisplay():
         self.logo = True
         self.longSpacer = '                                                                                                                                                                                  '
         self.big_spacer = ''
+    
+    def getDelay(self, user):
+        with open(os.path.expanduser('~')+'/.config/minceraft/preferences.json','r') as f:
+            d = json.load(f)
+        self.delay = d[user]['delay']
     
     def clear(self):
         self.outputList = []

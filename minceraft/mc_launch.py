@@ -21,6 +21,8 @@ import encryption as ec
 import readchar
 import subprocess
 import mc_edit
+import base64
+import requests
 
 def mc_launch(dspl,passwd,usr):
     global homePath
@@ -60,6 +62,7 @@ def selectOption(display):
     display.listAppend('[r]  reauthenticate')
     display.listAppend('[d]  delete version')
     display.listAppend('[p]  manage preferences')
+    display.listAppend('[s]  change skin')
     display.listAppend('[e]  text editor')
     display.listAppend('[q]  quit')
     i=0
@@ -83,7 +86,11 @@ def selectOption(display):
 
     elif selected == 'p':
         managePrefs()
-        return
+        return False
+        
+    elif selected == 's':
+        manageSkins()
+        return False
 
     if selected == 'q':
         return True
@@ -377,7 +384,7 @@ def managePrefs():
     while True:
         while True:
             display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
-            display.homeSet('Select version to modify',1)
+            display.homeSet('Select option to modify',1)
             display.listAppend('[q] quit')
             display.listAppend('[d] manage delay for messages\t\t\tCurrent: '+str(preferences[userSelected+1]['delay']))
             i=0
@@ -471,3 +478,45 @@ def manageDelay():
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
         json.dump(preferences,f,indent=4)
     display.getDelay((userSelected+1))
+
+#########################################################
+#Manage your skins
+#########################################################
+
+def manageSkins():
+    while True:
+        display.listSet('[q] quit')
+        i=0
+        for skin in os.listdir(os.path.join(homePath,'.minceraft','skins')):
+            display.listAppend('['+str(i)+'] '+skin.replace('.png',''))
+            i+=1
+        
+        display.homeSet('Select option')
+        userInput = display.userInput()
+        if userInput == 'q':
+            return
+        else:
+            try:
+                userInput=int(userInput)
+            except:
+                display.homeSet('Not a valid option')
+                time.sleep(display.delay)
+                continue
+            filename=os.listdir(os.path.join(homePath,'.minceraft','skins'))[userInput]
+            changeSkin(ec.decrypt(userDic[userSelected]['launchOptions']['token'],userPassword),os.path.join(homePath,'.minceraft','skins',filename))
+
+
+
+
+
+def changeSkin(token,filename):
+    auth = "Bearer "+token
+    url = 'https://api.minecraftservices.com/minecraft/profile/skins'
+
+    data = {'variant':'slim'}
+    headers = {'Authorization': auth}
+    with open(filename, 'rb') as png:
+        files= {'file': ('skin.png', png, 'image/png')}
+        r = requests.request("POST",url,headers=headers,data=data,files=files)
+        display.homeSet(r.reason)
+        time.sleep(display.delay)

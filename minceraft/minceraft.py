@@ -236,22 +236,6 @@ def login():
     return(userDic, userPassword, userSelected-1)
 
 
-'''
-def simpleLaunch(email, password):
-    minecraft_directory = '/home/malte/.config/minceraft'
-    display.append('installing minecraft')
-    minecraft_launcher_lib.install.install_minecraft_version("1.8.9", minecraft_directory)
-    display.append('finished installing minecraft')
-    resp = msmcauth.login(email, password)
-    launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": resp.access_token}
-    launchOptions["jvmArguments"] = ["-Xmx4G", "-Xms2G"]
-    launchCommand = minecraft_launcher_lib.command.get_minecraft_command("1.8.9", minecraft_directory, launchOptions)
-    finalLaunchCommand = ''
-    for i in launchCommand:
-        finalLaunchCommand += ' ' + i
-    os.system(finalLaunchCommand)
-'''
-
    
 
 ###############################################################
@@ -262,24 +246,4 @@ os.system('cd .config/minceraft/')
 CurrentUserDic, userPassword, userSelected = login()
 mc_launch.mc_launch(display,userPassword,userSelected)
 
-'''
-while(True):
-    display.homeSet('Select an option',1)
-    display.listSet('[2]    enter the text editor mode')
-    display.listAppendTop('[1]    enter the launch menu')
-    display.listAppendTop('[0]    exit minceraft')
-    userInput = readchar.readchar()
-
-    if(userInput == '0'):
-            display.clear()
-            break
-    elif userInput == '1' or userInput == '\r':
-        mc_launch.mc_launch(display,userPassword,userSelected)
-    elif userInput == '2':
-        mcedit.startEditor()
-    elif userInput == '\r':
-        pass
-        #open preferences file and do the thing
-        #userInput = preferencesDic['mainMenuSelection']
-        '''
 del display

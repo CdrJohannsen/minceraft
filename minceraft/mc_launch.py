@@ -502,18 +502,30 @@ def manageSkins():
                 display.homeSet('Not a valid option')
                 time.sleep(display.delay)
                 continue
+            display.homeSet('Choose skin width')
+            display.listSet('[s] slim')
+            display.listAppend('[c] classic')
+            width = display.userInput()
+            if width == 's':
+                skinWidth = 'slim'
+            elif width == 'c':
+                skinWidth = 'classic'
+            else:
+                disply.homeSet('Not a valid skin type!')
+                time.sleep(disply.delay)
+                continue
             filename=os.listdir(os.path.join(homePath,'.minceraft','skins'))[userInput]
-            changeSkin(ec.decrypt(userDic[userSelected]['launchOptions']['token'],userPassword),os.path.join(homePath,'.minceraft','skins',filename))
+            changeSkin(ec.decrypt(userDic[userSelected]['launchOptions']['token'],userPassword),os.path.join(homePath,'.minceraft','skins',filename),skinWidth)
 
 
 
 
 
-def changeSkin(token,filename):
+def changeSkin(token,filename,skinWidth):
     auth = "Bearer "+token
     url = 'https://api.minecraftservices.com/minecraft/profile/skins'
 
-    data = {'variant':'slim'}
+    data = {'variant':skinWidth}
     headers = {'Authorization': auth}
     with open(filename, 'rb') as png:
         files= {'file': ('skin.png', png, 'image/png')}

@@ -114,6 +114,10 @@ def createDirectory():
         os.mkdir(os.path.join(homePath, ".minceraft",'gameDirs'))
     except:
         pass
+    try:
+        os.mkdir(os.path.join(homePath, ".minceraft",'skins'))
+    except:
+        pass
 
 
 def login():

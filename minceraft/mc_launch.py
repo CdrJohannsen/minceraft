@@ -159,6 +159,7 @@ def deleteVersion():
 #########################################################
 
 def install():
+    versionPath=os.path.join(minecraft_dir,'versions') 
     display.clear()
     display.homeSet('Select Version',1)
     version = display.userInput()
@@ -185,7 +186,6 @@ def install():
 
         if mod == '0' or mod == '':
             try:
-                #display.quickSetOptions()
                 minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
                 success = True
                 new_version = version
@@ -195,7 +195,6 @@ def install():
 
         elif mod == '1':
             try:
-                #display.quickSetOptions()
                 minecraft_launcher_lib.fabric.install_fabric(version, minecraft_dir, callback=callback)
                 success=True
                 new_version = 'fabric-loader-'+minecraft_launcher_lib.fabric.get_latest_loader_version()+'-'+version
@@ -206,20 +205,29 @@ def install():
         ########################  Forge is not testet
         elif mod == '2':
             forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
-            if forge_version is None:
+            if forge_version is None and not minecraft_launcher_lib.forge.supports_automatic_install(forge_version):
                 display.homeSet("This Minecraft Version is not supported by Forge",1)
-            else:
-                #display.quickSetOptions()
+                time.sleep(display.delay)
+            elif minecraft_launcher_lib.forge.supports_automatic_install(version):
                 minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
                 success=True
+            else:
+                minecraft_launcher_lib.forge.run_forge_installer(forge_version)
+                success=True
+            dirs = []
+            for d in os.listdir(versionPath):
+                if os.path.isdir(os.path.join(versionPath,d)):
+                    dirs.append(d)
+            new_version = sorted(dirs, key=lambda x: os.path.getctime(os.path.join(versionPath,x)), reverse=True)[:1][0]
+                
+                
         ############################
         else:
             display.homeSet('Selection not valid!',1)
             time.sleep(display.delay)
         if name == '':
             name = new_version
-        if success:
-            versionPath=os.path.join(minecraft_dir,'versions')    
+        if success:   
             try:
                 os.mkdir(os.path.join(minecraft_dir,'gameDirs',new_version))
             except:
@@ -373,7 +381,7 @@ def launch(version):
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
             json.dump(preferences,f,indent=4)
     display.homeSet('Starting '+version,1)
-    #print(finalLaunchCommand)
+    print(finalLaunchCommand)
     time.sleep(3)
 
 #########################################################

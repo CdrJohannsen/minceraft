@@ -101,8 +101,9 @@ def selectOption(display):
 
     elif selected == '\r':
         try:
-            version = preferences[userSelected+1]['last_played']
-            launch(version)
+            version = preferences[userSelected+1]['last_played'][0]
+            index = preferences[userSelected+1]['last_played'][1]
+            launch(version, index)
             return True
         except:
             display.homeSet('No version played last!',1)
@@ -112,7 +113,7 @@ def selectOption(display):
         try:
             selected = int(selected)
             try:
-                launch(versionList[userSelected][selected][1])
+                launch(versionList[userSelected][selected][1],selected)
                 return True
             except Exception as e:
                 display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1]+'because: '+str(e),1)
@@ -137,15 +138,12 @@ def deleteVersion():
         try:
             delInput = int(userInput)
             del_version = versionList[userSelected][delInput][1]
-            b = 0
-            for i in preferences[userSelected+1]['versions']:
-                if i['version'] == del_version:
-                    del preferences[userSelected+1]['versions'][b]
-                    break
-                b += 1
 
-            if preferences[userSelected+1]['last_played'] == del_version:
-                preferences[userSelected+1]['last_played'] = ''
+            del preferences[userSelected+1]['versions'][delInput]
+
+
+            if preferences[userSelected+1]['last_played'][0] == del_version:
+                preferences[userSelected+1]['last_played'] = ['',-1]
             del versionList[userSelected][delInput]
             with open(homePath+'/.config/minceraft/versions.json', "w") as versionFile:
                 json.dump(versionList, versionFile,indent=4)
@@ -161,13 +159,14 @@ def deleteVersion():
 def install():
     versionPath=os.path.join(minecraft_dir,'versions') 
     display.clear()
-    display.homeSet('Select Version',1)
+    display.homeSet(['Select Version','For manual install paste name of directory'],2)
     version = display.userInput()
     display.homeSet('',0)
     display.homeSet('Select Modloader',1)
     display.listSet('[0]  vanilla')
     display.listAppend('[1]  fabric')
     display.listAppend('[2]  forge')
+    display.listAppend('[3]  manual install')
     mod = display.userInput()
     display.clear()
     display.homeSet(['Default is version','Select Name'],2)
@@ -202,7 +201,7 @@ def install():
                 display.homeSet('Version not supportet by fabric!',1)
                 time.sleep(display.delay)
 
-        ########################  Forge is not testet
+        ########################  Forge is not working
         elif mod == '2':
             forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
             if forge_version is None and not minecraft_launcher_lib.forge.supports_automatic_install(forge_version):
@@ -220,7 +219,12 @@ def install():
                     dirs.append(d)
             new_version = sorted(dirs, key=lambda x: os.path.getctime(os.path.join(versionPath,x)), reverse=True)[:1][0]
                 
-                
+        elif mod == '3':
+            display.homeSet('make sure there is a "natives" directory in your versions directory')
+            display.userInput()
+            success = True
+            new_version = version
+            
         ############################
         else:
             display.homeSet('Selection not valid!',1)
@@ -240,6 +244,13 @@ def install():
                     json.dump(versionList, versionFile,indent=4)
             except:
                 display.homeSet('Couldn\'t save version',1)
+                time.sleep(display.delay)
+            try:
+                preferences[userSelected+1]['versions'].append(getDefaultPrefs(new_version))
+                with open(homePath+'/.config/minceraft/preferences.json','w') as f:
+                    json.dump(preferences,f,indent=4)
+            except:
+                display.homeSet('Couldn\'t save preferences',1)
                 time.sleep(display.delay)
             
             display.homeSet('Download finished!',1)
@@ -334,37 +345,28 @@ def authIfNeeded():
 #Launch
 #########################################################
 
-def launch(version):
+def launch(version, index):
     launchOptions = dict(userDic[userSelected]['launchOptions'])
     game_dir = os.path.join(minecraft_dir,'gameDirs',version)
     launchOptions["gameDirectory"] = game_dir
     access_token = launchOptions['token']
     launchOptions['token']=ec.decrypt(access_token,userPassword)
     launchOptions['launcherName']='minceraft-launcher'
-    launchOptions['launcherVersion']='1.0'
+    launchOptions['launcherVersion']='1.1'
     
     launchOptions['customResolution']=True
     screen = display.getScreenSize()
     launchOptions['resolutionWidth']=screen[0]
     launchOptions['resolutionHeight']=screen[1]
     
-    try:
-        b = 0
-        pref_index = (-2)
-        for i in preferences[userSelected+1]['versions']:
-            if i['version'] == version:
-                pref_index = b
-                break
-            b += 1
-        version_prefs = preferences[userSelected+1]['versions'][pref_index]
-        launchOptions['jvmArguments'] = version_prefs['RAM']
-        if version_prefs['server'] != '':
-            launchOptions['server'] = version_prefs['server']
-            if version_prefs['port'] != '':
-                launchOptions['port'] = version_prefs['port']
-    except:
-        pass
-    
+
+    version_prefs = preferences[userSelected+1]['versions'][index]
+    launchOptions['jvmArguments'] = version_prefs['RAM']
+    if version_prefs['server'] != '':
+        launchOptions['server'] = version_prefs['server']
+        if version_prefs['port'] != '':
+            launchOptions['port'] = version_prefs['port']
+
     
     
     launchCommand = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_dir, launchOptions)
@@ -375,7 +377,7 @@ def launch(version):
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_time']=time.time()
-    preferences[userSelected+1]['last_played']=version
+    preferences[userSelected+1]['last_played']=[version,index]
     with open(homePath+'/.config/minceraft/users.json','w') as f:
         json.dump(userDic,f,indent=4)
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:

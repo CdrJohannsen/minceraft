@@ -176,6 +176,10 @@ def login():
                 userSelected = int(preferences[0]['last_user'])+1
             else:
                 userSelected = readchar.readchar()
+                if userSelected == 'd':
+                    display.debug('this message should never appear')
+                    display.debug_mode = True
+                    display.debug('debug mode is now ON')
                 try:
                     userSelected = int(userSelected)
                     userDic = configFileList[userSelected - 1]
@@ -240,6 +244,7 @@ def login():
 
 ###############################################################
 
+global debug
 homePath = os.path.expanduser('~')
 display = terminalDisplay.advancedDisplay()
 os.system('cd .config/minceraft/')

@@ -383,7 +383,7 @@ def launch(version, index):
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
             json.dump(preferences,f,indent=4)
     display.homeSet('Starting '+version,1)
-    #print(finalLaunchCommand)
+    display.debug(finalLaunchCommand)
     time.sleep(3)
 
 #########################################################

@@ -5,4 +5,4 @@
 [x] timer config
 [ ] finish azure
 [ ] Debug mode
-[ ] manual install
+[x] manual install

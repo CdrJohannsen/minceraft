@@ -477,6 +477,8 @@ def managePrefs():
 
 def getDefaultPrefs(version_to_change):
     defaultPrefs = {'version':version_to_change, 'RAM':['-Xmx2G', '-Xms2G'], 'server': '', 'port' : ''}
+    display.debug('Applied default preferences')
+    display.debug(defaultPrefs)
     return defaultPrefs
 
 
@@ -542,3 +544,5 @@ def changeSkin(token,filename,skinWidth):
         r = requests.request("POST",url,headers=headers,data=data,files=files)
         display.homeSet(r.reason)
         time.sleep(display.delay)
+    display.debug('headers: '+str(headers))
+    display.debug('data: '+str(data))

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Minceraft-launcher is a fast launcher for minecraft
 #    Copyright (C) 2022  Cdr_Johannsen, Muslimitmilch
 #

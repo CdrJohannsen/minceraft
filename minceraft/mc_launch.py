@@ -295,8 +295,10 @@ def set_max(new_max: int):
 
 def auth():
     if userDic[userSelected]['authType'] == 'normal':
+        display.debug('Doing normal auth')
         normalAuth()
     elif userDic[userSelected]['authType'] == '2fa':
+        display.debug('Doing 2fa auth')
         twoFactorAuth()
     else:
         display.homeSet('Couldn\'t authenticate because something weird happened…')
@@ -336,10 +338,15 @@ def twoFactorAuth():
 def authIfNeeded():
     try:
         last_time = preferences[userSelected+1]['last_time']
+        display.debug('User has played')
     except:
         last_time = preferences[userSelected+1]['last_time'] = 0
+        display.debug('User has never played')
     if last_time+42069 <= time.time():
+        display.debug('Doing auth with time difference of:'+str(time.time()-last_time))
         auth()
+    else:
+        display.debug('Doing no auth with time difference of:'+str(time.time()-last_time))
 
 #########################################################
 #Launch

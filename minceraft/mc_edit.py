@@ -15,10 +15,9 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import time
+import os
 
 def startEditor(dspl):
 	global display
 	display = dspl
-	display.clear()
-	display.homeSet('Not avaliable yet:(')
-	time.sleep(2)
+	os.system('vim')

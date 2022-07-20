@@ -296,10 +296,12 @@ def set_max(new_max: int):
 def auth():
     if userDic[userSelected]['authType'] == 'normal':
         display.debug('Doing normal auth')
-        normalAuth()
+        if not normalAuth():
+            return
     elif userDic[userSelected]['authType'] == '2fa':
         display.debug('Doing 2fa auth')
-        twoFactorAuth()
+        if not twoFactorAuth():
+            return
     else:
         display.homeSet('Couldn\'t authenticate because something weird happened…')
         time.sleep(display.delay)
@@ -319,9 +321,11 @@ def normalAuth():
         resp = msmcauth.login(email, msPassword)
         launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
+        return True
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
         time.sleep(display.delay)
+        return False
 
 
 def twoFactorAuth():
@@ -331,9 +335,11 @@ def twoFactorAuth():
         launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
         userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
+        return True
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
         time.sleep(display.delay)
+        return False
     
 def authIfNeeded():
     try:
@@ -380,7 +386,11 @@ def launch(version, index):
     finalLaunchCommand = ''
     for i in launchCommand:
         finalLaunchCommand += ' ' + i
-    finalLaunchCommand = 'cd '+game_dir+' && nohup '+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')+' >/dev/null 2>&1 &'
+    if not display.debug_mode:
+        nohup = 'nohup '
+    else:
+        nohup = ''
+    finalLaunchCommand = 'cd '+game_dir+' && '+nohup+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')+' >/dev/null 2>&1 &'
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
     preferences[userSelected+1]['last_played']=[version,index]

@@ -47,7 +47,6 @@ def mc_launch(dspl,passwd,usr):
     minecraft_dir = homePath+'/.minceraft'
     temp_usr = userSelected+1
     display.getDelay(temp_usr)
-    authIfNeeded()
     while True:
         if selectOption(display):
             return
@@ -360,6 +359,7 @@ def authIfNeeded():
 #########################################################
 
 def launch(version, index):
+    authIfNeeded()
     launchOptions = dict(userDic[userSelected]['launchOptions'])
     game_dir = os.path.join(minecraft_dir,'gameDirs',version)
     launchOptions["gameDirectory"] = game_dir
@@ -513,6 +513,7 @@ def manageDelay():
 #########################################################
 
 def manageSkins():
+    authIfNeeded()
     while True:
         display.listSet('[q] quit')
         i=0

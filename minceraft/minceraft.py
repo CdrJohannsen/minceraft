@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
+
 #    Minceraft-launcher is a fast launcher for minecraft
 #    Copyright (C) 2022  Cdr_Johannsen, Muslimitmilch
 #
@@ -21,7 +23,6 @@ import terminalDisplay
 import encryption as ec
 import mc_launch
 import mc_edit
-import readchar
 import getpass
 import webbrowser
 
@@ -46,7 +47,7 @@ def returnNewUser():
         display.homeSet("Select your microsoft authentication",1)
         display.listSet('[0]  normal (email & password)')
         display.listAppend('[1]  two factor (only for weirdos)')
-        auth_type = readchar.readchar()
+        auth_type = display.userInput()
         if auth_type == '0':
             return newNormalAuth(userPassword,newUserDic)
             
@@ -176,7 +177,7 @@ def login():
                 userDic = configFileList[int(preferences[0]['last_user'])]
                 userSelected = int(preferences[0]['last_user'])+1
             else:
-                userSelected = readchar.readchar()
+                userSelected = display.userInput()
                 if userSelected == 'd':
                     display.debug('this message should never appear')
                     display.debug_mode = True
@@ -210,7 +211,7 @@ def login():
                         userDic = configFileList[userSelected - 1]
                         break
                 except:
-                    if userSelected == '\r':
+                    if userSelected == '':
                         if preferences[0]['last_user'] != -1:
                             userDic = configFileList[int(preferences[0]['last_user'])]
                             userSelected = int(preferences[0]['last_user'])+1

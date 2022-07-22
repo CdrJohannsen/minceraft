@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+#-*- coding:utf-8 -*-
 #    Minceraft-launcher is a fast launcher for minecraft
 #    Copyright (C) 2022  Cdr_Johannsen, Muslimitmilch
 #
@@ -18,7 +20,6 @@ import time, os, msmcauth,json
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
-import readchar
 import subprocess
 import mc_edit
 import base64
@@ -71,7 +72,7 @@ def selectOption(display):
         display.listAppend('['+str(i)+']  '+version)
         i+=1
 
-    selected = readchar.readchar()
+    selected = display.userInput()
     if selected == 'i':
         install()
         return False
@@ -99,7 +100,7 @@ def selectOption(display):
         deleteVersion()
         return False
 
-    elif selected == '\r':
+    elif selected == '':
         try:
             version = preferences[userSelected+1]['last_played'][0]
             index = preferences[userSelected+1]['last_played'][1]
@@ -418,7 +419,7 @@ def managePrefs():
                 version = str(v[0])
                 display.listAppend('['+str(i)+']  '+version)
                 i+=1
-            userInput = readchar.readchar()
+            userInput = display.userInput()
             if userInput == 'd':
                 manageDelay()
                 break
@@ -459,7 +460,7 @@ def managePrefs():
                 display.listAppend('[0] manage RAM allocation\t\t\t\tCurrent: '+version_prefs['RAM'][0]+' '+version_prefs['RAM'][1])
                 display.listAppend('[1] manage servers to connect after launching\tCurrent: '+server_prefs)
                 #print(preferences)
-                action = readchar.readchar()
+                action = display.userInput()
                 if action == 'q':
                     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
                         json.dump(preferences,f,indent=4)

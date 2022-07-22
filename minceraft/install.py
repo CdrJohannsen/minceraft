@@ -63,7 +63,7 @@ shutil.copy(currDir+'/terminalDisplay.py',user+'/.minceraft/minceraft/'+'termina
 
 ####install modules
 print('Installing dependencies...\n')
-os.system('pip install readchar msmcauth minecraft-launcher-lib')
+os.system('pip install msmcauth minecraft-launcher-lib')
 
 ####move special files
 mvDesktop = 'mv '+currDir+'/minceraft.desktop /usr/share/applications/minceraft.desktop'

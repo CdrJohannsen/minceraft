@@ -60,7 +60,8 @@ class advancedDisplay():
         self.output()
     
     def getScreenSize(self):
-        return os.popen('xprop -root _NET_WORKAREA').readlines()[0].split('= ')[1].split(', ')[2:4]
+        # return os.popen('xprop -root _NET_WORKAREA').readlines()[0].split('= ')[1].split(', ')[2:4]
+        return ["1080","1920"]
     
     def homeSet(self, homeObject, homeLength = 1):
         self.homeList = []

@@ -368,10 +368,10 @@ def launch(version, index):
     launchOptions['launcherName']='minceraft-launcher'
     launchOptions['launcherVersion']='1.1'
     
-    launchOptions['customResolution']=True
-    screen = display.getScreenSize()
-    launchOptions['resolutionWidth']=screen[0]
-    launchOptions['resolutionHeight']=screen[1]
+    # launchOptions['customResolution']=True
+    # screen = display.getScreenSize()
+    # launchOptions['resolutionWidth']=screen[0]
+    # launchOptions['resolutionHeight']=screen[1]
     
 
     version_prefs = preferences[userSelected+1]['versions'][index]

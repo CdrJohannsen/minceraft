@@ -331,7 +331,7 @@ def normalAuth():
 def twoFactorAuth():
     try:
         refresh_token = ec.decrypt(userDic[userSelected]['refresh_token'], userPassword)
-        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, client_secret, redirect_uri, refresh_token)
+        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, redirect_uri, refresh_token)
         launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
         userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)

@@ -102,6 +102,7 @@ def newTwoFactorAuth(userPassword,newUserDic):
             newUserDic['launchOptions']=launchOptions
             newUserDic['authType'] = '2fa'
             newUserDic['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
+            return newUserDic
 
 def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])

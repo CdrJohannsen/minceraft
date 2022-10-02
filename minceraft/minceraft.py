@@ -76,6 +76,7 @@ def newNormalAuth(userPassword,newUserDic):
             break
         except:
             display.listSet(['not a correct microsoft account', 'please try again'])
+            time.sleep(2)
     return newUserDic
 
 def newTwoFactorAuth(userPassword,newUserDic):
@@ -83,10 +84,10 @@ def newTwoFactorAuth(userPassword,newUserDic):
         with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f:
             azure = json.load(f)
         client_id = azure['client_id']
-        # client_secret = azure['client_secret']
+        client_secret = azure['client_secret']
         redirect_uri = azure['redirect_uri']
         
-        display.homeSet('Please press ENTER and copy the url you will be redirectet to below')
+        display.homeSet('Please press ENTER and copy the url you will be redirected to below')
         display.userInput()
         webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
         code_url = display.userInput()
@@ -96,7 +97,7 @@ def newTwoFactorAuth(userPassword,newUserDic):
             time.sleep(2)
         else:
             auth_code = minecraft_launcher_lib.microsoft_account.get_auth_code_from_url(code_url)
-            login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id, redirect_uri, auth_code)
+            login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id,client_secret, redirect_uri=redirect_uri, auth_code=auth_code)
             launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
             newUserDic['launchOptions']=launchOptions
             newUserDic['authType'] = '2fa'

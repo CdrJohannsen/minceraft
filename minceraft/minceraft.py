@@ -97,7 +97,7 @@ def newTwoFactorAuth(userPassword,newUserDic):
             time.sleep(2)
         else:
             auth_code = minecraft_launcher_lib.microsoft_account.get_auth_code_from_url(code_url)
-            login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id,client_secret, redirect_uri=redirect_uri, auth_code=auth_code)
+            login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id,client_secret = None, redirect_uri=redirect_uri, auth_code=auth_code)
             launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
             newUserDic['launchOptions']=launchOptions
             newUserDic['authType'] = '2fa'

@@ -330,8 +330,13 @@ def normalAuth():
 
 def twoFactorAuth():
     try:
+        with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f:
+            azure = json.load(f)
+        client_id = azure['client_id']
+        redirect_uri = azure['redirect_uri']
+
         refresh_token = ec.decrypt(userDic[userSelected]['refresh_token'], userPassword)
-        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, redirect_uri, refresh_token)
+        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, client_secret = None, redirect_uri = redirect_uri, refresh_token = refresh_token)
         launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
         userDic[userSelected]['launchOptions'] = launchOptions
         userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)

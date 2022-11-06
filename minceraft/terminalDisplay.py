@@ -27,8 +27,10 @@ class advancedDisplay():
         self.debug_mode = False
     
     def getDelay(self, user):
+        self.debug(user)
         with open(os.path.expanduser('~')+'/.config/minceraft/preferences.json','r') as f:
             d = json.load(f)
+        self.debug(d)
         self.delay = d[user]['delay']
     
     def clear(self):

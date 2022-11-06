@@ -73,6 +73,7 @@ def newNormalAuth(userPassword,newUserDic):
             launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
             newUserDic['launchOptions']=launchOptions
             newUserDic['authType'] = 'normal'
+            newUserDic['delay'] = 2
             break
         except:
             display.listSet(['not a correct microsoft account', 'please try again'])
@@ -102,6 +103,7 @@ def newTwoFactorAuth(userPassword,newUserDic):
             newUserDic['launchOptions']=launchOptions
             newUserDic['authType'] = '2fa'
             newUserDic['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
+            newUserDic['delay'] = 2
             return newUserDic
 
 def createDirectory():
@@ -208,9 +210,11 @@ def login():
                         preferences[0]['last_user'] = len(configList)-1
                         preferences[len(configList)]['last_time']=time.time()
                         preferences[len(configList)]['versions']=[]
+                        preferences[len(configList)]['delay']=2
                         with open(prefsPath, "w") as prefFile:
                             json.dump(preferences, prefFile,indent=4)
-                        userDic = configFileList[userSelected - 1]
+                        userDic = newUser
+                        serSelected = len(configList)
                         break
                 except:
                     if userSelected == '':

@@ -22,9 +22,11 @@ import sys, getpass, shutil
 user = os.path.expanduser('~')
 currDir = os.path.dirname(os.path.abspath(__file__))
 
-# THIS IS !!!VERY!!! SKETCHY
-sudo = getpass.getpass(f'[sudo] password for {os.getlogin()}:')
 print()
+
+if len(os.popen('pip --version').readlines()) == 0:
+    print('pip is not installed on this system')
+    exit()
 
 ####create files
 with open('minceraft.desktop','w') as f:
@@ -62,17 +64,12 @@ shutil.copy(currDir+'/mc_launch.py',user+'/.minceraft/minceraft/'+'mc_launch.py'
 shutil.copy(currDir+'/minceraft.py',user+'/.minceraft/minceraft/'+'minceraft.py')
 shutil.copy(currDir+'/minceraft-icon.png',user+'/.minceraft/minceraft/'+'minceraft-icon.png')
 shutil.copy(currDir+'/terminalDisplay.py',user+'/.minceraft/minceraft/'+'terminalDisplay.py')
+shutil.copy(currDir+'/minceraft.desktop',user+'/.local/share/applications/'+'minceraft.desktop')
+os.system('chmod +x '+currDir+'/minceraft')
+shutil.copy(currDir+'/minceraft',user+'/.local/bin/'+'minceraft')
 
 ####install modules
 print('Installing dependencies...\n')
 os.system('pip install msmcauth minecraft-launcher-lib')
-
-####move special files
-mvDesktop = 'mv '+currDir+'/minceraft.desktop /usr/share/applications/minceraft.desktop'
-os.system('echo %s|sudo --prompt='' -S %s' % (sudo, mvDesktop))
-
-os.system('chmod +x '+currDir+'/minceraft')
-mvBin = 'mv '+currDir+'/minceraft /usr/bin/minceraft'
-os.system('echo %s|sudo --prompt='' -S %s' % (sudo, mvBin))
 
 print('\nFinished Installation !')

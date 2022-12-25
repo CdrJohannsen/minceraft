@@ -21,6 +21,8 @@ import sys, getpass, shutil
 
 user = os.path.expanduser('~')
 currDir = os.path.dirname(os.path.abspath(__file__))
+
+# THIS IS !!!VERY!!! SKETCHY
 sudo = getpass.getpass(f'[sudo] password for {os.getlogin()}:')
 print()
 
@@ -73,4 +75,4 @@ os.system('chmod +x '+currDir+'/minceraft')
 mvBin = 'mv '+currDir+'/minceraft /usr/bin/minceraft'
 os.system('echo %s|sudo --prompt='' -S %s' % (sudo, mvBin))
 
-print('\nFinished Instalation !')
+print('\nFinished Installation !')

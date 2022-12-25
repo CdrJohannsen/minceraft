@@ -3,6 +3,6 @@
 [x] reauthenticate
 [x] preferences
 [x] timer config
-[ ] finish azure
-[ ] Debug mode
+[x] finish azure
+[x] Debug mode
 [x] manual install

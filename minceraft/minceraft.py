@@ -167,7 +167,6 @@ def login():
 
 
     finally:
-        print('[DEBUG] ', configFileList)
         loginCorrect = True
         while(True):
             with open(configPath, "r") as configFile:

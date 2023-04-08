@@ -112,15 +112,12 @@ def selectOption(display):
     else:
         try:
             selected = int(selected)
-            try:
-                launch(versionList[userSelected][selected][1],selected)
-                return True
-            except Exception as e:
-                display.homeSet('Couldn\'t launch '+versionList[userSelected][selected][1]+'because: '+str(e),1)
-                time.sleep(display.delay)
         except:
             display.homeSet('Option not avaliable!',1)
             time.sleep(display.delay)
+            return False
+        launch(versionList[userSelected][selected][1],selected)
+        return True
 
 #########################################################
 #Delete a version
@@ -365,6 +362,8 @@ def authIfNeeded():
 
 def launch(version, index):
     authIfNeeded()
+    display.debug(version)
+    display.debug(index)
     launchOptions = dict(userDic[userSelected]['launchOptions'])
     game_dir = os.path.join(minecraft_dir,'gameDirs',version)
     launchOptions["gameDirectory"] = game_dir

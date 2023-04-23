@@ -1,5 +1,18 @@
 # minceraft
-A fast minecraft launcher with integrated text editor
+A fast minecraft launcher with integrated text editor.
+
+## Features
+
+- [x] open vim
+- [x] install versions
+- [x] authenticate
+- [x] launch Minecraft
+- [x] manage RAM allocation
+- [x] autojoin server on boot
+- [x] encrypted credentials
+- [x] change skins
+- [x] Fabric
+- [x] Forge
 
 ## Install
 

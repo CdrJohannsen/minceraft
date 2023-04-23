@@ -156,7 +156,8 @@ def deleteVersion():
 def install():
     versionPath=os.path.join(minecraft_dir,'versions') 
     display.clear()
-    display.homeSet(['Select Version','For manual install paste name of directory'],2)
+    latest=minecraft_launcher_lib.utils.get_latest_version()
+    display.homeSet(['Select Version','For manual install paste name of directory',f'Latest release: {latest["release"]}  Latest snapshot: {latest["snapshot"]}'],3)
     version = display.userInput()
     display.homeSet('',0)
     display.homeSet('Select Modloader',1)
@@ -201,13 +202,24 @@ def install():
         ########################  Forge is not working
         elif mod == '2':
             forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
+
+            installed_versions = minecraft_launcher_lib.utils.get_installed_versions(minecraft_dir)
+            base_version_avaliable = False
+            for i in installed_versions:
+                if 'version' in i.values():
+                    base_version_avaliable = True
+
             if forge_version is None and not minecraft_launcher_lib.forge.supports_automatic_install(forge_version):
                 display.homeSet("This Minecraft Version is not supported by Forge",1)
                 time.sleep(display.delay)
-            elif minecraft_launcher_lib.forge.supports_automatic_install(version):
+            elif minecraft_launcher_lib.forge.supports_automatic_install(forge_version):
+                if not base_version_avaliable:
+                    minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
                 minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_dir, callback=callback)
                 success=True
             else:
+                if not base_version_avaliable:
+                    minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_dir, callback=callback)
                 minecraft_launcher_lib.forge.run_forge_installer(forge_version)
                 success=True
             dirs = []

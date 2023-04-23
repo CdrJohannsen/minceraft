@@ -21,11 +21,13 @@ install:
 	cp -n minceraft/minceraft $(HOME)/.local/bin/
 
 executable:
+	rm -f minceraft/minceraft
 	echo "#!/usr/bin/env bash" >> minceraft/minceraft
 	echo $(HOME)/.minceraft/minceraft/minceraft.py >> minceraft/minceraft
 	chmod +x minceraft/minceraft
 
 desktop:
+	rm -f minceraft/minceraft.desktop
 	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> minceraft/minceraft.desktop
 	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft.py" >> minceraft/minceraft.desktop
 	echo "Icon="$(HOME)"/.minceraft/minceraft/minceraft-icon.png" >> minceraft/minceraft.desktop

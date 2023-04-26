@@ -20,4 +20,4 @@ import os
 def startEditor(dspl):
 	global display
 	display = dspl
-	os.system('vim')
+	os.system('$EDITOR')

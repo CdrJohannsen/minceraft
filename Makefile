@@ -10,15 +10,15 @@ install:
 	mkdir -p $(HOME)/.minceraft
 	mkdir -p $(HOME)/.minceraft/minceraft
 	cp -n minceraft/azure.json $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/encryption.py $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/logo.txt $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/mc_edit.py $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/mc_launch.py $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/minceraft.py $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/minceraft-icon.png $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/terminalDisplay.py $(HOME)/.minceraft/minceraft/
-	cp -n minceraft/minceraft.desktop $(HOME)/.local/share/applications/
-	cp -n minceraft/minceraft $(HOME)/.local/bin/
+	cp minceraft/encryption.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/logo.txt $(HOME)/.minceraft/minceraft/
+	cp minceraft/mc_edit.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/mc_launch.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/minceraft.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/minceraft-icon.png $(HOME)/.minceraft/minceraft/
+	cp minceraft/terminalDisplay.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/minceraft.desktop $(HOME)/.local/share/applications/
+	cp minceraft/minceraft $(HOME)/.local/bin/
 
 executable:
 	rm -f minceraft/minceraft

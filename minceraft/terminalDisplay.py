@@ -25,33 +25,33 @@ class advancedDisplay():
         self.longSpacer = '                                                                                                                                                                                  '
         self.big_spacer = ''
         self.debug_mode = False
-    
+
     def getDelay(self, user):
         self.debug(user)
         with open(os.path.expanduser('~')+'/.config/minceraft/preferences.json','r') as f:
             d = json.load(f)
         self.debug(d)
         self.delay = d[user]['delay']
-    
+
     def clear(self):
         self.outputList = []
         self.homeList = []
         os.system('clear')
-        
+
     def listSet(self, appendObject):
         if(type(appendObject) is str):
             self.outputList = [appendObject]
         else:
             self.outputList = appendObject
         self.output()
-        
+
     def listAppend(self, appendObject):
         if(type(appendObject) is str):
             self.outputList += [appendObject]
         else:
             self.outputList += appendObject
         self.output()
-    
+
     def listAppendTop(self, appendObject):
         self.outputList.reverse()
         if(type(appendObject) is str):
@@ -60,11 +60,11 @@ class advancedDisplay():
             self.outputList += appendObject
         self.outputList.reverse()
         self.output()
-    
+
     def getScreenSize(self):
         # return os.popen('xprop -root _NET_WORKAREA').readlines()[0].split('= ')[1].split(', ')[2:4]
         return ["1080","1920"]
-    
+
     def homeSet(self, homeObject, homeLength = 1):
         self.homeList = []
         if(type(homeObject) is str):
@@ -78,11 +78,11 @@ class advancedDisplay():
     def output(self):
         terminalWidth, terminalLength = os.get_terminal_size(0)
         '''
-        logoLines = ["    __  ____                            ______ ",
-"   /  |/  (_)___  ________  _________ _/ __/ /_",
-"  / /|_/ / / __ \/ ___/ _ \/ ___/ __ `/ /_/ __/",
-" / /  / / / / / / /__/  __/ /  / /_/ / __/ /_  ",
-"/_/  /_/_/_/ /_/\___/\___/_/   \____/_/  \__/  "]
+        logoLines = [   "    __  ____                            ______ ",
+                        "   /  |/  (_)___  ________  _________ _/ __/ /_",
+                        "  / /|_/ / / __ \/ ___/ _ \/ ___/ __ `/ /_/ __/",
+                        " / /  / / / / / / /__/  __/ /  / /_/ / __/ /_  ",
+                        "/_/  /_/_/_/ /_/\___/\___/_/   \____/_/  \__/  "]
         '''
         with open(os.path.dirname(os.path.abspath(__file__))+'/logo.txt','r') as logo:
             logoLines = logo.read().split('\n')
@@ -102,10 +102,10 @@ class advancedDisplay():
             print('    ' + i)
         for i in self.homeListFinal:
             print('    ' + i)
-            
+
     def userInput(self):
         return input('      ')
-    
+
     def debug(self,message):
         if self.debug_mode:
             print('[DEBUG] '+str(message))

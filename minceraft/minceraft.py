@@ -50,10 +50,10 @@ def returnNewUser():
         auth_type = display.userInput()
         if auth_type == '0':
             return newNormalAuth(userPassword,newUserDic)
-            
+
         elif auth_type == '1':
             return newTwoFactorAuth(userPassword,newUserDic)
-            
+
         else:
             display.homeSet("Not an Option",1)
             time.sleep(2)
@@ -87,12 +87,12 @@ def newTwoFactorAuth(userPassword,newUserDic):
         client_id = azure['client_id']
         client_secret = azure['client_secret']
         redirect_uri = azure['redirect_uri']
-        
+
         display.homeSet('Please press ENTER and copy the url you will be redirected to below')
         display.userInput()
         webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
         code_url = display.userInput()
-        
+
         if not minecraft_launcher_lib.microsoft_account.url_contains_auth_code(code_url):
             display.homeSet("The url is not valid")
             time.sleep(2)
@@ -152,7 +152,7 @@ def login():
         versionFileList = [[]]
         with open(versionsPath, "w") as versionFile:
             json.dump(versionFileList, versionFile,indent=4)
-    
+
     try:
         with open(prefsPath, "r") as prefFile:
             preferences = json.load(prefFile)
@@ -185,6 +185,7 @@ def login():
                     display.debug('this message should never appear')
                     display.debug_mode = True
                     display.debug('debug mode is now ON')
+                    continue
                 try:
                     userSelected = int(userSelected)
                     userDic = configFileList[userSelected - 1]
@@ -202,7 +203,7 @@ def login():
                         versionFileList.append([])
                         with open(versionsPath, "w") as versionFile:
                             json.dump(versionFileList, versionFile,indent=4)
-                        
+
                         with open(prefsPath, "r") as prefFile:
                             preferences = json.load(prefFile)
                         preferences.append({})
@@ -213,7 +214,7 @@ def login():
                         with open(prefsPath, "w") as prefFile:
                             json.dump(preferences, prefFile,indent=4)
                         userDic = newUser
-                        serSelected = len(configList)
+                        userSelected = len(configList)
                         break
                 except:
                     if userSelected == '':
@@ -221,33 +222,33 @@ def login():
                             userDic = configFileList[int(preferences[0]['last_user'])]
                             userSelected = int(preferences[0]['last_user'])+1
             try:
-                    display.listSet('')
-                    display.homeSet('please enter your password for user ' + userDic['username'],1)
-                    while(True):
-                            userPassword = getpass.getpass()
-                            loginCorrect = False
-                            if(hashValue(userPassword) == userDic['passwordHash']):
-                                preferences[0]['last_user'] = userSelected-1
-                                loginCorrect = True
-                                break
-                            elif userPassword == '':
-                                loginCorrect = False
-                                break
-                            else:
-                                display.homeSet('Not correct, try again',1)
-                    if loginCorrect:
+                display.listSet('')
+                display.homeSet('please enter your password for user ' + userDic['username'],1)
+                while(True):
+                    userPassword = getpass.getpass()
+                    loginCorrect = False
+                    if(hashValue(userPassword) == userDic['passwordHash']):
+                        preferences[0]['last_user'] = userSelected-1
+                        loginCorrect = True
                         break
+                    elif userPassword == '':
+                        loginCorrect = False
+                        break
+                    else:
+                        display.homeSet('Not correct, try again',1)
+                if loginCorrect:
+                    break
             except:
-                    display.listSet(userSelection)
-                    display.homeSet('not a valid user, please choose another option',1)
-          
+                display.listSet(userSelection)
+                display.homeSet('not a valid user, please choose another option',1)
+
     display.homeSet("you successfully logged in")
     with open(prefsPath, "w") as prefFile:
         json.dump(preferences, prefFile,indent=4)
     return(userDic, userPassword, userSelected-1)
 
 
-   
+
 
 ###############################################################
 

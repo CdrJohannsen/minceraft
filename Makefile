@@ -9,6 +9,7 @@ install:
 	make executable
 	mkdir -p $(HOME)/.minceraft
 	mkdir -p $(HOME)/.minceraft/minceraft
+	mkdir -p $(HOME)/.minceraft/skins
 	cp -n minceraft/azure.json $(HOME)/.minceraft/minceraft/
 	cp minceraft/encryption.py $(HOME)/.minceraft/minceraft/
 	cp minceraft/logo.txt $(HOME)/.minceraft/minceraft/

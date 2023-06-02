@@ -3,7 +3,7 @@ A fast minecraft launcher with integrated text editor.
 
 ## Features
 
-- [x] open vim
+- [x] open text editor
 - [x] install versions
 - [x] authenticate
 - [x] launch Minecraft

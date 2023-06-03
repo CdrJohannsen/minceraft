@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/minceraft/minceraft-icon.png">
+</p>
+
 # minceraft
 A fast minecraft launcher with integrated text editor.
 

@@ -23,9 +23,17 @@ A fast minecraft launcher with integrated text editor.
 
 ```bash
 git clone https://github.com/muslimitmilch/minceraft && cd minceraft
-# if you have msmcauth and minecraft-launcher-lib already installed
+```
+
+if you have msmcauth and minecraft-launcher-lib already installed
+
+```bash
 make install
-# if you dont have them
+```
+
+if you don't have them
+
+```bash
 make all
 ```
 

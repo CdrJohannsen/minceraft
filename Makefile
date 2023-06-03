@@ -18,13 +18,14 @@ install:
 	cp minceraft/minceraft.py $(HOME)/.minceraft/minceraft/
 	cp minceraft/minceraft-icon.png $(HOME)/.minceraft/minceraft/
 	cp minceraft/terminalDisplay.py $(HOME)/.minceraft/minceraft/
+	cp minceraft/optionHandler.py $(HOME)/.minceraft/minceraft/
 	cp minceraft/minceraft.desktop $(HOME)/.local/share/applications/
 	cp minceraft/minceraft $(HOME)/.local/bin/
 
 executable:
 	rm -f minceraft/minceraft
 	echo "#!/usr/bin/env bash" >> minceraft/minceraft
-	echo $(HOME)/.minceraft/minceraft/minceraft.py >> minceraft/minceraft
+	echo $(HOME)'/.minceraft/minceraft/minceraft.py $$*' >> minceraft/minceraft
 	chmod +x minceraft/minceraft
 
 desktop:

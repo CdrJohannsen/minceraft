@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+/home/cdr-johannsen/.minceraft/minceraft/minceraft.py $*

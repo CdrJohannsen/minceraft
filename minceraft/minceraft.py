@@ -189,7 +189,7 @@ def login():
             userSelection.extend(users)
             display.listSet(userSelection)
             display.homeSet('please choose your user profile',1)
-            if preferences[0]['last_user'] == -1 or not loginCorrect:
+            if preferences[0]['last_user'] == -1 or not loginCorrect or oh.user:
                 if not oh.user:
                     selectedUser = display.userInput()
                     if selectedUser == 'd':
@@ -203,6 +203,11 @@ def login():
                     else:
                         try:
                             oh.user = int(selectedUser)
+                            if oh.user > len(users):
+                                display.homeSet(f"Index must be between 0 and {len(users)}")
+                                time.sleep(2)
+                                oh.user = None
+                                continue
                         except:
                             display.homeSet('must be a number')
                 if(oh.user == 0):
@@ -284,7 +289,8 @@ def main():
     argParser.add_argument("-ui", "--user_index", type=int, help="index of selected user. Has higher priority than -u")
     argParser.add_argument("-lu", "--list_user", action='store_true', help="list users and their indices")
     argParser.add_argument("-p", "--password", type=str,help ="password for user")
-    argParser.add_argument("-v", "--version", type=str, help="version to launch")
+    argParser.add_argument("-v", "--version", type=int, help="version to launch")
+    argParser.add_argument("-lv", "--list_version", action='store_true', help="list versions and their indices")
     args = argParser.parse_args()
     oh = optionHandler.OptionHandler(args)
     homePath = os.path.expanduser('~')

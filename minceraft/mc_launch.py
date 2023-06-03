@@ -398,6 +398,10 @@ def launch(version, index):
         launchOptions['server'] = version_prefs['server']
         if version_prefs['port'] != '':
             launchOptions['port'] = version_prefs['port']
+    if oh.server:
+        launchOptions['server'] = oh.server
+        if oh.port:
+            launchOptions['port'] = oh.port
 
     
     

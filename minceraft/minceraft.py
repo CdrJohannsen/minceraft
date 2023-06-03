@@ -17,13 +17,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import time, sys, threading, json, os, hashlib, math, msmcauth
+import time, json, os, hashlib, msmcauth
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
 import optionHandler
 import mc_launch
-import mc_edit
 import argparse
 import getpass
 import webbrowser
@@ -291,6 +290,8 @@ def main():
     argParser.add_argument("-p", "--password", type=str,help ="password for user")
     argParser.add_argument("-v", "--version", type=int, help="version to launch")
     argParser.add_argument("-lv", "--list_version", action='store_true', help="list versions and their indices")
+    argParser.add_argument("--server", type=str, help="server to connect after booting", metavar="IP/URL")
+    argParser.add_argument("--port", type=str, help="port for --server")
     args = argParser.parse_args()
     oh = optionHandler.OptionHandler(args)
     homePath = os.path.expanduser('~')

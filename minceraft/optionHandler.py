@@ -18,6 +18,8 @@ class OptionHandler:
                 exit()
         self.password = args.password
         self.version = args.version
+        self.server = args.server
+        self.port = args.port
         if args.list_user:
             self.listUsers()
             exit()

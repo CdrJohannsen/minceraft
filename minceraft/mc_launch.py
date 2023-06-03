@@ -401,7 +401,7 @@ def launch(version, index):
     if oh.server:
         launchOptions['server'] = oh.server
         if oh.port:
-            launchOptions['port'] = oh.port
+            launchOptions['port'] = str(oh.port)
 
     
     

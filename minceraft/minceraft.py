@@ -291,7 +291,7 @@ def main():
     argParser.add_argument("-v", "--version", type=int, help="version to launch")
     argParser.add_argument("-lv", "--list_version", action='store_true', help="list versions and their indices")
     argParser.add_argument("--server", type=str, help="server to connect after booting", metavar="IP/URL")
-    argParser.add_argument("--port", type=str, help="port for --server")
+    argParser.add_argument("--port", type=int, help="port for --server")
     args = argParser.parse_args()
     oh = optionHandler.OptionHandler(args)
     homePath = os.path.expanduser('~')

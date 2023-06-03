@@ -384,7 +384,7 @@ def launch(version, index):
     access_token = launchOptions['token']
     launchOptions['token']=ec.decrypt(access_token,oh.password)
     launchOptions['launcherName']='minceraft-launcher'
-    launchOptions['launcherVersion']='1.1'
+    launchOptions['launcherVersion']='2.0'
     
     # launchOptions['customResolution']=True
     # screen = display.getScreenSize()

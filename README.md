@@ -13,6 +13,7 @@ A fast minecraft launcher with integrated text editor.
 - [x] change skins
 - [x] Fabric
 - [x] Forge
+- [x] CLI/TUI
 
 ## Install
 
@@ -29,3 +30,21 @@ make all
 ```bash
 make uninstall
 ```
+
+## CLI-Usage
+
+```
+  -h, --help            show this help message and exit
+  -u USER, --user USER  selected user
+  -ui USER_INDEX, --user_index USER_INDEX
+                        index of selected user. Has higher priority than -u
+  -lu, --list_user      list users and their indices
+  -p PASSWORD, --password PASSWORD
+                        password for user
+  -v VERSION, --version VERSION
+                        version to launch
+  -lv, --list_version   list versions and their indices
+```
+
+Tip: 
+Use `-p $(cat path/to/password)` instead of `-p PASSWORD` to prevent your password from getting into your bash_history

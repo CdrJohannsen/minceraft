@@ -2,7 +2,7 @@
 
 all:
 	make install-dependencies
-	make install
+	make instal
 
 install:
 	make desktop
@@ -35,7 +35,7 @@ desktop:
 	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> minceraft/minceraft.desktop
 
 install-dependencies:
-	pip install msmcauth minecraft-launcher-lib
+	pip install msmcauth minecraft-launcher-lib argparse
 
 check-uninstall:
 	@echo -en "This will remove your entire minceraft installation, including your worlds! \nProceed? [y/N] " && read ans && [ $${ans:-N} = y ]

@@ -18,18 +18,15 @@
 
 import time, os, msmcauth,json
 import minecraft_launcher_lib
-import terminalDisplay
 import encryption as ec
-import subprocess
 import mc_edit
-import base64
 import requests
 
-def mc_launch(dspl,passwd,usr):
+def mc_launch(dspl,optHandl):
+    global oh
+    oh = optHandl
     global homePath
     homePath = os.path.expanduser('~')
-    global userPassword
-    userPassword = passwd
     global userDic
     with open(homePath+'/.config/minceraft/users.json','r') as f:
         userDic = json.load(f)
@@ -41,11 +38,9 @@ def mc_launch(dspl,passwd,usr):
         preferences = json.load(f)
     global display
     display = dspl
-    global userSelected
-    userSelected = usr
     global minecraft_dir
     minecraft_dir = homePath+'/.minceraft'
-    temp_usr = userSelected+1
+    temp_usr = oh.user+1
     display.getDelay(temp_usr)
     while True:
         if selectOption(display):
@@ -57,7 +52,7 @@ def mc_launch(dspl,passwd,usr):
 
 def selectOption(display):
     display.homeSet('Select Option',1)
-    display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+    display.listSet([userDic[oh.user]['username'],'-------------------------------------'])
     display.listAppend('[i]  install version')
     display.listAppend('[r]  reauthenticate')
     display.listAppend('[d]  delete version')
@@ -66,7 +61,7 @@ def selectOption(display):
     display.listAppend('[e]  text editor')
     display.listAppend('[q]  quit')
     i=0
-    for v in list(versionList[userSelected]):
+    for v in list(versionList[oh.user]):
         version = str(v[0])
         display.listAppend('['+str(i)+']  '+version)
         i+=1
@@ -101,8 +96,8 @@ def selectOption(display):
 
     elif selected == '':
         try:
-            version = preferences[userSelected+1]['last_played'][0]
-            index = preferences[userSelected+1]['last_played'][1]
+            version = preferences[oh.user+1]['last_played'][0]
+            index = preferences[oh.user+1]['last_played'][1]
             launch(version, index)
             return True
         except:
@@ -116,7 +111,7 @@ def selectOption(display):
             display.homeSet('Option not avaliable!',1)
             time.sleep(display.delay)
             return False
-        launch(versionList[userSelected][selected][1],selected)
+        launch(versionList[oh.user][selected][1],selected)
         return True
 
 #########################################################
@@ -127,21 +122,21 @@ def deleteVersion():
     display.homeSet('Select version to delete',1)
     display.listSet('[q]  quit')
     i = 0
-    for version in versionList[userSelected]:
-        display.listAppend('['+str(i)+']  '+versionList[userSelected][i][0])
+    for version in versionList[oh.user]:
+        display.listAppend('['+str(i)+']  '+versionList[oh.user][i][0])
         i += 1
     userInput = display.userInput()
     if userInput != 'q':
         try:
             delInput = int(userInput)
-            del_version = versionList[userSelected][delInput][1]
+            del_version = versionList[oh.user][delInput][1]
 
-            del preferences[userSelected+1]['versions'][delInput]
+            del preferences[oh.user+1]['versions'][delInput]
 
 
-            if preferences[userSelected+1]['last_played'][0] == del_version:
-                preferences[userSelected+1]['last_played'] = ['',-1]
-            del versionList[userSelected][delInput]
+            if preferences[oh.user+1]['last_played'][0] == del_version:
+                preferences[oh.user+1]['last_played'] = ['',-1]
+            del versionList[oh.user][delInput]
             with open(homePath+'/.config/minceraft/versions.json', "w") as versionFile:
                 json.dump(versionList, versionFile,indent=4)
             with open(homePath+'/.config/minceraft/preferences.json', "w") as prefFile:
@@ -248,14 +243,14 @@ def install():
                 time.sleep(display.delay)
                     
             try:
-                versionList[userSelected].append([name,new_version])
+                versionList[oh.user].append([name,new_version])
                 with open(homePath+'/.config/minceraft/versions.json', "w") as versionFile:
                     json.dump(versionList, versionFile,indent=4)
             except:
                 display.homeSet('Couldn\'t save version',1)
                 time.sleep(display.delay)
             try:
-                preferences[userSelected+1]['versions'].append(getDefaultPrefs(new_version))
+                preferences[oh.user+1]['versions'].append(getDefaultPrefs(new_version))
                 with open(homePath+'/.config/minceraft/preferences.json','w') as f:
                     json.dump(preferences,f,indent=4)
             except:
@@ -303,11 +298,11 @@ def set_max(new_max: int):
 #########################################################
 
 def auth():
-    if userDic[userSelected]['authType'] == 'normal':
+    if userDic[oh.user]['authType'] == 'normal':
         display.debug('Doing normal auth')
         if not normalAuth():
             return
-    elif userDic[userSelected]['authType'] == '2fa':
+    elif userDic[oh.user]['authType'] == '2fa':
         display.debug('Doing 2fa auth')
         if not twoFactorAuth():
             return
@@ -315,7 +310,7 @@ def auth():
         display.homeSet('Couldn\'t authenticate because something weird happened…')
         time.sleep(display.delay)
         
-    preferences[userSelected+1]['last_time']=time.time()
+    preferences[oh.user+1]['last_time']=time.time()
     with open(homePath+'/.config/minceraft/users.json','w') as f:
         json.dump(userDic,f,indent=4)
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
@@ -325,11 +320,11 @@ def auth():
 def normalAuth():
     try:
         display.homeSet('Authenticating...',1)
-        email = ec.decrypt(userDic[userSelected]['msEmail'], userPassword)
-        msPassword = ec.decrypt(userDic[userSelected]["msPassword"], userPassword)
+        email = ec.decrypt(userDic[oh.user]['msEmail'], oh.password)
+        msPassword = ec.decrypt(userDic[oh.user]["msPassword"], oh.password)
         resp = msmcauth.login(email, msPassword)
-        launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, userPassword)}
-        userDic[userSelected]['launchOptions'] = launchOptions
+        launchOptions = {"username": resp.username, "uuid": resp.uuid, "token": ec.encrypt(resp.access_token, oh.password)}
+        userDic[oh.user]['launchOptions'] = launchOptions
         return True
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
@@ -344,11 +339,11 @@ def twoFactorAuth():
         client_id = azure['client_id']
         redirect_uri = azure['redirect_uri']
 
-        refresh_token = ec.decrypt(userDic[userSelected]['refresh_token'], userPassword)
+        refresh_token = ec.decrypt(userDic[oh.user]['refresh_token'], oh.password)
         login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(client_id, client_secret = None, redirect_uri = redirect_uri, refresh_token = refresh_token)
-        launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], userPassword)}
-        userDic[userSelected]['launchOptions'] = launchOptions
-        userDic[userSelected]['refresh_token'] = ec.encrypt(login_data['refresh_token'], userPassword)
+        launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": ec.encrypt(login_data['access_token'], oh.password)}
+        userDic[oh.user]['launchOptions'] = launchOptions
+        userDic[oh.user]['refresh_token'] = ec.encrypt(login_data['refresh_token'], oh.password)
         return True
     except Exception as e:
         display.homeSet('Authentification failed because of: '+str(e),1)
@@ -357,10 +352,10 @@ def twoFactorAuth():
     
 def authIfNeeded():
     try:
-        last_time = preferences[userSelected+1]['last_time']
+        last_time = preferences[oh.user+1]['last_time']
         display.debug('User has played')
     except:
-        last_time = preferences[userSelected+1]['last_time'] = 0
+        last_time = preferences[oh.user+1]['last_time'] = 0
         display.debug('User has never played')
     if last_time+42069 <= time.time():
         display.debug('Doing auth with time difference of:'+str(time.time()-last_time))
@@ -376,11 +371,11 @@ def launch(version, index):
     authIfNeeded()
     display.debug(version)
     display.debug(index)
-    launchOptions = dict(userDic[userSelected]['launchOptions'])
+    launchOptions = dict(userDic[oh.user]['launchOptions'])
     game_dir = os.path.join(minecraft_dir,'gameDirs',version)
     launchOptions["gameDirectory"] = game_dir
     access_token = launchOptions['token']
-    launchOptions['token']=ec.decrypt(access_token,userPassword)
+    launchOptions['token']=ec.decrypt(access_token,oh.password)
     launchOptions['launcherName']='minceraft-launcher'
     launchOptions['launcherVersion']='1.1'
     
@@ -390,7 +385,7 @@ def launch(version, index):
     # launchOptions['resolutionHeight']=screen[1]
     
 
-    version_prefs = preferences[userSelected+1]['versions'][index]
+    version_prefs = preferences[oh.user+1]['versions'][index]
     launchOptions['jvmArguments'] = version_prefs['RAM']
     if version_prefs['server'] != '':
         launchOptions['server'] = version_prefs['server']
@@ -410,7 +405,7 @@ def launch(version, index):
     finalLaunchCommand = 'cd '+game_dir+' && '+nohup+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')+' >/dev/null 2>&1 &'
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
-    preferences[userSelected+1]['last_played']=[version,index]
+    preferences[oh.user+1]['last_played']=[version,index]
     with open(homePath+'/.config/minceraft/users.json','w') as f:
         json.dump(userDic,f,indent=4)
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
@@ -426,12 +421,12 @@ def launch(version, index):
 def managePrefs():
     while True:
         while True:
-            display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+            display.listSet([userDic[oh.user]['username'],'-------------------------------------'])
             display.homeSet('Select option to modify',1)
             display.listAppend('[q] quit')
-            display.listAppend('[d] manage delay for messages\t\t\tCurrent: '+str(preferences[userSelected+1]['delay']))
+            display.listAppend('[d] manage delay for messages\t\t\tCurrent: '+str(preferences[oh.user+1]['delay']))
             i=0
-            for v in list(versionList[userSelected]):
+            for v in list(versionList[oh.user]):
                 version = str(v[0])
                 display.listAppend('['+str(i)+']  '+version)
                 i+=1
@@ -443,7 +438,7 @@ def managePrefs():
                 return
             try:
                 userInput = int(userInput)
-                version_to_change = versionList[userSelected][userInput][1]
+                version_to_change = versionList[oh.user][userInput][1]
             except:
                 display.homeSet('Not a valid Option')
                 time.sleep(display.delay)
@@ -451,20 +446,20 @@ def managePrefs():
                 
             b = 0
             pref_index = (-2)
-            for i in preferences[userSelected+1]['versions']:
-                if i['version'] == versionList[userSelected][userInput][1]:
+            for i in preferences[oh.user+1]['versions']:
+                if i['version'] == versionList[oh.user][userInput][1]:
                     pref_index = b
                     break
                 b += 1
             
             try:
-                version_prefs = preferences[userSelected+1]['versions'][pref_index]
+                version_prefs = preferences[oh.user+1]['versions'][pref_index]
             except:
-                preferences[userSelected+1]['versions'].append(getDefaultPrefs(version_to_change))
-                version_prefs = preferences[userSelected+1]['versions'][len(preferences[userSelected+1]['versions'])-1]
+                preferences[oh.user+1]['versions'].append(getDefaultPrefs(version_to_change))
+                version_prefs = preferences[oh.user+1]['versions'][len(preferences[oh.user+1]['versions'])-1]
             while True:
                 display.homeSet('Select option to modify',1)
-                display.listSet([userDic[userSelected]['username'],'-------------------------------------'])
+                display.listSet([userDic[oh.user]['username'],'-------------------------------------'])
                 if version_prefs['server'] != '':
                     server_prefs = version_prefs['server']
                     if version_prefs['port'] != '':
@@ -517,12 +512,12 @@ def getDefaultPrefs(version_to_change):
 
 def manageDelay():
     display.homeSet('Delay in seconds')
-    display.listSet('Current: '+str(preferences[userSelected+1]['delay']))
-    preferences[userSelected+1]['delay'] = float(display.userInput().replace(',','.'))
-    delay = preferences[userSelected+1]['delay']
+    display.listSet('Current: '+str(preferences[oh.user+1]['delay']))
+    preferences[oh.user+1]['delay'] = float(display.userInput().replace(',','.'))
+    delay = preferences[oh.user+1]['delay']
     with open(homePath+'/.config/minceraft/preferences.json','w') as f:
         json.dump(preferences,f,indent=4)
-    display.getDelay((userSelected+1))
+    display.getDelay((oh.user+1))
 
 #########################################################
 #Manage your skins
@@ -561,7 +556,7 @@ def manageSkins():
                 time.sleep(disply.delay)
                 continue
             filename=os.listdir(os.path.join(homePath,'.minceraft','skins'))[userInput]
-            changeSkin(ec.decrypt(userDic[userSelected]['launchOptions']['token'],userPassword),os.path.join(homePath,'.minceraft','skins',filename),skinWidth)
+            changeSkin(ec.decrypt(userDic[oh.user]['launchOptions']['token'],oh.password),os.path.join(homePath,'.minceraft','skins',filename),skinWidth)
 
 
 

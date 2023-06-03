@@ -17,12 +17,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import time, sys, threading, json, os, hashlib, math, subprocess, msmcauth
+import time, sys, threading, json, os, hashlib, math, msmcauth
 import minecraft_launcher_lib
 import terminalDisplay
 import encryption as ec
+import optionHandler
 import mc_launch
 import mc_edit
+import argparse
 import getpass
 import webbrowser
 
@@ -125,6 +127,15 @@ def createDirectory():
     except:
         pass
 
+def listUsers():
+    configPath = os.path.join(os.path.expanduser('~'), ".config/minceraft/users.json")
+    with open(configPath, "r") as configFile:
+        configFileList = json.load(configFile)
+    userSelection = []
+    for i in range(len(configFileList)):
+        userSelection.append(configFileList[i]["username"])
+    return userSelection
+
 
 def login():
     configPath = os.path.join(homePath, ".config/minceraft/users.json")
@@ -132,7 +143,7 @@ def login():
     prefsPath = os.path.join(homePath, ".config/minceraft/preferences.json")
     userDic={}
     userPassword = ''
-    userSelected= 0
+    # userSelected= 0
     try:
         with open(configPath, "r") as configFile:
             configFileList = json.load(configFile)
@@ -169,73 +180,83 @@ def login():
     finally:
         loginCorrect = True
         while(True):
-            with open(configPath, "r") as configFile:
-                configFileList = json.load(configFile)
-            userSelection = ['[0]    create new user']
-            for i in range(len(configFileList)):
-                userSelection.append('[' + str(i + 1) + ']    ' + configFileList[i]["username"])
-                display.listSet(userSelection)
-                display.homeSet('please choose your user profile',1)
-            if preferences[0]['last_user'] != -1 and loginCorrect:
-                userDic = configFileList[int(preferences[0]['last_user'])]
-                userSelected = int(preferences[0]['last_user'])+1
-            else:
-                userSelected = display.userInput()
-                if userSelected == 'd':
-                    display.debug('this message should never appear')
-                    display.debug_mode = True
-                    display.debug('debug mode is now ON')
-                    continue
-                try:
-                    userSelected = int(userSelected)
-                    userDic = configFileList[userSelected - 1]
-                    if(userSelected == 0):
-                        display.listSet('creating new user')
-                        with open(configPath, "r") as configFile:
-                            configList = json.load(configFile)
-                        newUser = returnNewUser()
-                        configList.append(newUser)
-                        with open(configPath, "w") as configFile:
-                            json.dump(configList, configFile,indent=4)
-
-                        with open(versionsPath, "r") as versionFile:
-                            versionFileList = json.load(versionFile)
-                        versionFileList.append([])
-                        with open(versionsPath, "w") as versionFile:
-                            json.dump(versionFileList, versionFile,indent=4)
-
-                        with open(prefsPath, "r") as prefFile:
-                            preferences = json.load(prefFile)
-                        preferences.append({})
-                        preferences[0]['last_user'] = len(configList)-1
-                        preferences[len(configList)]['last_time']=time.time()
-                        preferences[len(configList)]['versions']=[]
-                        preferences[len(configList)]['delay']=2
-                        with open(prefsPath, "w") as prefFile:
-                            json.dump(preferences, prefFile,indent=4)
-                        userDic = newUser
-                        userSelected = len(configList)
-                        break
-                except:
-                    if userSelected == '':
+            # with open(configPath, "r") as configFile:
+                # configFileList = json.load(configFile)
+            userSelection = ['[0]\t\tcreate new user']
+            users = listUsers()
+            for i in range(len(users)):
+                users[i] = f"[{str(i+1)}]\t\t{users[i]}"
+            userSelection.extend(users)
+            display.listSet(userSelection)
+            display.homeSet('please choose your user profile',1)
+            if preferences[0]['last_user'] == -1 or not loginCorrect:
+                if not oh.user:
+                    selectedUser = display.userInput()
+                    if selectedUser == 'd':
+                        display.debug('this message should never appear')
+                        display.debug_mode = True
+                        display.debug('debug mode is now ON')
+                        continue
+                    elif selectedUser == '':
                         if preferences[0]['last_user'] != -1:
-                            userDic = configFileList[int(preferences[0]['last_user'])]
-                            userSelected = int(preferences[0]['last_user'])+1
+                            oh.user = int(preferences[0]['last_user'])+1
+                    else:
+                        try:
+                            oh.user = int(selectedUser)
+                        except:
+                            display.homeSet('must be a number')
+                if(oh.user == 0):
+                    display.listSet('creating new user')
+                    with open(configPath, "r") as configFile:
+                        configList = json.load(configFile)
+                    newUser = returnNewUser()
+                    configList.append(newUser)
+                    with open(configPath, "w") as configFile:
+                        json.dump(configList, configFile,indent=4)
+
+                    with open(versionsPath, "r") as versionFile:
+                        versionFileList = json.load(versionFile)
+                    versionFileList.append([])
+                    with open(versionsPath, "w") as versionFile:
+                        json.dump(versionFileList, versionFile,indent=4)
+
+                    with open(prefsPath, "r") as prefFile:
+                        preferences = json.load(prefFile)
+                    preferences.append({})
+                    preferences[0]['last_user'] = len(configList)-1
+                    preferences[len(configList)]['last_time']=time.time()
+                    preferences[len(configList)]['versions']=[]
+                    preferences[len(configList)]['delay']=2
+                    with open(prefsPath, "w") as prefFile:
+                        json.dump(preferences, prefFile,indent=4)
+                    userDic = newUser
+                    oh.user = len(configList)
+                    break
+            else:
+                oh.user = int(preferences[0]['last_user'])+1
+            userDic = configFileList[oh.user - 1]
             try:
                 display.listSet('')
-                display.homeSet('please enter your password for user ' + userDic['username'],1)
+                loginCorrect = True
                 while(True):
-                    userPassword = getpass.getpass()
-                    loginCorrect = False
-                    if(hashValue(userPassword) == userDic['passwordHash']):
-                        preferences[0]['last_user'] = userSelected-1
+                    if not oh.password:
+                        if loginCorrect:
+                            display.homeSet('please enter your password for user ' + userDic['username'],1)
+                        else:
+                            display.homeSet('Password not correct, try again',1)
+                        oh.password = getpass.getpass()
+                    if(hashValue(oh.password) == userDic['passwordHash']):
+                        preferences[0]['last_user'] = oh.user - 1
                         loginCorrect = True
                         break
-                    elif userPassword == '':
+                    elif oh.password == '':
+                        oh.password = None
                         loginCorrect = False
+                        oh.user = None
                         break
                     else:
-                        display.homeSet('Not correct, try again',1)
+                        oh.password = None
+                        loginCorrect = False
                 if loginCorrect:
                     break
             except:
@@ -245,18 +266,33 @@ def login():
     display.homeSet("you successfully logged in")
     with open(prefsPath, "w") as prefFile:
         json.dump(preferences, prefFile,indent=4)
-    return(userDic, userPassword, userSelected-1)
+    oh.user -= 1
+    return
 
 
 
 
 ###############################################################
 
-global debug
-homePath = os.path.expanduser('~')
-display = terminalDisplay.advancedDisplay()
-os.system('cd .config/minceraft/')
-CurrentUserDic, userPassword, userSelected = login()
-mc_launch.mc_launch(display,userPassword,userSelected)
+def main():
+    global debug
+    global display
+    global homePath
+    global oh
+    argParser = argparse.ArgumentParser(description="A fast launcher for Minecraft")
+    argParser.add_argument("-u", "--user", type=str, help="selected user")
+    argParser.add_argument("-ui", "--user_index", type=int, help="index of selected user. Has higher priority than -u")
+    argParser.add_argument("-lu", "--list_user", action='store_true', help="list users and their indices")
+    argParser.add_argument("-p", "--password", type=str,help ="password for user")
+    argParser.add_argument("-v", "--version", type=str, help="version to launch")
+    args = argParser.parse_args()
+    oh = optionHandler.OptionHandler(args)
+    homePath = os.path.expanduser('~')
+    display = terminalDisplay.advancedDisplay()
+    os.system('cd .config/minceraft/')
+    login()
+    mc_launch.mc_launch(display,oh)
+    del display
 
-del display
+if __name__ == "__main__":
+    main()

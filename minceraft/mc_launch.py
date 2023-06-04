@@ -414,7 +414,7 @@ def launch(version, index):
     else:
         nohup = ''
     finalLaunchCommand = 'cd '+game_dir+' && '+nohup+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')+' >/dev/null 2>&1 &'
-    # finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
+    finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
     preferences[oh.user+1]['last_played']=[version,index]
     with open(homePath+'/.config/minceraft/users.json','w') as f:

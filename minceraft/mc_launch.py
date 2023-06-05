@@ -118,6 +118,11 @@ def selectOption(display):
                 display.homeSet('Option not avaliable!',1)
                 time.sleep(display.delay)
                 return False
+        if len(versionList[oh.user]) <= oh.version:
+            display.homeSet(f'Version with index {oh.version} not avaliable',1)
+            oh.version = None
+            time.sleep(display.delay)
+            return False
         launch(versionList[oh.user][oh.version][1],oh.version)
         return True
 

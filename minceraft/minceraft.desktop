@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Minceraft
-StartupWMClass=Minceraft
-Exec=xterm-256color -e /home/cdr-johannsen/.minceraft/minceraft/minceraft.py
-Icon=/home/cdr-johannsen/.minceraft/minceraft/minceraft-icon.png
-Type=Application
-Categories=Games;
-Keywords=Minceraft, Python, Quick, Fast, Minecraft;

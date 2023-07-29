@@ -128,3 +128,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# desktop file and executable
+minceraft/minceraft.desktop
+minceraft/minceraft

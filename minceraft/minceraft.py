@@ -128,6 +128,15 @@ def createDirectory():
 
 def listUsers():
     configPath = os.path.join(os.path.expanduser('~'), ".config/minceraft/users.json")
+    try:
+        with open(configPath, "r") as configFile:
+            configFileList = json.load(configFile)
+
+    except:
+        createDirectory()
+        with open(configPath, "w") as configFile:
+            json.dump([], configFile,indent=4)
+
     with open(configPath, "r") as configFile:
         configFileList = json.load(configFile)
     userSelection = []

@@ -416,9 +416,11 @@ def launch(version, index):
         finalLaunchCommand += ' ' + i
     if not display.debug_mode:
         nohup = 'nohup '
+        dev_null = ' >/dev/null 2>&1 &'
     else:
         nohup = ''
-    finalLaunchCommand = 'cd '+game_dir+' && '+nohup+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa')+' >/dev/null 2>&1 &'
+        dev_null = ''
+    finalLaunchCommand = 'cd '+game_dir+' && '+nohup+finalLaunchCommand.replace('--clientId ${clientid} --xuid ${auth_xuid} ','').replace('--userType mojang','--userType msa') + dev_null
     finalLaunchCommand = finalLaunchCommand.replace('-DFabricMcEmu= net.minecraft.client.main.Main  ','')#I don't know why this is there, it needs to go for fabric to launch properly
     os.system(finalLaunchCommand)
     preferences[oh.user+1]['last_played']=[version,index]

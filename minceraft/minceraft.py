@@ -201,7 +201,6 @@ def login():
                 if not oh.user:
                     selectedUser = display.userInput()
                     if selectedUser == 'd':
-                        display.debug('this message should never appear')
                         display.debug_mode = True
                         display.debug('debug mode is now ON')
                         continue
@@ -301,10 +300,11 @@ def main():
     argParser.add_argument("-lv", "--list_version", action='store_true', help="list versions and their indices")
     argParser.add_argument("--server", type=str, help="server to connect after booting", metavar="IP/URL")
     argParser.add_argument("--port", type=int, help="port for --server")
+    argParser.add_argument("-d", "--debug",action='store_true', help="enable debug mode")
     args = argParser.parse_args()
     oh = optionHandler.OptionHandler(args)
     homePath = os.path.expanduser('~')
-    display = terminalDisplay.advancedDisplay()
+    display = terminalDisplay.advancedDisplay(oh)
     os.system('cd .config/minceraft/')
     login()
     mc_launch.mc_launch(display,oh)

@@ -414,7 +414,7 @@ def launch(version, index):
     finalLaunchCommand = ''
     for i in launchCommand:
         finalLaunchCommand += ' ' + i
-    if not display.debug_mode:
+    if not oh.debug_mode:
         nohup = 'nohup '
         dev_null = ' >/dev/null 2>&1 &'
     else:

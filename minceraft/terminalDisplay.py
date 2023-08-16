@@ -14,17 +14,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os, math, json, time
+import os, math, json, time, minceraft
 
 class advancedDisplay():
 
-    def __init__(self):
+    def __init__(self,oh):
         self.outputList = []
         self.homeListFinal = ['', '', '']
         self.logo = True
         self.longSpacer = '                                                                                                                                                                                  '
         self.big_spacer = ''
-        self.debug_mode = False
+        self.oh = oh
 
     def getDelay(self, user):
         self.debug(user)
@@ -107,6 +107,6 @@ class advancedDisplay():
         return input('      ')
 
     def debug(self,message):
-        if self.debug_mode:
+        if self.oh.debug_mode:
             print('[DEBUG] '+str(message))
             time.sleep(2)

@@ -20,6 +20,7 @@ class OptionHandler:
         self.version = args.version
         self.server = args.server
         self.port = args.port
+        self.debug_mode = args.debug
         if args.list_user:
             self.listUsers()
             exit()

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/minceraft/minceraft-icon.png">
+  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/src/minceraft-icon.png">
 </p>
 
 # minceraft
@@ -56,6 +56,9 @@ make uninstall
   -v VERSION, --version VERSION
                         version to launch
   -lv, --list_version   list versions and their indices
+  --server IP/URL       server to connect after booting
+  --port PORT           port for --server
+  -d, --debug           enable debug mode
 ```
 
 Tip: 

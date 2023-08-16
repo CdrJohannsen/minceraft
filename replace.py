@@ -1,4 +1,4 @@
-file = open('minceraft/mc_launch_old.py', 'r')
+file = open('src/mc_launch_old.py', 'r')
 lines = file.readlines()
 file.close()
 
@@ -11,7 +11,7 @@ for lineNum in range(len(lines)):
         else:
             newLines[lineNum] += lines[lineNum][characterNum]
              
-newFile = open('minceraft/mc_launch.py', 'w')
+newFile = open('src/mc_launch.py', 'w')
 print(newLines)
 for i in newLines:
     newFile.write(i)

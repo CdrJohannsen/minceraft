@@ -1,5 +1,0 @@
-{
-    "client_id": "48825ebd-8564-433e-87f7-8ef10f2dfb5a",
-    "client_secret": "",
-    "redirect_uri": "https://login.microsoftonline.com/common/oauth2/nativeclient"
-}

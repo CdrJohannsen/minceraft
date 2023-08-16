@@ -10,30 +10,30 @@ install:
 	mkdir -p $(HOME)/.minceraft
 	mkdir -p $(HOME)/.minceraft/minceraft
 	mkdir -p $(HOME)/.minceraft/skins
-	cp -n minceraft/azure.json $(HOME)/.minceraft/minceraft/
-	cp minceraft/encryption.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/logo.txt $(HOME)/.minceraft/minceraft/
-	cp minceraft/mc_edit.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/mc_launch.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/minceraft.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/minceraft-icon.png $(HOME)/.minceraft/minceraft/
-	cp minceraft/terminalDisplay.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/optionHandler.py $(HOME)/.minceraft/minceraft/
-	cp minceraft/minceraft.desktop $(HOME)/.local/share/applications/
-	cp minceraft/minceraft $(HOME)/.local/bin/
+	cp -n src/azure.json $(HOME)/.minceraft/minceraft/
+	cp src/encryption.py $(HOME)/.minceraft/minceraft/
+	cp src/logo.txt $(HOME)/.minceraft/minceraft/
+	cp src/mc_edit.py $(HOME)/.minceraft/minceraft/
+	cp src/mc_launch.py $(HOME)/.minceraft/minceraft/
+	cp src/minceraft.py $(HOME)/.minceraft/minceraft/
+	cp src/minceraft-icon.png $(HOME)/.minceraft/minceraft/
+	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
+	cp src/optionHandler.py $(HOME)/.minceraft/minceraft/
+	cp src/minceraft.desktop $(HOME)/.local/share/applications/
+	cp src/minceraft $(HOME)/.local/bin/
 
 executable:
-	rm -f minceraft/minceraft
-	echo "#!/usr/bin/env bash" >> minceraft/minceraft
-	echo $(HOME)'/.minceraft/minceraft/minceraft.py $$*' >> minceraft/minceraft
-	chmod +x minceraft/minceraft
+	rm -f src/minceraft
+	echo "#!/usr/bin/env bash" >> src/minceraft
+	echo $(HOME)'/.minceraft/minceraft/minceraft.py $$*' >> src/minceraft
+	chmod +x src/minceraft
 
 desktop:
-	rm -f minceraft/minceraft.desktop
-	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> minceraft/minceraft.desktop
-	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft.py" >> minceraft/minceraft.desktop
-	echo "Icon="$(HOME)"/.minceraft/minceraft/minceraft-icon.png" >> minceraft/minceraft.desktop
-	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> minceraft/minceraft.desktop
+	rm -f src/minceraft.desktop
+	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> src/minceraft.desktop
+	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft.py" >> src/minceraft.desktop
+	echo "Icon="$(HOME)"/.minceraft/minceraft/minceraft-icon.png" >> src/minceraft.desktop
+	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
 
 install-dependencies:
 	pip install msmcauth minecraft-launcher-lib argparse

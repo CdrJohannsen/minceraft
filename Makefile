@@ -10,13 +10,14 @@ install:
 	mkdir -p $(HOME)/.minceraft
 	mkdir -p $(HOME)/.minceraft/minceraft
 	mkdir -p $(HOME)/.minceraft/skins
+	mkdir -p $(HOME)/.icons/hicolor/256x256/apps
 	cp -n src/azure.json $(HOME)/.minceraft/minceraft/
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/
 	cp src/mc_edit.py $(HOME)/.minceraft/minceraft/
 	cp src/mc_launch.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.py $(HOME)/.minceraft/minceraft/
-	cp src/minceraft-icon.png $(HOME)/.minceraft/minceraft/
+	cp src/minceraft.png $(HOME)/.icons/hicolor/256x256/apps/
 	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
 	cp src/optionHandler.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.desktop $(HOME)/.local/share/applications/
@@ -32,7 +33,7 @@ desktop:
 	rm -f src/minceraft.desktop
 	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> src/minceraft.desktop
 	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft.py" >> src/minceraft.desktop
-	echo "Icon="$(HOME)"/.minceraft/minceraft/minceraft-icon.png" >> src/minceraft.desktop
+	echo "Icon=minceraft" >> src/minceraft.desktop
 	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
 
 install-dependencies:
@@ -45,6 +46,7 @@ uninstall:
 	make check-uninstall
 	rm -f $(HOME)/.local/bin/minceraft
 	rm -f $(HOME)/.local/share/applications/minceraft.desktop
+	rm -f $(HOME)/.icons/hicolor/256x256/apps/minceraft.png
 	rm -rf $(HOME)/.config/minceraft
 	rm -rf $(HOME)/.minceraft
 

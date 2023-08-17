@@ -111,19 +111,19 @@ def createDirectory():
     display.listSet(['not found valid config file or directory', 'creating new config directory'])
     try:
         os.mkdir(os.path.join(homePath, ".minceraft"))
-    except:
+    except FileExistsError:
         pass
     try:
         os.mkdir(os.path.join(homePath, ".config/minceraft"))
-    except:
+    except FileExistsError:
         pass
     try:
         os.mkdir(os.path.join(homePath, ".minceraft",'gameDirs'))
-    except:
+    except FileExistsError:
         pass
     try:
         os.mkdir(os.path.join(homePath, ".minceraft",'skins'))
-    except:
+    except FileExistsError:
         pass
 
 def listUsers():
@@ -150,14 +150,11 @@ def login():
     versionsPath = os.path.join(homePath, ".config/minceraft/versions.json")
     prefsPath = os.path.join(homePath, ".config/minceraft/preferences.json")
     userDic={}
-    userPassword = ''
-    # userSelected= 0
     try:
         with open(configPath, "r") as configFile:
             configFileList = json.load(configFile)
 
     except:
-        display.listSet(['Not found valid config file', 'Creating new config file and user'])
         configFileList = [returnNewUser()]
         createDirectory()
 
@@ -310,7 +307,6 @@ def main():
     oh = optionHandler.OptionHandler(args)
     homePath = os.path.expanduser('~')
     display = terminalDisplay.advancedDisplay(oh)
-    os.system('cd .config/minceraft/')
     login()
     mc_launch.mc_launch(display,oh)
     del display

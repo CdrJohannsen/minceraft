@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/src/minceraft-icon.png">
+  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/src/minceraft.png">
 </p>
 
 # minceraft

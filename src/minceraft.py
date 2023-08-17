@@ -201,8 +201,11 @@ def login():
                 if not oh.user:
                     selectedUser = display.userInput()
                     if selectedUser == 'd':
-                        display.debug_mode = True
-                        display.debug('debug mode is now ON')
+                        if oh.debug_mode:
+                            display.debug('debug mode is already on')
+                        else:
+                            oh.debug_mode = True
+                            display.debug('debug mode is now ON')
                         continue
                     elif selectedUser == '':
                         if preferences[0]['last_user'] != -1:
@@ -217,6 +220,8 @@ def login():
                                 continue
                         except:
                             display.homeSet('must be a number')
+                            time.sleep(2)
+                            continue
                 if(oh.user == 0):
                     display.listSet('creating new user')
                     with open(configPath, "r") as configFile:

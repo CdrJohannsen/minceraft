@@ -1,16 +1,28 @@
 import minceraft, os, json
 
 class OptionHandler:
-    def __init__(self, args) -> None:
-        users = minceraft.listUsers()
+    def __init__(self):
+        self.users = minceraft.listUsers()
+        self.user
+        self.password
+        self.version
+        self.server
+        self.port
+        self.debug_mode
+        self.debug = print
+
+    def set_debug_callback(self,callback: function):
+        self.debug = callback
+
+    def from_args(self, args) -> None:
         if args.user_index:
             self.user = args.user_index
-            if args.user_index > len(users):
-                print(f"Index must be between 0 and {len(users)}")
+            if args.user_index > len(self.users):
+                print(f"Index must be between 0 and {len(self.users)}")
                 exit()
         else:
-            if args.user in users:
-                self.user = users.index(args.user)+1
+            if args.user in self.users:
+                self.user = self.users.index(args.user)+1
             elif args.user == None:
                 self.user = None
             else:

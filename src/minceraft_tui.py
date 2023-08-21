@@ -15,6 +15,8 @@ class MinecraftTui:
         minceraft.handleArgs(self.oh)
         self.display = terminalDisplay.advancedDisplay(self.oh)
         self.oh.set_debug_callback(self.display.debug)
+        if not self.oh.load():
+            self.newUser()
 
     def run(self):
         """

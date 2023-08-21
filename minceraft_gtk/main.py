@@ -12,6 +12,8 @@ class Minceraft(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.connect('activate', self.on_activate)
+        self.oh = minceraft.optionHandler.OptionHandler()
+        minceraft.handleArgs(self.oh)
         self.builder = Gtk.Builder()
         self.builder.add_from_file("minceraft_gtk.ui")
         self.version_dropdown = self.builder.get_object("version-dropdown")
@@ -43,7 +45,9 @@ class Minceraft(Adw.Application):
 
     def show_about(self,action):
         about_dialog = self.builder.get_object("about")
+        about_dialog.set_version(self.oh.config[0]["launcher_version"])
         about_dialog.set_visible(True)
+        print(dir(about_dialog))
 
     def show_delete(self,action):
         self.delete_dialog.set_property("secondary-text",f"Do you really want to delete {self.versions[self.version_dropdown.get_selected()]}?")

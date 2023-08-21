@@ -18,6 +18,8 @@ A fast minecraft launcher with integrated text editor.
 - [x] Fabric
 - [x] Forge
 - [x] CLI/TUI
+- [ ] quickPlay
+- [ ] GUI
 
 ## Install
 

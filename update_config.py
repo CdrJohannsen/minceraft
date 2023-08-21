@@ -25,7 +25,10 @@ for i in range(len(users)):
     user = users[i]
     pref = prefs[i+1]
     vers = versions[i]
-    del user["delay"]
+    try:
+        del user["delay"]
+    except:
+        pass
     user["last_time"]=pref["last_time"]
     user["last_played"]=pref["last_played"][1]
     new_versions=[]

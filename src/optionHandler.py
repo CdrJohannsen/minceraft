@@ -23,7 +23,7 @@ class OptionHandler:
         self.user = self.config[0]["last_user"]
 
     def load(self):
-        if len(self.config) > 1:
+        if len(self.config) == 1:
             return False
         self.updateUsers()
         self.updateUserInfo()

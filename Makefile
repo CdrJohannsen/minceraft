@@ -2,7 +2,7 @@
 
 all:
 	make install-dependencies
-	make instal
+	make install
 
 install:
 	make desktop
@@ -10,29 +10,32 @@ install:
 	mkdir -p $(HOME)/.minceraft
 	mkdir -p $(HOME)/.minceraft/minceraft
 	mkdir -p $(HOME)/.minceraft/skins
+	mkdir -p $(HOME)/.minceraft/gameDirs
 	mkdir -p $(HOME)/.icons/hicolor/256x256/apps
 	cp -n src/azure.json $(HOME)/.minceraft/minceraft/
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/
-	cp src/mc_edit.py $(HOME)/.minceraft/minceraft/
-	cp src/mc_launch.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.py $(HOME)/.minceraft/minceraft/
+	cp src/minceraft_tui.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.png $(HOME)/.icons/hicolor/256x256/apps/
 	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
 	cp src/optionHandler.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.desktop $(HOME)/.local/share/applications/
 	cp src/minceraft $(HOME)/.local/bin/
+	rm -f src/mc_edit.py
+	rm -f src/mc_launch.py
+	python3 ./update_config.py
 
 executable:
 	rm -f src/minceraft
 	echo "#!/usr/bin/env bash" >> src/minceraft
-	echo $(HOME)'/.minceraft/minceraft/minceraft.py $$*' >> src/minceraft
+	echo $(HOME)'/.minceraft/minceraft/minceraft_tui.py $$*' >> src/minceraft
 	chmod +x src/minceraft
 
 desktop:
 	rm -f src/minceraft.desktop
 	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> src/minceraft.desktop
-	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft.py" >> src/minceraft.desktop
+	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft_tui.py" >> src/minceraft.desktop
 	echo "Icon=minceraft" >> src/minceraft.desktop
 	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
 

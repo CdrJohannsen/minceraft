@@ -13,6 +13,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import hashlib
 
 def encrypt(string, key):
     while(len(key) < len(string)):
@@ -30,3 +31,10 @@ def decrypt(string, key):
     for i in range(len(string)):
         decryptedString += chr(ord(string[i]) - ord(key[i]))
     return(decryptedString)
+
+
+def hashValue(inputString):
+    hash = hashlib.new('sha256')
+    encodedString = inputString.encode()
+    hash.update(encodedString)
+    return(hash.hexdigest())

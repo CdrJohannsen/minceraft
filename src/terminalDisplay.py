@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os, math, json, time, minceraft
+import os, math, json, time 
 
 class advancedDisplay():
 
@@ -86,7 +86,8 @@ class advancedDisplay():
         '''
         with open(os.path.dirname(os.path.abspath(__file__))+'/logo.txt','r') as logo:
             logoLines = logo.read().split('\n')
-        os.system('clear')
+        if not self.oh.debug_mode:
+            os.system('clear')
         if(terminalLength > (len(self.homeListFinal) + len(self.outputList) + len(logoLines) + (terminalLength / 2))):
             for i in range(math.ceil(terminalLength/2) - len(logoLines) - 1):
                 print()

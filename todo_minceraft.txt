@@ -7,3 +7,7 @@
 [x] Debug mode
 [x] manual install
 [ ] make tui less hard coded
+[ ] change file structure
+[ ] convert old file structure to new one
+[ ] remove/rename old config files
+[ ] move old game dirs to new ones

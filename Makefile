@@ -12,6 +12,8 @@ install:
 	mkdir -p $(HOME)/.minceraft/skins
 	mkdir -p $(HOME)/.minceraft/gameDirs
 	mkdir -p $(HOME)/.icons/hicolor/256x256/apps
+	mkdir -p $(HOME)/.local/share/applications
+	mkdir -p $(HOME)/.local/bin
 	cp src/azure.json $(HOME)/.minceraft/minceraft/
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/

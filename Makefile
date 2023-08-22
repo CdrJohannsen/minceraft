@@ -12,7 +12,9 @@ install:
 	mkdir -p $(HOME)/.minceraft/skins
 	mkdir -p $(HOME)/.minceraft/gameDirs
 	mkdir -p $(HOME)/.icons/hicolor/256x256/apps
-	cp -n src/azure.json $(HOME)/.minceraft/minceraft/
+	mkdir -p $(HOME)/.local/share/applications
+	mkdir -p $(HOME)/.local/bin
+	cp src/azure.json $(HOME)/.minceraft/minceraft/
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.py $(HOME)/.minceraft/minceraft/
@@ -20,6 +22,7 @@ install:
 	cp src/minceraft.png $(HOME)/.icons/hicolor/256x256/apps/
 	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
 	cp src/optionHandler.py $(HOME)/.minceraft/minceraft/
+	cp -n src/config.json $(HOME)/.minceraft/
 	cp src/minceraft.desktop $(HOME)/.local/share/applications/
 	cp src/minceraft $(HOME)/.local/bin/
 	rm -f src/mc_edit.py

@@ -1,7 +1,7 @@
 import minceraft, os, json
 
 class OptionHandler:
-    def __init__(self) -> None:
+    def __init__(self):
         self.homePath = os.path.expanduser('~')
         self.minceraftDir = os.path.join(self.homePath,".minceraft")
         self.versionsDir = os.path.join(self.minceraftDir,"versions")
@@ -21,10 +21,15 @@ class OptionHandler:
         self.debug = print
         self.user=0
         self.user = self.config[0]["last_user"]
+
+    def load(self):
+        if len(self.config) == 1:
+            return False
         self.updateUsers()
         self.updateUserInfo()
         self.updateUsername()
         self.updateVersions()
+        return True
 
     def updateVersions(self):
         self.versions = self.user_info["versions"]

@@ -23,10 +23,11 @@
             <property name="valign">center</property>
           </object>
         </child>
-        <child type="start">
-          <object class="GtkDropDown" id="account-dropdown">
-            <property name="model">
-              <object class="GtkStringList" id="account-list"/>
+        <child>
+          <object class="GtkMenuButton" id="account-menu-button">
+            <property name="label">User</property>
+            <property name="popover">
+              <object class="GtkPopoverMenu" id="account-popover"/>
             </property>
           </object>
         </child>
@@ -41,19 +42,7 @@
           <object class="GtkMenuButton" id="hamburger">
             <property name="icon-name">open-menu-symbolic</property>
             <property name="popover">
-              <object class="GtkPopoverMenu" id="hamburger-popover">
-                <property name="child">
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkButton" id="about-button">
-                        <property name="has-frame">False</property>
-                        <property name="label">About</property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
+              <object class="GtkPopoverMenu" id="hamburger-popover"/>
             </property>
           </object>
         </child>
@@ -499,7 +488,7 @@ Cdr_Johannsen</property>
       <object class="AdwLeaflet" id="add-account-leaflet">
         <property name="can-unfold">False</property>
         <property name="transition-type">slide</property>
-        <property name="visible-child">add-account-normal</property>
+        <property name="visible-child">add-account-minceraft</property>
         <child>
           <object class="AdwClamp" id="add-account-minceraft">
             <child>

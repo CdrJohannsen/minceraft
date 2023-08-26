@@ -242,9 +242,6 @@ class MinecraftTui:
                     continue
                 minceraft.changeSkin(
                     self.oh,
-                    minceraft.encryption.decrypt(
-                        self.oh.user_info['launchOptions']['token'],
-                        self.oh.password),
                     os.path.join(self.oh.minceraftDir,'skins',skins[index]),skinWidth)
 
 

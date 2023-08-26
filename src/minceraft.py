@@ -282,9 +282,9 @@ def listSkins(oh:optionHandler.OptionHandler) -> list:
     return os.listdir(os.path.join(oh.minceraftDir,"skins"))
 
 
-def changeSkin(oh:optionHandler.OptionHandler,token,filename,skinWidth):
+def changeSkin(oh:optionHandler.OptionHandler,filename,skinWidth):
     authIfNeeded(oh)
-    auth = "Bearer "+token
+    auth = "Bearer "+encryption.decrypt(oh.user_info["launchOptions"]["token"],oh.password)
     url = 'https://api.minecraftservices.com/minecraft/profile/skins'
 
     data = {'variant':skinWidth}

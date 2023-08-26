@@ -139,21 +139,21 @@ class MinecraftTui:
         Select from many options
         """
 
-        self.display.homeSet('Select Option',1)
-        self.display.listSet([self.oh.username,'-------------------------------------'])
-        self.display.listAppend('[i]  install version')
-        self.display.listAppend('[r]  reauthenticate')
-        self.display.listAppend('[d]  delete version')
-        self.display.listAppend('[p]  manage preferences')
-        self.display.listAppend('[s]  change skin')
-        self.display.listAppend('[q]  quit')
-        i=0
-        for v in self.oh.versions:
-            version = v["alias"]
-            self.display.listAppend('['+str(i)+']  '+version)
-            i+=1
-        if not self.oh.version:
+        if self.oh.version == None:
             selected = self.display.userInput()
+            self.display.homeSet('Select Option',1)
+            self.display.listSet([self.oh.username,'-------------------------------------'])
+            self.display.listAppend('[i]  install version')
+            self.display.listAppend('[r]  reauthenticate')
+            self.display.listAppend('[d]  delete version')
+            self.display.listAppend('[p]  manage preferences')
+            self.display.listAppend('[s]  change skin')
+            self.display.listAppend('[q]  quit')
+            i=0
+            for v in self.oh.versions:
+                version = v["alias"]
+                self.display.listAppend('['+str(i)+']  '+version)
+                i+=1
         else:
             selected = None
         if selected == 'i':

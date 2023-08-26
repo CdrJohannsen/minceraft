@@ -2,7 +2,7 @@
     {
         "last_user": 1,
         "config_version": 2.0,
-        "launcher_version": 3.0
+        "launcher_version": "3.0"
     },
     {
         "username": "Cdr_Johannsen",
@@ -24,8 +24,8 @@
                 "alias": "1.20.1 Vanilla",
                 "quickPlay": 0,
                 "memory": [
-                    8,
-                    2
+                    "8",
+                    "2"
                 ],
                 "server": "",
                 "port": ""
@@ -35,8 +35,8 @@
                 "alias": "1.20.1 Vanilla",
                 "quickPlay": 1/2/3,
                 "memory": [
-                    8,
-                    2
+                    "8",
+                    "2"
                 ],
                 "server": "",
                 "port": "",

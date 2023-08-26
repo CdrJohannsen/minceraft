@@ -21,6 +21,7 @@ class OptionHandler:
         self.debug = print
         self.user=0
         self.user = self.config[0]["last_user"]
+        self.updateUsers()
 
     def load(self):
         if len(self.config) == 1:
@@ -67,8 +68,8 @@ class OptionHandler:
                 print(f"Index must be between 0 and {len(self.users)}")
                 exit()
         else:
-            if args.user in self.users:
-                self.user = self.users.index(args.user)+1
+            if args.user in self.listUsernames():
+                self.user = self.listUsernames().index(args.user)+1
             elif args.user == None:
                 pass
             else:
@@ -76,7 +77,10 @@ class OptionHandler:
                 exit()
         self.password = args.password
         self.version = args.version
-        if self.version:
+        if self.version != None:
+            self.updateUserInfo()
+            self.updateVersions()
+            self.version -= 1
             if self.version > len(self.user_info["versions"])-1:
                 print(f"Index out of range. Version must be between 0 and {len(self.user_info['versions'])-1}")
                 exit()
@@ -91,7 +95,7 @@ class OptionHandler:
             exit()
 
     def cliListUsers(self) -> None:
-        users = self.users
+        users = self.listUsernames()
         print("[INDEX]\t\tUSER")
         for i in range(len(users)):
             users[i] = f"[{str(i+1)}]\t\t{users[i]}"
@@ -101,11 +105,10 @@ class OptionHandler:
         if not self.user:
             print("No user specified")
             exit()
-        with open(os.path.expanduser('~')+'/.config/minceraft/versions.json','r') as f:
-            versionList = json.load(f)
-        i = 0
+        self.updateUserInfo()
+        self.updateVersions()
+        i = 1
         print(f'[INDEX]\t\tVERSION')
-        for v in list(versionList[self.user-1]):
-            version = str(v[0])
-            print(f'[{str(i)}]\t\t{version}')
+        for v in self.versions:
+            print(f'[{str(i)}]\t\t{v["alias"]}')
             i+=1

@@ -14,6 +14,29 @@
     <property name="title">Minceraft</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
+        <child>
+          <object class="GtkButton" id="reauth-button">
+            <property name="halign">start</property>
+            <property name="has-tooltip">True</property>
+            <property name="icon-name">view-refresh-symbolic</property>
+            <property name="tooltip-text">Reauthenticate</property>
+            <property name="valign">center</property>
+          </object>
+        </child>
+        <child type="start">
+          <object class="GtkDropDown" id="account-dropdown">
+            <property name="model">
+              <object class="GtkStringList" id="account-list"/>
+            </property>
+          </object>
+        </child>
+        <child type="start">
+          <object class="GtkButton" id="add-account-button">
+            <property name="has-tooltip">True</property>
+            <property name="icon-name">list-add-symbolic</property>
+            <property name="tooltip-text">Add account</property>
+          </object>
+        </child>
         <child type="end">
           <object class="GtkMenuButton" id="hamburger">
             <property name="icon-name">open-menu-symbolic</property>
@@ -34,140 +57,307 @@
             </property>
           </object>
         </child>
-        <child>
-          <object class="GtkButton" id="reauth-button">
-            <property name="halign">start</property>
-            <property name="has-tooltip">True</property>
-            <property name="icon-name">view-refresh-symbolic</property>
-            <property name="tooltip-text">Reauthenticate</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="account-button">
-            <property name="label">Account</property>
-            <property name="popover">
-              <object class="GtkPopoverMenu" id="account-popover">
-                <property name="child">
-                  <object class="GtkBox" id="account-popover-box">
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkSeparator"/>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="new-account-button">
-                        <property name="label">Add new</property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
-            </property>
-          </object>
-        </child>
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="main_box">
-        <property name="orientation">vertical</property>
+      <object class="AdwLeaflet" id="main-leaflet">
+        <property name="can-unfold">False</property>
+        <property name="visible-child">login-page</property>
         <child>
-          <object class="GtkBox">
-            <property name="halign">center</property>
-            <property name="valign">center</property>
+          <object class="AdwClamp" id="main-page">
             <child>
-              <object class="GtkButton" id="skin-select-button">
-                <property name="halign">center</property>
-                <property name="valign">center</property>
+              <object class="GtkBox" id="main_box">
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">document-open-symbolic</property>
+                      <object class="GtkButton" id="skin-select-button">
+                        <property name="halign">center</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
+                        <property name="valign">center</property>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkImage">
+                                <property name="icon-name">document-open-symbolic</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="skin-select-label">
+                                <property name="label">(None)</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="skin-select-label">
-                        <property name="label">(None)</property>
+                      <object class="GtkCheckButton" id="skin-slim-check">
+                        <property name="label">slim</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="skin-apply-button">
+                        <property name="label">Apply</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
                       </object>
                     </child>
                   </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="skin-slim-check">
-                <property name="label">slim</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="skin-apply-button">
-                <property name="label">Apply</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Version:</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">3</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-top">10</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkDropDown" id="version-dropdown">
+                        <property name="halign">center</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">3</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-top">10</property>
+                        <property name="model">
+                          <object class="GtkStringList" id="version-list"/>
+                        </property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="preferences-button">
+                        <property name="has-tooltip">True</property>
+                        <property name="icon-name">preferences-system-symbolic</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">3</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-top">10</property>
+                        <property name="tooltip-text">preferences</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="delete-button">
+                        <property name="has-tooltip">True</property>
+                        <property name="icon-name">user-trash-symbolic</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">3</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-top">10</property>
+                        <property name="tooltip-text">delete</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="install-new-button">
+                        <property name="has-frame">False</property>
+                        <property name="has-tooltip">True</property>
+                        <property name="icon-name">list-add-symbolic</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">3</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-top">10</property>
+                        <property name="tooltip-text">Install new version</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="launch-button">
+                    <property name="css-classes">suggested-action</property>
+                    <property name="halign">center</property>
+                    <property name="label">Launch</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="valign">end</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="halign">center</property>
-            <property name="valign">center</property>
+          <object class="AdwClamp" id="login-page">
             <child>
-              <object class="GtkLabel">
-                <property name="label">Version:</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkDropDown" id="version-dropdown">
-                <property name="enable-search">True</property>
-                <property name="halign">center</property>
-                <property name="model">
-                  <object class="GtkStringList" id="version-list"/>
-                </property>
-                <property name="valign">center</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="preferences-button">
-                <property name="has-tooltip">True</property>
-                <property name="icon-name">preferences-system-symbolic</property>
-                <property name="tooltip-text">preferences</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="delete-button">
-                <property name="has-tooltip">True</property>
-                <property name="icon-name">user-trash-symbolic</property>
-                <property name="tooltip-text">delete</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="install-dialog-button">
-                <property name="has-frame">False</property>
-                <property name="has-tooltip">True</property>
-                <property name="icon-name">list-add-symbolic</property>
-                <property name="tooltip-text">Install new version</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="halign">end</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-top">10</property>
+                    <property name="selection-mode">none</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
+                    <child>
+                      <object class="GtkLabel" id="login-dialog-label">
+                        <property name="halign">start</property>
+                        <property name="label">Enter your password for the selected user</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwPasswordEntryRow" id="login-dialog-entry">
+                        <property name="show-apply-button">True</property>
+                        <property name="title">Password</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="login-wrong-password">
+                    <property name="css-classes">error</property>
+                    <property name="halign">end</property>
+                    <property name="justify">right</property>
+                    <property name="label">Wrong password</property>
+                    <property name="valign">start</property>
+                    <property name="visible">False</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="launch-button">
-            <property name="css-classes">suggested-action</property>
-            <property name="halign">center</property>
-            <property name="label">Launch</property>
-            <property name="valign">end</property>
+          <object class="AdwClamp" id="install-page">
+            <child>
+              <object class="GtkBox">
+                <property name="margin-bottom">10</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-top">10</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
+                    <child>
+                      <object class="GtkCheckButton" id="vanilla-check">
+                        <property name="active">True</property>
+                        <property name="group">
+                          <object class="GtkCheckButton" id="modloader"/>
+                        </property>
+                        <property name="halign">start</property>
+                        <property name="label">Vanilla</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="fabric-check">
+                        <property name="group">modloader</property>
+                        <property name="halign">center</property>
+                        <property name="label">Fabric</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="forge-check">
+                        <property name="group">modloader</property>
+                        <property name="halign">end</property>
+                        <property name="label">Forge</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
+                    <child>
+                      <object class="GtkDropDown" id="install-version-dropdown">
+                        <property name="enable-search">True</property>
+                        <property name="halign">center</property>
+                        <property name="model">
+                          <object class="GtkStringList" id="install-version-list"/>
+                        </property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="show-snapshots-check">
+                        <property name="halign">center</property>
+                        <property name="label">show snapshots</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="install-alias">
+                    <property name="halign">center</property>
+                    <property name="input-hints">no-emoji | no-spellcheck</property>
+                    <property name="placeholder-text">(Optional) Profile name</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">300</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="install-button">
+                    <property name="css-classes">suggested-action</property>
+                    <property name="halign">center</property>
+                    <property name="label">Install</property>
+                    <property name="valign">center</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="install-progress">
+                    <property name="fraction">0.3</property>
+                    <property name="show-text">True</property>
+                    <property name="visible">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
   </object>
-  <object class="GtkDialog" id="preferences">
+  <object class="GtkDialog" id="preferences-dialog">
     <property name="default-height">500</property>
     <property name="default-width">500</property>
+    <property name="height-request">400</property>
     <property name="hide-on-close">True</property>
     <property name="modal">True</property>
     <property name="title">Preferences</property>
-    <property name="transient-for">win</property>
+    <property name="titlebar">
+      <object class="AdwHeaderBar">
+        <child>
+          <object class="GtkButton" id="preferences-apply-button">
+            <property name="css-classes">suggested-action</property>
+            <property name="label">Apply</property>
+          </object>
+        </child>
+      </object>
+    </property>
     <property name="use-header-bar">1</property>
+    <property name="width-request">500</property>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -175,28 +365,24 @@
           <object class="GtkListBox">
             <property name="css-classes">boxed-list</property>
             <property name="halign">center</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-top">10</property>
             <property name="selection-mode">none</property>
             <property name="show-separators">True</property>
             <property name="valign">center</property>
             <property name="width-request">420</property>
             <child>
-              <object class="GtkBox">
-                <property name="halign">center</property>
-                <property name="homogeneous">True</property>
-                <property name="valign">center</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="halign">start</property>
-                    <property name="label">Minimum RAM allocation</property>
-                  </object>
-                </child>
+              <object class="AdwActionRow">
+                <property name="title">Minimum RAM allocation</property>
                 <child>
                   <object class="GtkSpinButton" id="min-ram">
                     <property name="adjustment">
-                      <object class="GtkAdjustment">
+                      <object class="GtkAdjustment" id="min-ram-adj">
                         <property name="lower">1.0</property>
                         <property name="step-increment">1.0</property>
-                        <property name="upper">16.0</property>
+                        <property name="upper">2.0</property>
                         <property name="value">2.0</property>
                       </object>
                     </property>
@@ -208,23 +394,15 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
-                <property name="halign">center</property>
-                <property name="homogeneous">True</property>
-                <property name="valign">center</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="halign">start</property>
-                    <property name="label">Maximum RAM allocation</property>
-                  </object>
-                </child>
+              <object class="AdwActionRow">
+                <property name="title">Maximum RAM allocation</property>
                 <child>
                   <object class="GtkSpinButton" id="max-ram">
                     <property name="adjustment">
-                      <object class="GtkAdjustment">
-                        <property name="lower">1.0</property>
+                      <object class="GtkAdjustment" id="max-ram-adj">
+                        <property name="lower">2.0</property>
                         <property name="step-increment">1.0</property>
-                        <property name="upper">16.0</property>
+                        <property name="upper">255.0</property>
                         <property name="value">2.0</property>
                       </object>
                     </property>
@@ -241,19 +419,29 @@
           <object class="GtkListBox">
             <property name="css-classes">boxed-list</property>
             <property name="halign">center</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-top">10</property>
             <property name="selection-mode">none</property>
             <property name="valign">center</property>
             <property name="width-request">420</property>
             <child>
-              <object class="GtkBox">
+              <object class="AdwActionRow">
+                <property name="title">Startup server</property>
                 <child>
                   <object class="AdwEntryRow" id="startup-server">
-                    <property name="halign">center</property>
+                    <property name="halign">end</property>
                     <property name="input-hints">no-emoji | no-spellcheck</property>
-                    <property name="title">Startup server</property>
+                    <property name="title">Address</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title">Startup port</property>
                 <child>
                   <object class="GtkSpinButton" id="startup-port">
                     <property name="adjustment">
@@ -265,7 +453,7 @@
                       </object>
                     </property>
                     <property name="climb-rate">1.0</property>
-                    <property name="halign">start</property>
+                    <property name="halign">end</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -276,80 +464,7 @@
       </object>
     </child>
   </object>
-  <object class="GtkDialog" id="install">
-    <property name="hide-on-close">True</property>
-    <property name="modal">True</property>
-    <property name="title">Install</property>
-    <property name="transient-for">win</property>
-    <child>
-      <object class="GtkBox">
-        <property name="homogeneous">True</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkBox">
-            <property name="homogeneous">True</property>
-            <property name="valign">center</property>
-            <child>
-              <object class="GtkCheckButton" id="vanilla-check">
-                <property name="active">True</property>
-                <property name="group">
-                  <object class="GtkCheckButton" id="modloader"/>
-                </property>
-                <property name="halign">start</property>
-                <property name="label">Vanilla</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="fabric-check">
-                <property name="group">modloader</property>
-                <property name="halign">center</property>
-                <property name="label">Fabric</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="forge-check">
-                <property name="group">modloader</property>
-                <property name="halign">end</property>
-                <property name="label">Forge</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="halign">center</property>
-            <property name="homogeneous">True</property>
-            <child>
-              <object class="GtkDropDown" id="install-version-dropdown">
-                <property name="enable-search">True</property>
-                <property name="halign">center</property>
-                <property name="model">
-                  <object class="GtkStringList" id="install-version-list"/>
-                </property>
-                <property name="valign">center</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="show-snapshots-check">
-                <property name="halign">center</property>
-                <property name="label">show snapshots</property>
-                <property name="valign">center</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="install-button">
-            <property name="css-classes">suggested-action</property>
-            <property name="halign">center</property>
-            <property name="label">Install</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="AdwAboutWindow" id="about">
+  <object class="AdwAboutWindow" id="about-dialog">
     <property name="application-icon">minceraft</property>
     <property name="application-name">Minceraft</property>
     <property name="artists">Cdr_Johannsen</property>
@@ -364,7 +479,6 @@ Cdr_Johannsen</property>
     <property name="issue-url">https://github.com/muslimitmilch/minceraft/issues/new</property>
     <property name="license-type">gpl-3-0</property>
     <property name="support-url">https://github.com/muslimitmilch/minceraft/issues/new</property>
-    <property name="transient-for">win</property>
     <property name="version">1.0</property>
     <property name="website">https://github.com/muslimitmilch/minceraft</property>
   </object>
@@ -375,24 +489,33 @@ Cdr_Johannsen</property>
     <property name="modal">True</property>
     <property name="secondary-text">Do you really want to delete this version?</property>
     <property name="text">Delete version</property>
-    <property name="transient-for">win</property>
   </object>
   <object class="GtkDialog" id="add-account-dialog">
+    <property name="height-request">400</property>
     <property name="hide-on-close">True</property>
     <property name="modal">True</property>
-    <property name="transient-for">win</property>
+    <property name="width-request">500</property>
     <child>
-      <object class="AdwCarousel">
+      <object class="AdwLeaflet" id="add-account-leaflet">
+        <property name="can-unfold">False</property>
+        <property name="transition-type">slide</property>
+        <property name="visible-child">add-account-normal</property>
         <child>
-          <object class="AdwClamp">
+          <object class="AdwClamp" id="add-account-minceraft">
             <child>
               <object class="AdwPreferencesGroup">
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
                 <property name="title">Setup minceraft-launcher account</property>
                 <child>
                   <object class="GtkListBox">
                     <property name="css-classes">boxed-list</property>
                     <property name="halign">center</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-top">10</property>
                     <property name="selection-mode">none</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
                     <child>
                       <object class="AdwEntryRow" id="minceraft-name">
                         <property name="input-hints">no-emoji | no-spellcheck</property>
@@ -413,11 +536,24 @@ Cdr_Johannsen</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="minceraft-confirm">
-                    <property name="css-classes">suggested-action</property>
+                  <object class="GtkBox">
                     <property name="halign">end</property>
-                    <property name="label">Confirm</property>
-                    <property name="valign">end</property>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkLabel" id="minceraft-error-label">
+                        <property name="css-classes">error</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="minceraft-confirm">
+                        <property name="css-classes">suggested-action</property>
+                        <property name="halign">end</property>
+                        <property name="label">Confirm</property>
+                        <property name="valign">end</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -425,20 +561,26 @@ Cdr_Johannsen</property>
           </object>
         </child>
         <child>
-          <object class="AdwClamp">
+          <object class="AdwClamp" id="add-account-select">
             <child>
-              <object class="GtkListBox">
+              <object class="GtkListBox" id="auth-type-select">
                 <property name="css-classes">boxed-list</property>
                 <property name="halign">center</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
+                <property name="margin-top">10</property>
+                <property name="selection-mode">none</property>
                 <property name="valign">center</property>
+                <property name="width-request">420</property>
                 <child>
-                  <object class="AdwActionRow" id="normal-auth-action">
-                    <property name="title">Normal Authentication</property>
+                  <object class="GtkButton" id="normal-auth-action">
+                    <property name="label">Normal Authentication</property>
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="2fa-action">
-                    <property name="title">2 Factor Authentication</property>
+                  <object class="GtkButton" id="2fa-action">
+                    <property name="label">2 Factor Authentication</property>
                   </object>
                 </child>
               </object>
@@ -446,13 +588,81 @@ Cdr_Johannsen</property>
           </object>
         </child>
         <child>
-          <object class="AdwClamp">
+          <object class="AdwClamp" id="add-account-2fa">
             <child>
               <object class="AdwPreferencesGroup">
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
+                <property name="title">Two Factor Authentication</property>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="css-classes">boxed-list</property>
+                    <property name="halign">center</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="selection-mode">none</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Your browser should have opened, paste the url you will be redirectet below</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="margin-top">10</property>
+                        <property name="natural-wrap-mode">word</property>
+                        <property name="wrap">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwEntryRow" id="2fa-url">
+                        <property name="input-hints">no-emoji | no-spellcheck</property>
+                        <property name="input-purpose">url</property>
+                        <property name="title">URL</property>
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">end</property>
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkLabel" id="2fa-error-label">
+                        <property name="css-classes">error</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="2fa-confirm">
+                        <property name="css-classes">suggested-action</property>
+                        <property name="halign">end</property>
+                        <property name="label">Confirm</property>
+                        <property name="valign">end</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwClamp" id="add-account-normal">
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="margin-end">20</property>
+                <property name="margin-start">20</property>
                 <property name="title">Normal Authentication</property>
                 <child>
                   <object class="GtkListBox">
                     <property name="css-classes">boxed-list</property>
+                    <property name="halign">center</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-top">10</property>
+                    <property name="selection-mode">none</property>
+                    <property name="valign">center</property>
+                    <property name="width-request">420</property>
                     <child>
                       <object class="AdwEntryRow" id="microsoft-mail">
                         <property name="input-hints">no-emoji | no-spellcheck</property>
@@ -468,80 +678,31 @@ Cdr_Johannsen</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="normal-confirm">
-                    <property name="css-classes">suggested-action</property>
+                  <object class="GtkBox">
                     <property name="halign">end</property>
-                    <property name="label">Confirm</property>
-                    <property name="valign">end</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="AdwClamp">
-            <child>
-              <object class="AdwPreferencesGroup">
-                <property name="title">Two Factor Authentication</property>
-                <child>
-                  <object class="GtkListBox">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
+                    <property name="margin-end">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="spacing">3</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">Your browser should have opened, paste the url you will be redirectet below</property>
-                        <property name="natural-wrap-mode">word</property>
-                        <property name="wrap">True</property>
+                      <object class="GtkLabel" id="normal-error-label">
+                        <property name="css-classes">error</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwEntryRow" id="2fa-url">
-                        <property name="halign">center</property>
-                        <property name="input-hints">no-emoji | no-spellcheck</property>
-                        <property name="input-purpose">url</property>
-                        <property name="title">URL</property>
-                        <property name="valign">center</property>
+                      <object class="GtkSpinner" id="normal-spinner"/>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="normal-confirm">
+                        <property name="css-classes">suggested-action</property>
+                        <property name="halign">end</property>
+                        <property name="label">Confirm</property>
+                        <property name="valign">end</property>
                       </object>
                     </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkButton" id="2fa-confirm">
-                    <property name="css-classes">suggested-action</property>
-                    <property name="halign">end</property>
-                    <property name="label">Confirm</property>
-                    <property name="valign">end</property>
-                  </object>
-                </child>
               </object>
             </child>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkDialog" id="login-dialog">
-    <property name="modal">True</property>
-    <property name="title">Password for user</property>
-    <property name="transient-for">win</property>
-    <child>
-      <object class="GtkListBox">
-        <property name="css-classes">boxed-list</property>
-        <property name="selection-mode">none</property>
-        <child>
-          <object class="GtkLabel" id="login-dialog-label">
-            <property name="halign">start</property>
-            <property name="label">Enter your password for the selected user</property>
-            <property name="valign">center</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwPasswordEntryRow" id="login-dialog-entry">
-            <property name="halign">center</property>
-            <property name="title">Password</property>
-            <property name="valign">center</property>
           </object>
         </child>
       </object>

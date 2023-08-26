@@ -24,8 +24,8 @@
                 "alias": "1.20.1 Vanilla",
                 "quickPlay": 0,
                 "memory": [
-                    8,
-                    2
+                    "8",
+                    "2"
                 ],
                 "server": "",
                 "port": ""
@@ -35,14 +35,14 @@
                 "alias": "1.20.1 Vanilla",
                 "quickPlay": 1/2/3,
                 "memory": [
-                    8,
-                    2
+                    "8",
+                    "2"
                 ],
                 "server": "",
                 "port": "",
                 "quickPlaySingleplayer": "My World",
                 "quickPlayMultiplayer": "mc.hypixel.net",
-                "quickPlayRealms": "idk wat realms use"
+                "quickPlayRealms": "idk what realms use"
             }
         ]
     }

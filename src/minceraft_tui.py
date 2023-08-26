@@ -124,10 +124,10 @@ class MinecraftTui:
                     time.sleep(default_delay)
             else:
                 self.display.listSet('Two factor authentication')
-                client_id, redirect_uri = minceraft.twoFactorOpenBrowser()
+                minceraft.twoFactorOpenBrowser()
                 self.display.homeSet(["Your browser should have opened","Please paste the url you will be redirected to below"])
                 url = self.display.userInput()
-                auth_successfull = minceraft.newTwoFactorAuth(self.oh,username,password,url,client_id,redirect_uri)
+                auth_successfull = minceraft.newTwoFactorAuth(self.oh,username,password,url)
                 if not auth_successfull:
                     self.display.listSet('The url is not valid, try again')
                     time.sleep(default_delay)

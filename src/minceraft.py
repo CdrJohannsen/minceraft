@@ -62,12 +62,16 @@ def twoFactorOpenBrowser():
     client_id = azure['client_id']
     redirect_uri = azure['redirect_uri']
     webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
-    return client_id, redirect_uri
+    return
 
-def newTwoFactorAuth(oh,username,password,url,client_id,redirect_uri):
+def newTwoFactorAuth(oh,username,password,url):
     if not minecraft_launcher_lib.microsoft_account.url_contains_auth_code(url):
         return False
     else:
+        with open(os.path.dirname(os.path.abspath(__file__))+'/azure.json','r') as f:
+            azure = json.load(f)
+        client_id = azure['client_id']
+        redirect_uri = azure['redirect_uri']
         auth_code = minecraft_launcher_lib.microsoft_account.get_auth_code_from_url(url)
         login_data = minecraft_launcher_lib.microsoft_account.complete_login(client_id,client_secret = None, redirect_uri=redirect_uri, auth_code=auth_code)
         launchOptions = {"username": login_data['name'], "uuid": login_data['id'], "token": encryption.encrypt(login_data['access_token'], password)}
@@ -112,7 +116,7 @@ def generateVersion(oh:optionHandler.OptionHandler,version,alias,quickPlay):
         "version": version,
         "alias": alias,
         "quickPlay": quickPlay,
-        "memory": [2,2],
+        "memory": ["2","2"],
         "server": "",
         "port": "",
     }

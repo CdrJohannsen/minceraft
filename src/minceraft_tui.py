@@ -140,7 +140,6 @@ class MinecraftTui:
         """
 
         if self.oh.version == None:
-            selected = self.display.userInput()
             self.display.homeSet('Select Option',1)
             self.display.listSet([self.oh.username,'-------------------------------------'])
             self.display.listAppend('[i]  install version')
@@ -154,6 +153,7 @@ class MinecraftTui:
                 version = v["alias"]
                 self.display.listAppend('['+str(i)+']  '+version)
                 i+=1
+            selected = self.display.userInput()
         else:
             selected = None
         if selected == 'i':

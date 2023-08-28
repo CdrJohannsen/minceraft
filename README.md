@@ -7,7 +7,6 @@ A fast minecraft launcher with integrated text editor.
 
 ## Features
 
-- [x] open text editor
 - [x] install versions
 - [x] authenticate
 - [x] launch Minecraft
@@ -18,8 +17,9 @@ A fast minecraft launcher with integrated text editor.
 - [x] Fabric
 - [x] Forge
 - [x] CLI/TUI
+- [x] GUI
 - [ ] quickPlay
-- [ ] GUI
+- [ ] 3D Skin view
 
 ## Install
 
@@ -37,6 +37,11 @@ if you don't have them
 
 ```bash
 make all
+```
+
+if you want the gui version
+```bash
+make install-gui
 ```
 
 ## Uninstall

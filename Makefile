@@ -1,4 +1,5 @@
-
+EXECUTABLE=$(HOME)/.minceraft/minceraft/minceraft_tui.py
+PREEXEC=alacritty -e 
 
 all:
 	make install-dependencies
@@ -14,6 +15,8 @@ install:
 	mkdir -p $(HOME)/.icons/hicolor/256x256/apps
 	mkdir -p $(HOME)/.local/share/applications
 	mkdir -p $(HOME)/.local/bin
+	cp minceraft_gtk/minceraft_gtk.py $(HOME)/.minceraft/minceraft/
+	cp minceraft_gtk/minceraft_gtk.ui $(HOME)/.minceraft/minceraft/
 	cp src/azure.json $(HOME)/.minceraft/minceraft/
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/
@@ -29,16 +32,20 @@ install:
 	rm -f src/mc_launch.py
 	python3 ./update_config.py
 
+install-gui:
+	make install EXECUTABLE=$(HOME)/.minceraft/minceraft/minceraft_gtk.py PREEXEC=""
+
+
 executable:
 	rm -f src/minceraft
 	echo "#!/usr/bin/env bash" >> src/minceraft
-	echo $(HOME)'/.minceraft/minceraft/minceraft_tui.py $$*' >> src/minceraft
+	echo $(EXECUTABLE) '$$*' >> src/minceraft
 	chmod +x src/minceraft
 
 desktop:
 	rm -f src/minceraft.desktop
 	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> src/minceraft.desktop
-	echo Exec=$(TERM)" -e "$(HOME)"/.minceraft/minceraft/minceraft_tui.py" >> src/minceraft.desktop
+	echo Exec=$(PREEXEC)$(EXECUTABLE) >> src/minceraft.desktop
 	echo "Icon=minceraft" >> src/minceraft.desktop
 	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
 

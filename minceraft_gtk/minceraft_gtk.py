@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import sys, os
+sys.path.append('../src')
+import minceraft
 import threading
 from time import sleep
 
@@ -8,21 +11,18 @@ import minecraft_launcher_lib
 gi.require_version("Gtk", "4.0")
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Adw, Gio, GLib, Gdk
-import sys
-sys.path.append('../src')
-import minceraft
 
 class Minceraft(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.connect('activate', self.on_activate)
         self.oh = minceraft.optionHandler.OptionHandler()
         minceraft.handleArgs(self.oh)
+        self.connect('activate', self.on_activate)
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("minceraft_gtk.ui")
+        self.builder.add_from_file(os.path.dirname(os.path.abspath(__file__))+"/minceraft_gtk.ui")
         self.win                        = self.builder.get_object("win")
         self.add_account_dialog         = self.builder.get_object("add-account-dialog")
-        self.add_account_leaflet        = self.builder.get_object("add-account-leaflet")
+        self.add_account_stack          = self.builder.get_object("add-account-stack")
         self.add_account_2fa            = self.builder.get_object("add-account-2fa")
         self.twoFA_url                  = self.builder.get_object("2fa-url")
         self.twoFA_confirm              = self.builder.get_object("2fa-confirm")
@@ -70,7 +70,7 @@ class Minceraft(Adw.Application):
         self.account_list               = self.builder.get_object("account-list")
         self.add_account_button         = self.builder.get_object("add-account-button")
         self.hamburger_popover          = self.builder.get_object("hamburger-popover")
-        self.main_leaflet               = self.builder.get_object("main-leaflet")
+        self.main_stack                 = self.builder.get_object("main-stack")
         self.login_page                 = self.builder.get_object("login-page")
         self.login_dialog_label         = self.builder.get_object("login-dialog-label")
         self.login_dialog_entry         = self.builder.get_object("login-dialog-entry")
@@ -99,21 +99,43 @@ class Minceraft(Adw.Application):
         self.account_popover.set_menu_model(self.account_menu)
         self.reauth_button.set_sensitive(False)
 
+        filter = Gtk.FileFilter()
+        filter.add_mime_type("image/png")
+        filters = Gio.ListStore.new(Gtk.FileFilter)
+        filters.append(filter)
         self.file_dialog = Gtk.FileDialog.new()
+        self.file_dialog.set_title("Select a skin")
+        self.file_dialog.set_accept_label("Select")
+        self.file_dialog.set_filters(filters)
+        self.file_dialog.set_default_filter(filter)
 
-        self.oh.set_debug_callback(print)
+        self.oh.set_debug_callback(self.debug)
         if not self.oh.load():
             self.show_add_account_dialog(None)
 
         self.updateUsers()
         self.updateVersions()
         self.account_menu_button.set_label(self.oh.username)
+        self.skin_apply_button.set_sensitive(False)
 
         if self.oh.user_info["last_played"] != -1: self.version_dropdown.set_selected(self.oh.user_info["last_played"])
-        self.main_leaflet.set_visible_child(self.login_page)
+
+        if self.oh.password and self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(self.oh.password):
+            self.oh.config[0]["last_user"]=self.oh.user
+            self.oh.load()
+            self.oh.saveConfig()
+            self.handle_version_buttons()
+            self.manage_main_stack(None,1)
+            self.reauth_button.set_sensitive(True)
+        else:
+            self.manage_main_stack(None,0)
 
         self.current_max=0
         self.modloader="0"
+
+    def debug(self,message):
+        if self.oh.debug_mode:
+            print(f"[DEBUG] {message}")
 
     def on_activate(self, app):
         self.delete_alert.set_modal(self.win)
@@ -126,7 +148,7 @@ class Minceraft(Adw.Application):
         """
 
         self.minceraft_confirm.connect(         "clicked",      self.add_minceraft)
-        self.normal_auth_action.connect(        "clicked",      self.manage_add_account_leaflet,2)
+        self.normal_auth_action.connect(        "clicked",      self.manage_add_account_stack,2)
         self.twoFA_action.connect(              "clicked",      self.prepare2fa)
         self.about_action.connect(              "activate",     self.show_about)
         self.delete_button.connect(             "clicked",      self.show_delete)
@@ -171,8 +193,12 @@ class Minceraft(Adw.Application):
         self.file_dialog.open(self.win,None,self.fileChooserCallback)
 
     def fileChooserCallback(self,action,result):
-        self.skin = self.file_dialog.open_finish(result)
-        self.skin_select_label.set_text(self.skin.get_basename().strip(".png"))
+        try:
+            self.skin = self.file_dialog.open_finish(result)
+            self.skin_select_label.set_text(self.skin.get_basename().strip(".png"))
+            self.skin_apply_button.set_sensitive(True)
+        except GLib.Error:
+            pass
 
     def updateAccounts(self):
         self.account_menu.remove_all()
@@ -188,7 +214,7 @@ class Minceraft(Adw.Application):
         self.updateVersions()
         self.account_menu_button.set_label(self.oh.username)
         self.login_dialog_entry.delete_text(0,-1)
-        self.main_leaflet.set_visible_child(self.login_page)
+        self.manage_main_stack(None,0)
         self.reauth_button.set_sensitive(False)
 
 
@@ -220,7 +246,7 @@ class Minceraft(Adw.Application):
         pThread = threading.Thread(target=self.install)
         pThread.daemon=True
         pThread.start()
-        self.updateVersions()
+        # self.updateVersions()
 
     def install(self):
         callback = {
@@ -233,19 +259,19 @@ class Minceraft(Adw.Application):
                           self.modloader,
                           self.install_alias.get_text(),
                           callback)
+        sleep(2)
+        self.oh.updateVersions()
+        GLib.idle_add(self.updateVersions)
+        self.oh.saveConfig()
+        GLib.idle_add(self.win.set_focus,self.launch_button)
+        GLib.idle_add(self.version_dropdown.set_selected,len(self.version_list)-1)
+        GLib.idle_add(self.manage_main_stack,None,1)
 
     def updateProgress(self):
         self.install_progress.set_fraction(self.install_progress.get_fraction())
 
     def set_status(self,status: str):
-        print(status)
-        if not status == "Installation complete":
-            GLib.idle_add(self.install_progress.set_text,status)
-        else:
-            sleep(1)
-            self.updateVersions()
-            self.oh.saveConfig()
-            self.main_leaflet.set_visible_child(self.main_page)
+        GLib.idle_add(self.install_progress.set_text,status)
 
 
     def set_progress(self,progress: int):
@@ -267,7 +293,7 @@ class Minceraft(Adw.Application):
 
     def prepare2fa(self,action):
         minceraft.twoFactorOpenBrowser()
-        self.manage_add_account_leaflet(None,3)
+        self.manage_add_account_stack(None,3)
 
     def new2FactorAuth(self,action):
         self.twoFA_error_label.set_text("")
@@ -325,7 +351,7 @@ class Minceraft(Adw.Application):
         elif self.minceraft_password.get_text() != self.minceraft_password2.get_text():
             self.minceraft_error_label.set_text("Passwords are not the same")
         else:
-            self.manage_add_account_leaflet(None,1)
+            self.manage_add_account_stack(None,1)
 
     def apply_preferences(self,action):
         self.oh.versions[self.version_dropdown.get_selected()]["memory"][0] = str(int(self.max_ram.get_value()))
@@ -336,7 +362,7 @@ class Minceraft(Adw.Application):
         self.preferences_dialog.set_visible(False)
 
     def handle_min_ram(self,action):
-        self.max_ram_adj.set_upper(self.min_ram.get_value())
+        self.max_ram_adj.set_lower(self.min_ram.get_value())
 
     def handle_max_ram(self,action):
         self.min_ram_adj.set_upper(self.max_ram.get_value())
@@ -349,8 +375,9 @@ class Minceraft(Adw.Application):
             self.oh.load()
             self.oh.saveConfig()
             self.handle_version_buttons()
-            self.main_leaflet.set_visible_child(self.main_page)
+            self.manage_main_stack(None,1)
             self.reauth_button.set_sensitive(True)
+            self.win.set_focus(self.launch_button)
             self.login_dialog_entry.delete_text(0,-1)
         else:
             self.login_wrong_password.set_visible(True)
@@ -368,16 +395,22 @@ class Minceraft(Adw.Application):
             self.launch_button.set_sensitive(True)
 
     def show_add_account_dialog(self,action):
-        self.add_account_leaflet.set_visible_child(self.add_account_minceraft)
+        self.manage_add_account_stack(None,0)
+        self.minceraft_name.delete_text(0,-1)
+        self.minceraft_password.delete_text(0,-1)
+        self.minceraft_password2.delete_text(0,-1)
+        self.microsoft_mail.delete_text(0,-1)
+        self.microsoft_password.delete_text(0,-1)
+        self.twoFA_url.delete_text(0,-1)
         self.add_account_dialog.set_visible(True)
 
-    def manage_add_account_leaflet(self,action,page):
-        pages = [self.add_account_minceraft, self.add_account_select, self.add_account_normal, self.add_account_2fa]
-        self.add_account_leaflet.set_visible_child(pages[page])
+    def manage_add_account_stack(self,action,page):
+        pages = ["add-account-minceraft", "add-account-select", "add-account-normal", "add-account-2fa"]
+        self.add_account_stack.set_visible_child_name(pages[page])
     
-    def manage_main_leaflet(self,action,page):
-        pages=[self.login_page,self.main_page]
-        self.main_leaflet.set_visible_child(pages[page])
+    def manage_main_stack(self,action,page):
+        pages=["login-page","main-page","install-page"]
+        self.main_stack.set_visible_child_name(pages[page])
 
     def show_about(self,action,param):
         self.about_dialog.set_version(self.oh.config[0]["launcher_version"])
@@ -393,10 +426,10 @@ class Minceraft(Adw.Application):
     def show_install(self,action):
         self.updateInstallVersions(None)
         self.install_progress.set_visible(False)
-        self.install_alias.set_text("")
+        self.install_alias.delete_text(0,-1)
         self.vanilla_check.set_active(True)
         self.install_button.set_sensitive(True)
-        self.main_leaflet.set_visible_child(self.install_page)
+        self.manage_main_stack(None,2)
 
     def show_preferences(self,action):
         self.preferences_dialog.set_title(self.oh.versions[self.version_dropdown.get_selected()]["alias"])
@@ -410,6 +443,8 @@ class Minceraft(Adw.Application):
 
     def launch(self,action):
         minceraft.launch(self.oh,self.version_dropdown.get_selected())
+        sleep(3)
+        self.quit()
 
     def handle_reauth(self,action):
         self.reauth_button.set_sensitive(False)
@@ -430,5 +465,6 @@ class Minceraft(Adw.Application):
             self.handle_version_buttons()
         self.delete_alert.set_visible(False)
 
-app = Minceraft(application_id="com.github.muslimitmilch.minceraft")
-app.run(sys.argv)
+if __name__ == "__main__":
+    app = Minceraft(application_id="com.github.muslimitmilch.minceraft")
+    app.run()

@@ -60,7 +60,6 @@ uninstall:
 	rm -f $(HOME)/.local/bin/minceraft
 	rm -f $(HOME)/.local/share/applications/minceraft.desktop
 	rm -f $(HOME)/.icons/hicolor/256x256/apps/minceraft.png
-	rm -rf $(HOME)/.config/minceraft
 	rm -rf $(HOME)/.minceraft
 
 .PHONY: all install install-dependencies uninstall check-uninstall desktop executable

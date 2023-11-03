@@ -25,7 +25,7 @@ install:
 	cp src/minceraft.png $(HOME)/.icons/hicolor/256x256/apps/
 	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
 	cp src/optionHandler.py $(HOME)/.minceraft/minceraft/
-	cp -n src/config.json $(HOME)/.minceraft/
+	cp --update=none src/config.json $(HOME)/.minceraft/
 	cp src/minceraft.desktop $(HOME)/.local/share/applications/
 	cp src/minceraft $(HOME)/.local/bin/
 	rm -f src/mc_edit.py

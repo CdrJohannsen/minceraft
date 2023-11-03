@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os, math, json, time 
+import os, math, json, time, getpass
 
 class advancedDisplay():
 
@@ -106,6 +106,9 @@ class advancedDisplay():
 
     def userInput(self):
         return input('      ')
+
+    def userPassword(self):
+        return getpass.getpass('      ')
 
     def debug(self,message):
         if self.oh.debug_mode:

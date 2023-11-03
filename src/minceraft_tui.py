@@ -75,7 +75,7 @@ class MinecraftTui:
 
         if not self.oh.password:
             self.display.homeSet('Please enter your password for user ' + self.oh.username,1)
-            self.oh.password = self.display.userInput()
+            self.oh.password = self.display.userPassword()
         if self.oh.password == "":
             self.display.homeSet('Please choose your user profile')
             self.selectAccount()

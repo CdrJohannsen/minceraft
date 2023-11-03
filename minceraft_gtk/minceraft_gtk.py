@@ -126,6 +126,7 @@ class Minceraft(Adw.Application):
             self.oh.saveConfig()
             self.handle_version_buttons()
             self.manage_main_stack(None,1)
+            self.win.set_focus(self.launch_button)
             self.reauth_button.set_sensitive(True)
         else:
             self.manage_main_stack(None,0)

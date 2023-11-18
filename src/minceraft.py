@@ -165,7 +165,7 @@ def install(oh: optionHandler.OptionHandler,version,modloader,alias,callback):
         os.mkdir(os.path.join(oh.minceraftDir,'gameDirs',alias.replace(" ","-")))
     except:
         oh.debug("Couldn't make gameDirectory")
-    generateVersion(oh,version,alias,0)
+    generateVersion(oh,new_version,alias,0)
     
     
     

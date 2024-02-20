@@ -216,7 +216,7 @@ def twoFactorAuth(oh:optionHandler.OptionHandler):
         oh.user_info['refresh_token'] = encryption.encrypt(login_data['refresh_token'], oh.password)
         return True
     except Exception as e:
-        oh.debug('Authentification failed because of: '+str(e),1)
+        oh.debug('Authentification failed because of: '+str(e))
         return False
     
 def authIfNeeded(oh:optionHandler.OptionHandler):

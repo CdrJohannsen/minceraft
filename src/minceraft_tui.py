@@ -236,6 +236,7 @@ class MinecraftTui:
                     time.sleep(DEFAULT_DELAY)
                 else:
                     self.launch(version_index)
+                    exit_after = True
             case _:
                 if self.oh.version is None:
                     try:

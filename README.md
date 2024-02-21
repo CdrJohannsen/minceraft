@@ -54,6 +54,7 @@ make uninstall
 
 ```
   -h, --help            show this help message and exit
+  -g, --gui             Start minceraft in gui mode
   -u USER, --user USER  selected user
   -ui USER_INDEX, --user_index USER_INDEX
                         index of selected user. Has higher priority than -u

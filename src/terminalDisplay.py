@@ -137,13 +137,13 @@ class AdvancedDisplay:
         for i in self.home_list_final:
             print("    " + i)
 
-    def userInput(self):
+    def userInput(self) -> str:
         """
         Get an input
         """
         return input("      ")
 
-    def userPassword(self):
+    def userPassword(self) -> str:
         """
         Get a password
         """

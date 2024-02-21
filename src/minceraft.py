@@ -85,7 +85,7 @@ def twoFactorOpenBrowser():
     )
 
 
-def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str):
+def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) -> bool:
     """Add a new user account with 2 factor authentification"""
     if not minecraft_launcher_lib.microsoft_account.url_contains_auth_code(url):
         return False
@@ -137,7 +137,7 @@ def deleteVersion(oh: OptionHandler, del_version: int):
 #########################################################
 # Install
 #########################################################
-def isVersionValid(oh: OptionHandler, version: str, modloader: str):
+def isVersionValid(oh: OptionHandler, version: str, modloader: str) -> bool | None:
     """Check if a version is valid for a given modloader"""
     if not minecraft_launcher_lib.utils.is_version_valid(version, oh.minceraft_dir):
         return True
@@ -250,7 +250,7 @@ def install(
 #########################################################
 
 
-def auth(oh: OptionHandler):
+def auth(oh: OptionHandler) -> bool:
     """Authenticates with the users selected auth method"""
     if oh.user_info["authType"] == "normal":
         oh.debug("Doing normal auth")
@@ -269,7 +269,7 @@ def auth(oh: OptionHandler):
     return True
 
 
-def normalAuth(oh: OptionHandler):
+def normalAuth(oh: OptionHandler) -> bool:
     """Authenticate the normal way"""
     try:
         email = encryption.decrypt(oh.user_info["msEmail"], oh.password)
@@ -287,7 +287,7 @@ def normalAuth(oh: OptionHandler):
         return False
 
 
-def twoFactorAuth(oh: OptionHandler):
+def twoFactorAuth(oh: OptionHandler) -> bool:
     """Authenticate with 2fa"""
     try:
         with open(azure_path, "r", encoding="utf-8") as f:
@@ -416,7 +416,9 @@ def changeSkin(oh: OptionHandler, filename: str, skin_width: str):
 def handleArgs(oh: OptionHandler):
     """Handle cli arguments"""
     parser = argparse.ArgumentParser(description="A fast launcher for Minecraft")
-    parser.add_argument("-g", "--gui", action="store_true", help="Start minceraft in gui mode")
+    parser.add_argument(
+        "-g", "--gui", action="store_true", help="Start minceraft in gui mode"
+    )
     parser.add_argument("-u", "--user", type=str, help="selected user")
     parser.add_argument(
         "-ui",

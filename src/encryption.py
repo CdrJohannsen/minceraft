@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import hashlib
 
 
-def encrypt(string, key):
+def encrypt(string, key) -> str:
     """
     Encrypt a string
     """
@@ -33,7 +33,7 @@ def encrypt(string, key):
     return encrypted_string
 
 
-def decrypt(string, key):
+def decrypt(string, key) -> str:
     """
     Decrypt a string
     """
@@ -45,7 +45,7 @@ def decrypt(string, key):
     return decrypted_string
 
 
-def hashValue(input_string):
+def hashValue(input_string) -> str:
     """
     Hash a string
     """

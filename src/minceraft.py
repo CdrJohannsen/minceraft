@@ -64,7 +64,7 @@ def newNormalAuth(
             "msPassword": encryption.encrypt(ms_password, password),
             "authType": "normal",
             "last_time": time.time(),
-            "launch_options": launch_options,
+            "launchOptions": launch_options,
             "last_played": -1,
             "versions": [],
         }
@@ -113,7 +113,7 @@ def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) 
         "authType": "2fa",
         "refresh_token": encryption.encrypt(login_data["refresh_token"], password),
         "last_time": time.time(),
-        "launch_options": launch_options,
+        "launchOptions": launch_options,
         "last_played": -1,
         "versions": [],
     }
@@ -280,7 +280,7 @@ def normalAuth(oh: OptionHandler) -> bool:
             "uuid": resp.uuid,
             "token": encryption.encrypt(resp.access_token, oh.password),
         }
-        oh.user_info["launch_options"] = launch_options
+        oh.user_info["launchOptions"] = launch_options
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         oh.debug("Authentification failed because of: " + str(e))
@@ -307,7 +307,7 @@ def twoFactorAuth(oh: OptionHandler) -> bool:
             "uuid": login_data["id"],
             "token": encryption.encrypt(login_data["access_token"], oh.password),
         }
-        oh.user_info["launch_options"] = launch_options
+        oh.user_info["launchOptions"] = launch_options
         oh.user_info["refresh_token"] = encryption.encrypt(
             login_data["refresh_token"], oh.password
         )
@@ -397,7 +397,7 @@ def changeSkin(oh: OptionHandler, filename: str, skin_width: str):
     """Change a users skins"""
     authIfNeeded(oh)
     authorization = "Bearer " + encryption.decrypt(
-        oh.user_info["launch_options"]["token"], oh.password
+        oh.user_info["launchOptions"]["token"], oh.password
     )
     url = "https://api.minecraftservices.com/minecraft/profile/skins"
 

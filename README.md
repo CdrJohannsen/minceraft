@@ -3,7 +3,17 @@
 </p>
 
 # minceraft
-A fast minecraft launcher with integrated text editor.
+
+A fast minecraft launcher.
+
+<!-- toc -->
+
+- [Features](#features)
+- [Install](#install)
+- [Uninstall](#uninstall)
+- [CLI-Usage](#cli-usage)
+
+<!-- tocstop -->
 
 ## Features
 
@@ -17,7 +27,7 @@ A fast minecraft launcher with integrated text editor.
 - [x] Fabric
 - [x] Forge
 - [x] CLI/TUI
-- [x] GUI
+- [x] GUI (Unmaintained)
 - [ ] quickPlay
 - [ ] 3D Skin view
 
@@ -40,6 +50,7 @@ make all
 ```
 
 if you want the gui version
+
 ```bash
 make install-gui
 ```
@@ -69,5 +80,5 @@ make uninstall
   -d, --debug           enable debug mode
 ```
 
-Tip: 
+Tip:
 Use `-p $(cat path/to/password)` instead of `-p PASSWORD` to prevent your password from getting into your bash_history

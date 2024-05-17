@@ -18,15 +18,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import time
+import argparse
 import json
 import os
-import argparse
+import time
 import webbrowser
-import requests
 
-import msmcauth
 import minecraft_launcher_lib
+import msmcauth
+import requests
+from minecraft_launcher_lib.types import CallbackDict, MinecraftOptions
 
 import encryption
 from optionHandler import OptionHandler
@@ -46,9 +47,7 @@ def addUser(oh: OptionHandler, user_info: dict):
     oh.saveConfig()
 
 
-def newNormalAuth(
-    oh: OptionHandler, username: str, password: str, email: str, ms_password: str
-) -> bool:
+def newNormalAuth(oh: OptionHandler, username: str, password: str, email: str, ms_password: str) -> bool:
     """Add a new user account with normal authentification"""
     try:
         resp = msmcauth.login(email, ms_password)
@@ -80,9 +79,7 @@ def twoFactorOpenBrowser():
         azure = json.load(f)
     client_id = azure["client_id"]
     redirect_uri = azure["redirect_uri"]
-    webbrowser.open(
-        minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri)
-    )
+    webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
 
 
 def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) -> bool:
@@ -124,7 +121,7 @@ def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) 
 def deleteVersion(oh: OptionHandler, del_version: int):
     """Deletes the entry for a version"""
     # Set last played version to a valid value
-    if oh.user_info.get("last_played") == -1:
+    if oh.user_info.get("last_played", -1) == -1:
         pass
     elif del_version == oh.user_info.get("last_played"):
         oh.user_info["last_played"] = -1
@@ -164,9 +161,7 @@ def generateVersion(oh: OptionHandler, version: str, alias: str, quick_play: int
     oh.saveConfig()
 
 
-def install(
-    oh: OptionHandler, version: str, modloader: str, alias: str, callback: dict
-):
+def install(oh: OptionHandler, version: str, modloader: str, alias: str, callback: CallbackDict):
     """Installs a version
     Args:
         version:    str     The name of the version
@@ -180,23 +175,14 @@ def install(
     """
     new_version = version
     # Vanilla
-    if modloader in ["0", ""]:
-        minecraft_launcher_lib.install.install_minecraft_version(
-            version, oh.minceraft_dir, callback=callback
-        )
+    if modloader in ("0", ""):
+        minecraft_launcher_lib.install.install_minecraft_version(version, oh.minceraft_dir, callback=callback)
         new_version = version
 
     # Fabric
     elif modloader == "1":
-        minecraft_launcher_lib.fabric.install_fabric(
-            version, oh.minceraft_dir, callback=callback
-        )
-        new_version = (
-            "fabric-loader-"
-            + minecraft_launcher_lib.fabric.get_latest_loader_version()
-            + "-"
-            + version
-        )
+        minecraft_launcher_lib.fabric.install_fabric(version, oh.minceraft_dir, callback=callback)
+        new_version = "fabric-loader-" + minecraft_launcher_lib.fabric.get_latest_loader_version() + "-" + version
 
     # Forge
     elif modloader == "2":
@@ -204,9 +190,7 @@ def install(
         if forge_version is None:
             return
 
-        installed_versions = minecraft_launcher_lib.utils.get_installed_versions(
-            oh.minceraft_dir
-        )
+        installed_versions = minecraft_launcher_lib.utils.get_installed_versions(oh.minceraft_dir)
         base_version_avaliable = False
         for i in installed_versions:
             if version in i.values():
@@ -214,17 +198,11 @@ def install(
 
         if minecraft_launcher_lib.forge.supports_automatic_install(forge_version):
             if not base_version_avaliable:
-                minecraft_launcher_lib.install.install_minecraft_version(
-                    version, oh.minceraft_dir, callback=callback
-                )
-            minecraft_launcher_lib.forge.install_forge_version(
-                forge_version, oh.minceraft_dir, callback=callback
-            )
+                minecraft_launcher_lib.install.install_minecraft_version(version, oh.minceraft_dir, callback=callback)
+            minecraft_launcher_lib.forge.install_forge_version(forge_version, oh.minceraft_dir, callback=callback)
         else:
             if not base_version_avaliable:
-                minecraft_launcher_lib.install.install_minecraft_version(
-                    version, oh.minceraft_dir, callback=callback
-                )
+                minecraft_launcher_lib.install.install_minecraft_version(version, oh.minceraft_dir, callback=callback)
             minecraft_launcher_lib.forge.run_forge_installer(forge_version)
         new_version = forge_version
 
@@ -239,9 +217,11 @@ def install(
     if alias == "":
         alias = new_version
     try:
-        os.mkdir(os.path.join(oh.minceraft_dir, "game_dirs", alias.replace(" ", "-")))
+        os.mkdir(os.path.join(oh.minceraft_dir, "gameDirs", alias.replace(" ", "-")))
     except FileNotFoundError:
-        oh.debug("Couldn't make gameDirectory")
+        oh.debug(f"Couldn't make gameDirectory, parent directory {oh.minceraft_dir} does not exist")
+    except FileExistsError:
+        oh.debug("Game directory already exists")
     generateVersion(oh, new_version, alias, 0)
 
 
@@ -308,9 +288,7 @@ def twoFactorAuth(oh: OptionHandler) -> bool:
             "token": encryption.encrypt(login_data["access_token"], oh.password),
         }
         oh.user_info["launchOptions"] = launch_options
-        oh.user_info["refresh_token"] = encryption.encrypt(
-            login_data["refresh_token"], oh.password
-        )
+        oh.user_info["refresh_token"] = encryption.encrypt(login_data["refresh_token"], oh.password)
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         oh.debug("Authentification failed because of: " + str(e))
@@ -325,9 +303,7 @@ def authIfNeeded(oh: OptionHandler):
         oh.debug("Doing auth with time difference of:" + str(time.time() - last_time))
         auth(oh)
     else:
-        oh.debug(
-            "Doing no auth with time difference of:" + str(time.time() - last_time)
-        )
+        oh.debug("Doing no auth with time difference of:" + str(time.time() - last_time))
 
 
 #########################################################
@@ -361,7 +337,7 @@ def launch(oh: OptionHandler, version_index: int):
             launch_options["port"] = str(oh.port)
 
     launch_command = minecraft_launcher_lib.command.get_minecraft_command(
-        version_prefs["version"], oh.minceraft_dir, launch_options
+        version_prefs["version"], oh.minceraft_dir, MinecraftOptions(**launch_options)
     )
     final_launch_command = ""
     for i in launch_command:
@@ -384,7 +360,7 @@ def launch(oh: OptionHandler, version_index: int):
 
 
 #########################################################
-# Manage your skins
+# Manage your skins and capes
 #########################################################
 
 
@@ -396,29 +372,61 @@ def listSkins(oh: OptionHandler) -> list:
 def changeSkin(oh: OptionHandler, filename: str, skin_width: str):
     """Change a users skins"""
     authIfNeeded(oh)
-    authorization = "Bearer " + encryption.decrypt(
-        oh.user_info["launchOptions"]["token"], oh.password
-    )
+    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
     url = "https://api.minecraftservices.com/minecraft/profile/skins"
 
     data = {"variant": skin_width}
     headers = {"Authorization": authorization}
     with open(filename, "rb") as png:
         files = {"file": ("skin.png", png, "image/png")}
-        r = requests.request(
-            "POST", url, headers=headers, data=data, files=files, timeout=5
-        )
+        r = requests.request("POST", url, headers=headers, data=data, files=files, timeout=5)
         oh.debug(r.reason)
     oh.debug("headers: " + str(headers))
     oh.debug("data: " + str(data))
 
 
+def listCapes(oh: OptionHandler) -> tuple[list[tuple[str, str]], str | None]:
+    """Returns a list of all owned capes"""
+    authIfNeeded(oh)
+    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
+    url = "https://api.minecraftservices.com/minecraft/profile"
+    headers = {"Authorization": authorization}
+    r = requests.get(url, headers=headers, timeout=5).json()
+    capes = []
+    current_cape = None
+    for cape in r["capes"]:
+        capes.append((cape["alias"], cape["id"]))
+        if cape["state"] == "ACTIVE":
+            current_cape = cape["alias"]
+    return capes, current_cape
+
+
+def changeCape(oh: OptionHandler, cape: tuple[str, str], current_cape: str | None):
+    """Change a users cape"""
+    authIfNeeded(oh)
+    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
+    url = "https://api.minecraftservices.com/minecraft/profile/capes/active"
+
+    headers = {"Authorization": authorization, "Content-Type": "application/json"}
+    if current_cape == cape[0]:
+        r = requests.delete(url, headers=headers, timeout=5)
+    else:
+        data = {"capeId": cape[1]}
+        r = requests.put(url, headers=headers, json=data, timeout=5)
+        oh.debug("data: " + str(data))
+    oh.debug(r.reason)
+    oh.debug("headers: " + str(headers))
+
+
+#########################################################
+# Handle CLI arguments
+#########################################################
+
+
 def handleArgs(oh: OptionHandler):
     """Handle cli arguments"""
     parser = argparse.ArgumentParser(description="A fast launcher for Minecraft")
-    parser.add_argument(
-        "-g", "--gui", action="store_true", help="Start minceraft in gui mode"
-    )
+    parser.add_argument("-g", "--gui", action="store_true", help="Start minceraft in gui mode")
     parser.add_argument("-u", "--user", type=str, help="selected user")
     parser.add_argument(
         "-ui",
@@ -426,9 +434,7 @@ def handleArgs(oh: OptionHandler):
         type=int,
         help="index of selected user. Has higher priority than -u",
     )
-    parser.add_argument(
-        "-lu", "--list_user", action="store_true", help="list users and their indices"
-    )
+    parser.add_argument("-lu", "--list_user", action="store_true", help="list users and their indices")
     parser.add_argument("-p", "--password", type=str, help="password for user")
     parser.add_argument("-v", "--version", type=int, help="version to launch")
     parser.add_argument(
@@ -437,9 +443,7 @@ def handleArgs(oh: OptionHandler):
         action="store_true",
         help="list versions and their indices",
     )
-    parser.add_argument(
-        "--server", type=str, help="server to connect after booting", metavar="IP/URL"
-    )
+    parser.add_argument("--server", type=str, help="server to connect after booting", metavar="IP/URL")
     parser.add_argument("--port", type=int, help="port for --server")
     parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
     args = parser.parse_args()

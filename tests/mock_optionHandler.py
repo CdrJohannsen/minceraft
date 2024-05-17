@@ -18,21 +18,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
+import os
+import shutil
+import tempfile
 
 
-class OptionHandler:
+class MockOptionHandler:
     """
     Handle the options and config
     """
 
     def __init__(self):
-        self.home_path = os.path.expanduser("~")
+        self.home_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../build")
         self.minceraft_dir = os.path.join(self.home_path, ".minceraft")
         self.versions_dir = os.path.join(self.minceraft_dir, "versions")
         self.game_dirs = os.path.join(self.minceraft_dir, "gameDirs")
-        self.config_path = os.path.join(self.minceraft_dir, "config.json")
+        self._config_file = tempfile.NamedTemporaryFile()
+        self.config_path = self._config_file.name
+        shutil.copy(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_config.json"), self.config_path)
         self.config = []
         self.reloadConfig()
         self.password = str()
@@ -118,9 +122,7 @@ class OptionHandler:
             self.updateVersions()
             self.version -= 1
             if self.version > len(self.user_info["versions"]) - 1:
-                print(
-                    f"Index out of range. Version must be between 0 and {len(self.user_info['versions'])-1}"
-                )
+                print(f"Index out of range. Version must be between 0 and {len(self.user_info['versions'])-1}")
                 exit(1)
         self.server = args.server
         self.port = args.port

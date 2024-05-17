@@ -74,4 +74,13 @@ shallow-uninstall:
 	rm -f $(HOME)/.icons/hicolor/256x256/apps/minceraft.png
 	rm -rf $(HOME)/.minceraft/minceraft
 
-.PHONY: all install install-dependencies uninstall shallow-uninstall desktop executable
+docs:
+	doxygen
+
+tests:
+	pytest --cov=src --cov-report=html
+
+analyse:
+	pylint src/
+
+.PHONY: all install install-dependencies uninstall shallow-uninstall desktop executable tests

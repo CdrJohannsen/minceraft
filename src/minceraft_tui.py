@@ -22,6 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import time
 
+from minecraft_launcher_lib.types import CallbackDict
+
 import minceraft
 import terminalDisplay
 
@@ -105,16 +107,12 @@ class MinecraftTui:
         """
 
         if not self.oh.password:
-            self.display.homeSet(
-                "Please enter your password for user " + self.oh.username, 1
-            )
+            self.display.homeSet("Please enter your password for user " + self.oh.username, 1)
             self.oh.password = self.display.userPassword()
         if self.oh.password == "":
             self.display.homeSet("Please choose your user profile")
             self.selectAccount()
-        if self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(
-            self.oh.password
-        ):
+        if self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(self.oh.password):
             self.oh.config[0]["last_user"] = self.oh.user
             return
         self.display.homeSet("Password not correct, try again")
@@ -141,9 +139,7 @@ class MinecraftTui:
             auth_type = self.display.userInput()
             if auth_type in ["1", "2"]:
                 break
-            self.display.homeSet(
-                ["Option not avaliable", "Select your microsoft authentication type"]
-            )
+            self.display.homeSet(["Option not avaliable", "Select your microsoft authentication type"])
         auth_successfull = False
         while not auth_successfull:
             if auth_type == "0":
@@ -153,13 +149,9 @@ class MinecraftTui:
                 self.display.homeSet("please enter your microsoft email password")
                 ms_password = self.display.userInput()
                 self.display.homeSet("Verifying...", 1)
-                auth_successfull = minceraft.newNormalAuth(
-                    self.oh, username, password, email, ms_password
-                )
+                auth_successfull = minceraft.newNormalAuth(self.oh, username, password, email, ms_password)
                 if not auth_successfull:
-                    self.display.listSet(
-                        ["Not a correct microsoft account", "Please try again"]
-                    )
+                    self.display.listSet(["Not a correct microsoft account", "Please try again"])
                     time.sleep(DEFAULT_DELAY)
             else:
                 self.display.listSet("Two factor authentication")
@@ -171,9 +163,7 @@ class MinecraftTui:
                     ]
                 )
                 url = self.display.userInput()
-                auth_successfull = minceraft.newTwoFactorAuth(
-                    self.oh, username, password, url
-                )
+                auth_successfull = minceraft.newTwoFactorAuth(self.oh, username, password, url)
                 if not auth_successfull:
                     self.display.listSet("The url is not valid, try again")
                     time.sleep(DEFAULT_DELAY)
@@ -188,14 +178,13 @@ class MinecraftTui:
 
         if self.oh.version is None:
             self.display.homeSet("Select Option", 1)
-            self.display.listSet(
-                [self.oh.username, "-------------------------------------"]
-            )
+            self.display.listSet([self.oh.username, "-------------------------------------"])
             self.display.listAppend("[i]  install version")
             self.display.listAppend("[r]  reauthenticate")
             self.display.listAppend("[d]  delete version")
             self.display.listAppend("[p]  manage preferences")
             self.display.listAppend("[s]  change skin")
+            self.display.listAppend("[c]  change cape")
             self.display.listAppend("[q]  quit")
             i = 0
             for v in self.oh.versions:
@@ -223,6 +212,9 @@ class MinecraftTui:
             case "s":
                 self.manageSkins()
 
+            case "c":
+                self.manageCapes()
+
             case "q":
                 exit_after = True
 
@@ -238,7 +230,7 @@ class MinecraftTui:
                     self.launch(version_index)
                     exit_after = True
             case _:
-                if self.oh.version is None:
+                if selected is not None:
                     try:
                         self.oh.version = int(selected)
                     except ValueError:
@@ -246,9 +238,7 @@ class MinecraftTui:
                         time.sleep(DEFAULT_DELAY)
                         return exit_after
                 if len(self.oh.versions) <= self.oh.version:
-                    self.display.homeSet(
-                        f"Version with index {self.oh.version} not avaliable", 1
-                    )
+                    self.display.homeSet(f"Version with index {self.oh.version} not avaliable", 1)
                     self.oh.version = None
                     time.sleep(DEFAULT_DELAY)
                     return exit_after
@@ -295,14 +285,37 @@ class MinecraftTui:
                 skin_width,
             )
 
+    def manageCapes(self):
+        """
+        Menu for changing capes
+        """
+
+        self.display.listSet("[q] quit")
+        capes, current_cape = minceraft.listCapes(self.oh)
+        self.oh.debug(f"{current_cape=}")
+        while True:
+            for i in range(len(capes)):
+                self.display.listAppend(f"[{i}] {' *' if capes[i][0] == current_cape else ''}{capes[i][0]}")
+
+            self.display.homeSet("Select option")
+            index = self.display.userInput()
+            if index == "q":
+                return
+            try:
+                index = int(index)
+            except ValueError:
+                self.display.homeSet("Not a valid option")
+                time.sleep(DEFAULT_DELAY)
+                continue
+            minceraft.changeCape(self.oh, capes[index], current_cape)
+            return
+
     def managePrefs(self):
         """
         UI for managing preferences
         """
         while True:
-            self.display.listSet(
-                [self.oh.username, "-------------------------------------"]
-            )
+            self.display.listSet([self.oh.username, "-------------------------------------"])
             self.display.homeSet("Select option to modify", 1)
             self.display.listAppend("[q] quit")
             for i in range(len(self.oh.versions)):
@@ -320,9 +333,7 @@ class MinecraftTui:
             version_prefs = self.oh.versions[user_input]
             while True:
                 self.display.homeSet("Select option to modify", 1)
-                self.display.listSet(
-                    [self.oh.username, "-------------------------------------"]
-                )
+                self.display.listSet([self.oh.username, "-------------------------------------"])
                 if version_prefs["server"] != "":
                     server_prefs = version_prefs["server"]
                     if version_prefs["port"] != "":
@@ -333,12 +344,8 @@ class MinecraftTui:
                 current_ram_string = f"-Xmx{version_prefs['memory'][0]}G -Xms{version_prefs['memory'][1]}G"
 
                 self.display.listAppend("[q] save & quit")
-                self.display.listAppend(
-                    f"[0] manage RAM allocation\t\t\t\tCurrent: {current_ram_string}"
-                )
-                self.display.listAppend(
-                    f"[1] manage servers to connect after launching\tCurrent: {server_prefs}"
-                )
+                self.display.listAppend(f"[0] manage RAM allocation\t\t\t\tCurrent: {current_ram_string}")
+                self.display.listAppend(f"[1] manage servers to connect after launching\tCurrent: {server_prefs}")
                 action = self.display.userInput()
                 if action == "q":
                     self.oh.saveConfig()
@@ -394,9 +401,7 @@ class MinecraftTui:
         Calls the minceraft.launch command and displays the startet version
         """
 
-        self.display.homeSet(
-            f"Preparing to launch {self.oh.versions[version_index]['alias']}"
-        )
+        self.display.homeSet(f"Preparing to launch {self.oh.versions[version_index]['alias']}")
         minceraft.launch(self.oh, version_index)
         self.display.homeSet(f"Starting {self.oh.versions[version_index]['alias']}")
         time.sleep(3)
@@ -429,7 +434,7 @@ class MinecraftTui:
         self.display.homeSet(["Default is version", "Select Name"])
         alias = self.display.userInput()
         self.install_max = 390
-        callback = {
+        callback: CallbackDict = {
             "setStatus": self.setStatus,
             "setProgress": self.setProgress,
             "setMax": self.setMax,
@@ -466,9 +471,7 @@ class MinecraftTui:
         prog = f"{progress}/{self.current_max}"
         size = int(os.get_terminal_size()[0])
         barsize = size - len(prog) - len(str(self.current_max)) - 2 - 4 - 30
-        barlen = int(
-            ((float(barsize) / (float(self.current_max) / 10)) * (progress / 10))
-        )
+        barlen = int(((float(barsize) / (float(self.current_max) / 10)) * (progress / 10)))
         bar = "  ["
         bar = bar + "■" * barlen
         bar = bar + " " * (barsize - barlen)

@@ -28,9 +28,9 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw, Gio, GLib, Gdk
-
 import minecraft_launcher_lib
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk
+from minecraft_launcher_lib.types import CallbackDict
 
 minceraft_gtk_path = os.path.abspath(os.path.dirname(__file__))
 import minceraft
@@ -38,9 +38,7 @@ import minceraft
 # pylint: enable=wrong-import-position
 
 
-class Minceraft(
-    Adw.Application
-):  # pylint: disable=too-many-public-methods, too-many-instance-attributes
+class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, too-many-instance-attributes
     """Handles the entire GUI for minceraft"""
 
     def __init__(self, **kwargs):  # pylint: disable=too-many-statements
@@ -83,17 +81,13 @@ class Minceraft(
         self.forge_check = self.builder.get_object("forge-check")
         self.modloader = self.builder.get_object("modloader")
         self.show_snapshots_check = self.builder.get_object("show-snapshots-check")
-        self.install_version_dropdown = self.builder.get_object(
-            "install-version-dropdown"
-        )
+        self.install_version_dropdown = self.builder.get_object("install-version-dropdown")
         self.install_version_list = self.builder.get_object("install-version-list")
         self.install_alias = self.builder.get_object("install-alias")
         self.install_button = self.builder.get_object("install-button")
         self.install_progress = self.builder.get_object("install-progress")
         self.preferences_dialog = self.builder.get_object("preferences-dialog")
-        self.preferences_apply_button = self.builder.get_object(
-            "preferences-apply-button"
-        )
+        self.preferences_apply_button = self.builder.get_object("preferences-apply-button")
         self.min_ram = self.builder.get_object("min-ram")
         self.min_ram_adj = self.builder.get_object("min-ram-adj")
         self.max_ram = self.builder.get_object("max-ram")
@@ -157,9 +151,7 @@ class Minceraft(
         if self.oh.user_info["last_played"] != -1:
             self.version_dropdown.set_selected(self.oh.user_info["last_played"])
 
-        if self.oh.password and self.oh.user_info[
-            "passwordHash"
-        ] == minceraft.encryption.hashValue(self.oh.password):
+        if self.oh.password and self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(self.oh.password):
             self.oh.config[0]["last_user"] = self.oh.user
             self.oh.load()
             self.oh.saveConfig()
@@ -281,21 +273,14 @@ class Minceraft(
         ):  # forge doesnt have a list of supportet versions
             versions = minecraft_launcher_lib.utils.get_version_list()
             for version in versions:
-                if (
-                    version["type"] != "snapshot"
-                    or self.show_snapshots_check.get_active()
-                ):
+                if version["type"] != "snapshot" or self.show_snapshots_check.get_active():
                     self.install_version_list.append(version["id"])
         elif self.fabric_check.get_active():
             if self.show_snapshots_check.get_active():
-                for (
-                    version
-                ) in minecraft_launcher_lib.fabric.get_all_minecraft_versions():
+                for version in minecraft_launcher_lib.fabric.get_all_minecraft_versions():
                     self.install_version_list.append(version["version"])
             else:
-                self.install_version_list.splice(
-                    0, 0, minecraft_launcher_lib.fabric.get_stable_minecraft_versions()
-                )
+                self.install_version_list.splice(0, 0, minecraft_launcher_lib.fabric.get_stable_minecraft_versions())
 
     def installVersion(self, *_):
         """Creates a new version installation thread"""
@@ -316,16 +301,14 @@ class Minceraft(
 
     def install(self):
         """Triggers a new version installation"""
-        callback = {
+        callback: CallbackDict = {
             "setStatus": self.setStatus,
             "setProgress": self.setProgress,
             "setMax": self.setMax,
         }
         minceraft.install(
             self.oh,
-            self.install_version_list.get_string(
-                self.install_version_dropdown.get_selected()
-            ),
+            self.install_version_list.get_string(self.install_version_dropdown.get_selected()),
             self.modloader,
             self.install_alias.get_text(),
             callback,
@@ -399,9 +382,7 @@ class Minceraft(
     def newNormalAuth(self, *_):
         """Adds a new user with normal authentification"""
         if not self.microsoft_mail.get_text() or not self.microsoft_password.get_text():
-            self.normal_error_label.set_text(
-                "Mail address and password need to be provided"
-            )
+            self.normal_error_label.set_text("Mail address and password need to be provided")
         else:
             self.normal_error_label.set_text("")
             self.normal_confirm.set_sensitive(False)
@@ -433,10 +414,7 @@ class Minceraft(
         """Gets credentials for a new account"""
         if not self.minceraft_name.get_text():
             self.minceraft_error_label.set_text("Username missing")
-        elif (
-            not self.minceraft_password.get_text()
-            or not self.minceraft_password2.get_text()
-        ):
+        elif not self.minceraft_password.get_text() or not self.minceraft_password2.get_text():
             self.minceraft_error_label.set_text("Password missing")
         elif self.minceraft_password.get_text() != self.minceraft_password2.get_text():
             self.minceraft_error_label.set_text("Passwords are not the same")
@@ -445,18 +423,10 @@ class Minceraft(
 
     def applyPreferences(self, *_):
         """Apply and save selected preferences"""
-        self.oh.versions[self.version_dropdown.get_selected()]["memory"][0] = str(
-            int(self.max_ram.get_value())
-        )
-        self.oh.versions[self.version_dropdown.get_selected()]["memory"][1] = str(
-            int(self.min_ram.get_value())
-        )
-        self.oh.versions[self.version_dropdown.get_selected()][
-            "server"
-        ] = self.startup_server.get_text()
-        self.oh.versions[self.version_dropdown.get_selected()]["port"] = str(
-            int(self.startup_port.get_value())
-        )
+        self.oh.versions[self.version_dropdown.get_selected()]["memory"][0] = str(int(self.max_ram.get_value()))
+        self.oh.versions[self.version_dropdown.get_selected()]["memory"][1] = str(int(self.min_ram.get_value()))
+        self.oh.versions[self.version_dropdown.get_selected()]["server"] = self.startup_server.get_text()
+        self.oh.versions[self.version_dropdown.get_selected()]["port"] = str(int(self.startup_port.get_value()))
         self.oh.saveConfig()
         self.preferences_dialog.set_visible(False)
 
@@ -471,9 +441,7 @@ class Minceraft(
     def login(self, *_):
         """Handles the login process"""
         self.oh.password = self.login_dialog_entry.get_text()
-        if self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(
-            self.oh.password
-        ):
+        if self.oh.user_info["passwordHash"] == minceraft.encryption.hashValue(self.oh.password):
             self.login_wrong_password.set_visible(False)
             self.oh.config[0]["last_user"] = self.oh.user
             self.oh.load()
@@ -538,15 +506,8 @@ class Minceraft(
             "secondary-text",
             f"Do you really want to delete {self.oh.versions[self.version_dropdown.get_selected()]['alias']}?",
         )
-        cancel_button = (
-            self.delete_alert.get_child()
-            .get_last_child()
-            .get_first_child()
-            .get_first_child()
-        )
-        self.delete_alert.get_child().get_last_child().get_first_child().set_focus_child(
-            cancel_button
-        )
+        cancel_button = self.delete_alert.get_child().get_last_child().get_first_child().get_first_child()
+        self.delete_alert.get_child().get_last_child().get_first_child().set_focus_child(cancel_button)
         cancel_button.set_css_classes(["text-button", "error", "default"])
         self.delete_alert.set_visible(True)
 
@@ -561,18 +522,10 @@ class Minceraft(
 
     def showPreferences(self, *_):
         """Updates and shows the preferences dialog"""
-        self.preferences_dialog.set_title(
-            self.oh.versions[self.version_dropdown.get_selected()]["alias"]
-        )
-        self.max_ram_adj.set_value(
-            int(self.oh.versions[self.version_dropdown.get_selected()]["memory"][0])
-        )
-        self.min_ram_adj.set_value(
-            int(self.oh.versions[self.version_dropdown.get_selected()]["memory"][1])
-        )
-        self.startup_server.set_text(
-            self.oh.versions[self.version_dropdown.get_selected()]["server"]
-        )
+        self.preferences_dialog.set_title(self.oh.versions[self.version_dropdown.get_selected()]["alias"])
+        self.max_ram_adj.set_value(int(self.oh.versions[self.version_dropdown.get_selected()]["memory"][0]))
+        self.min_ram_adj.set_value(int(self.oh.versions[self.version_dropdown.get_selected()]["memory"][1]))
+        self.startup_server.set_text(self.oh.versions[self.version_dropdown.get_selected()]["server"])
         port = self.oh.versions[self.version_dropdown.get_selected()]["port"]
         if port != "":
             self.startup_port.set_value(int(port))

@@ -1,13 +1,14 @@
 import json
 import os
 import sys
+from pathlib import Path
 from shutil import copy
 from tempfile import NamedTemporaryFile
 
 import pytest
 
 sys.path.append("src/")
-from optionHandler import OptionHandler
+from minceraft.optionHandler import OptionHandler, pd
 
 
 class TestOptionHandler:
@@ -15,8 +16,14 @@ class TestOptionHandler:
     def option_handler(self):
         self.config = NamedTemporaryFile()
         copy(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_config.json"),
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_minceraft/config.json"),
             self.config.name,
+        )
+        pd.user_data_path = lambda _, ensure_exists=False: Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+            "test_minceraft"
+        )
+        pd.user_config_path = lambda _, ensure_exists=False: Path(os.path.dirname(os.path.realpath(__file__))).joinpath(
+            "test_minceraft"
         )
 
         ohandler = OptionHandler()
@@ -27,15 +34,21 @@ class TestOptionHandler:
         yield ohandler
 
     def test_versions_dir(self, option_handler):
-        assert option_handler.versions_dir == os.path.join(os.path.expanduser("~"), ".minceraft", "versions")
+        assert option_handler.versions_dir == Path(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_minceraft", "versions")
+        )
 
     def test_game_dirs(self, option_handler):
-        assert option_handler.game_dirs == os.path.join(os.path.expanduser("~"), ".minceraft", "gameDirs")
+        assert option_handler.game_dirs == Path(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_minceraft", "gameDirs")
+        )
 
     def test_config_path(self, option_handler):
         option_handler.__init__()
 
-        assert option_handler.config_path == os.path.join(os.path.expanduser("~"), ".minceraft", "config.json")
+        assert option_handler.config_path == Path(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_minceraft", "config.json")
+        )
 
     def test_updateVersions(self, option_handler):
         option_handler.user_info["versions"] = list(self.example_config[1]["versions"])

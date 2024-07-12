@@ -1,9 +1,10 @@
-import sys
 import hashlib
+import sys
+
 import pytest
 
 sys.path.append("src/")
-from encryption import encrypt, decrypt, hashValue
+from minceraft.encryption import decrypt, encrypt, hashValue
 
 
 def test_encrypt():
@@ -15,6 +16,7 @@ def test_encrypt():
 
     assert encrypted_string == expected_string
 
+
 def test_decrypt():
     original_string = "\x79\x97\x9f\xa0\xa4\x56\x8e\xa7\xa3\x9e\x97"
     key = "12345678"
@@ -23,6 +25,7 @@ def test_decrypt():
     encrypted_string = decrypt(original_string, key)
 
     assert encrypted_string == expected_string
+
 
 def test_hashValue():
     original_string = "Hello World"

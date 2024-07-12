@@ -20,6 +20,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import hashlib
 
+from Cryptodome.Cipher import AES
+from Cryptodome.Util.Padding import pad, unpad
+
+
+def encryptAES(string: str, key: str) -> str:
+    """
+    Encrypt a string
+    """
+    decrypted_string = string.encode()
+    aes = AES.new(pad(key.encode(), 16), AES.MODE_CBC)
+    encrypted_string = aes.encrypt(pad(decrypted_string, AES.block_size)).hex()
+    return encrypted_string
+
+
+def decryptAES(string: str, key: str) -> str:
+    """
+    Decrypt a string
+    """
+    encrypted_string = bytes.fromhex(string)
+    aes = AES.new(pad(key.encode(), 16), AES.MODE_CBC)
+    decrypted_string = unpad(aes.decrypt(encrypted_string), AES.block_size).decode()
+    return decrypted_string
+
 
 def encrypt(string, key) -> str:
     """

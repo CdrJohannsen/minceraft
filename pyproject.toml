@@ -1,0 +1,48 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=77.0.3", "setuptools-scm" ]
+
+[project]
+name = "minceraft"
+description = "A fast minecraft launcher"
+readme = "README.md"
+keywords = [ "Fast", "Minceraft", "Minecraft", "Python", "Quick" ]
+license = "GPL-3.0-or-later"
+license-files = [ "LICENSE" ]
+authors = [
+  { name = "Cdr_Johannsen" },
+]
+requires-python = ">=3.13"
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Natural Language :: English",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Games/Entertainment",
+]
+dynamic = [ "version" ]
+dependencies = [ "argparse", "minecraft-launcher-lib>=8", "platformdirs", "pycryptodomex" ]
+optional-dependencies.gtk = [ "pygobject" ]
+urls.Homepage = "https://github.com/CdrJohannsen/minceraft"
+urls.Issues = "https://github.com/CdrJohannsen/minceraft/issues"
+urls.Repository = "https://github.com/CdrJohannsen/minceraft.git"
+scripts.minceraft = "minceraft.minceraft_main:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.data-files]
+"share/applications" = [ "minceraft.desktop" ]
+"share/icons/hicolor/256x256/apps" = [ "src/minceraft/minceraft.png" ]
+
+[tool.setuptools.package-data]
+minceraft = [ "azure.json", "config.json", "logo.txt", "minceraft.png", "minceraft_gtk.ui" ]
+
+[tool.setuptools.packages.find]
+where = [ "src" ]
+
+[tool.setuptools_scm]

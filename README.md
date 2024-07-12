@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/muslimitmilch/minceraft/main/src/minceraft.png" width="160" height="160">
+  <img src="https://raw.githubusercontent.com/CdrJohannsen/minceraft/main/src/minceraft.png" width="160" height="160">
 </p>
 
 # minceraft
@@ -33,34 +33,29 @@ A fast minecraft launcher.
 
 ## Install
 
+> [!Note]
+> If you have minceraft \<=v4.1.0 installed, need to run this command once to update:
+>
+> ```bash
+> make update-install-method
+> ```
+
 Make sure you have `pip` installed
 
 ```bash
-git clone https://github.com/muslimitmilch/minceraft && cd minceraft
+pip install minceraft@git+https://github.com/CdrJohannsen/minceraft.git
 ```
 
-if you have minecraft-launcher-lib already installed
+or if you want to be able to use the gui version
 
 ```bash
-make install
-```
-
-if you don't have them
-
-```bash
-make all
-```
-
-if you want the gui version
-
-```bash
-make install-gui
+pip install minceraft[gtk]@git+https://github.com/CdrJohannsen/minceraft.git
 ```
 
 ## Uninstall
 
 ```bash
-make uninstall
+pip uninstall minceraft
 ```
 
 ## CLI-Usage

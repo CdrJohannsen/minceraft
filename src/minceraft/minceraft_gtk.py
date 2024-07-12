@@ -3,7 +3,7 @@
 A GUI for the minceraft launcher
 
 Minceraft-launcher is a fast launcher for minecraft
-Copyright (C) 2024  Cdr_Johannsen, Muslimitmilch
+Copyright (C) 2025  Cdr_Johannsen, Muslimitmilch
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,10 +21,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # pylint: disable=wrong-import-position
 import os
+import sys
 import threading
+from importlib import metadata
 from time import sleep
 
-import gi
+try:
+    import gi
+except ImportError:
+    print("Please install minceraft[gtk] to use this feature")
+    sys.exit(1)
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -33,7 +39,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 from minecraft_launcher_lib.types import CallbackDict
 
 minceraft_gtk_path = os.path.abspath(os.path.dirname(__file__))
-import minceraft
+from minceraft import minceraft
 
 # pylint: enable=wrong-import-position
 
@@ -117,11 +123,11 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.install_new_button = self.builder.get_object("install-new-button")
         self.launch_button = self.builder.get_object("launch-button")
 
-        self.hamburger_menu = Gio.Menu.new()
+        self.hamburger_menu = Gio.Menu.new()  # pylint: disable=no-value-for-parameter
         self.about_action = Gio.SimpleAction.new("about", None)
         self.add_action(self.about_action)
 
-        self.account_menu = Gio.Menu.new()
+        self.account_menu = Gio.Menu.new()  # pylint: disable=no-value-for-parameter
 
         self.connectAll()
         self.hamburger_menu.append("About", "app.about")
@@ -133,7 +139,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         f_filter.add_mime_type("image/png")
         f_filters = Gio.ListStore.new(Gtk.FileFilter)
         f_filters.append(f_filter)
-        self.file_dialog = Gtk.FileDialog.new()
+        self.file_dialog = Gtk.FileDialog.new()  # pylint: disable=no-value-for-parameter
         self.file_dialog.set_title("Select a skin")
         self.file_dialog.set_accept_label("Select")
         self.file_dialog.set_filters(f_filters)
@@ -497,7 +503,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
 
     def showAbout(self, *_):
         """Shows the about dialog"""
-        self.about_dialog.set_version(self.oh.config[0]["launcher_version"])
+        self.about_dialog.set_version(metadata.version("minceraft"))
         self.about_dialog.set_visible(True)
 
     def showDelete(self, *_):
@@ -561,6 +567,11 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.delete_alert.set_visible(False)
 
 
-if __name__ == "__main__":
+def main():
+    """Run the minceraft gui launcher"""
     app = Minceraft(application_id="com.github.CdrJohannsen.minceraft")
     app.run()
+
+
+if __name__ == "__main__":
+    main()

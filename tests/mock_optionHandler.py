@@ -30,13 +30,13 @@ class MockOptionHandler:
     """
 
     def __init__(self):
-        self.home_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../build")
-        self.minceraft_dir = os.path.join(self.home_path, ".minceraft")
+        self._home_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../build")
+        self.minceraft_dir = os.path.join(self._home_path, ".minceraft")
         self.versions_dir = os.path.join(self.minceraft_dir, "versions")
         self.game_dirs = os.path.join(self.minceraft_dir, "gameDirs")
         self._config_file = tempfile.NamedTemporaryFile()
         self.config_path = self._config_file.name
-        shutil.copy(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_config.json"), self.config_path)
+        shutil.copy(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_minceraft/config.json"), self.config_path)
         self.config = []
         self.reloadConfig()
         self.password = str()

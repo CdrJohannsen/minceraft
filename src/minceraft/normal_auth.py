@@ -61,7 +61,7 @@ def prepare(session: r.Session) -> tuple[str, str]:
         raise LoginException("Couldn't find sFFTag value")
     sfft_value = sfft_value_res.group(1)
 
-    url_post_res = search(r"urlPost\":\"(.+)\"", resp.text)
+    url_post_res = search(r"urlPost\":\"([^\"]+)\"", resp.text)
     if url_post_res is None:
         raise LoginException("Couldn't find urlPost")
     url_post = url_post_res.group(1)

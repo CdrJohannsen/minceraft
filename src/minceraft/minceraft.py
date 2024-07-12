@@ -21,16 +21,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import argparse
 import json
 import os
+import re
 import time
 import webbrowser
+from importlib import metadata
 
 import minecraft_launcher_lib
 import requests
 from minecraft_launcher_lib.types import CallbackDict, MinecraftOptions
 
-import encryption
-import normal_auth
-from optionHandler import OptionHandler
+from minceraft import encryption, normal_auth
+from minceraft.optionHandler import OptionHandler
 
 ###############################################################
 
@@ -54,13 +55,13 @@ def newNormalAuth(oh: OptionHandler, username: str, password: str, email: str, m
         launch_options = {
             "username": resp.username,
             "uuid": resp.uuid,
-            "token": encryption.encrypt(resp.access_token, password),
+            "token": encryption.encryptAES(resp.access_token, password),
         }
         user_info = {
             "username": username,
             "passwordHash": encryption.hashValue(password),
-            "msEmail": encryption.encrypt(email, password),
-            "msPassword": encryption.encrypt(ms_password, password),
+            "msEmail": encryption.encryptAES(email, password),
+            "msPassword": encryption.encryptAES(ms_password, password),
             "authType": "normal",
             "last_time": time.time(),
             "launchOptions": launch_options,
@@ -102,13 +103,13 @@ def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) 
     launch_options = {
         "username": login_data["name"],
         "uuid": login_data["id"],
-        "token": encryption.encrypt(login_data["access_token"], password),
+        "token": encryption.encryptAES(login_data["access_token"], password),
     }
     user_info = {
         "username": username,
         "passwordHash": encryption.hashValue(password),
         "authType": "2fa",
-        "refresh_token": encryption.encrypt(login_data["refresh_token"], password),
+        "refresh_token": encryption.encryptAES(login_data["refresh_token"], password),
         "last_time": time.time(),
         "launchOptions": launch_options,
         "last_played": -1,
@@ -217,7 +218,7 @@ def install(oh: OptionHandler, version: str, modloader: str, alias: str, callbac
     if alias == "":
         alias = new_version
     try:
-        os.mkdir(os.path.join(oh.minceraft_dir, "gameDirs", alias.replace(" ", "-")))
+        os.mkdir(os.path.join(oh.game_dirs, alias.replace(" ", "-")))
     except FileNotFoundError:
         oh.debug(f"Couldn't make gameDirectory, parent directory {oh.minceraft_dir} does not exist")
     except FileExistsError:
@@ -252,13 +253,27 @@ def auth(oh: OptionHandler) -> bool:
 def normalAuth(oh: OptionHandler) -> bool:
     """Authenticate the normal way"""
     try:
-        email = encryption.decrypt(oh.user_info["msEmail"], oh.password)
-        ms_password = encryption.decrypt(oh.user_info["msPassword"], oh.password)
+        try:
+            email = encryption.decryptAES(oh.user_info["msEmail"], oh.password)
+        except Exception as e:
+            oh.debug("AES decryption of email failed: " + str(e))
+            email = ""
+        # If decrypting with AES doesn't give a valid email address, it is probably still encrypted with the old method
+        # The RegEx used for validating the email address should probably catch most standard addresses
+        if re.match(r"^[a-zA-Z.0-9]+@[a-zA-Z.0-9]+$", email) is None:
+            email = encryption.decrypt(oh.user_info["msEmail"], oh.password)
+            ms_password = encryption.decrypt(oh.user_info["msPassword"], oh.password)
+            oh.debug("Used old decryption for email: " + email)
+            oh.user_info["msEmail"] = encryption.encryptAES(email, oh.password)
+            oh.user_info["msPassword"] = encryption.encryptAES(ms_password, oh.password)
+        else:
+            oh.debug("Used AES decryption for email: " + email)
+            ms_password = encryption.decryptAES(oh.user_info["msPassword"], oh.password)
         resp = normal_auth.login(email, ms_password)
         launch_options = {
             "username": resp.username,
             "uuid": resp.uuid,
-            "token": encryption.encrypt(resp.access_token, oh.password),
+            "token": encryption.encryptAES(resp.access_token, oh.password),
         }
         oh.user_info["launchOptions"] = launch_options
         return True
@@ -275,20 +290,31 @@ def twoFactorAuth(oh: OptionHandler) -> bool:
         client_id = azure["client_id"]
         redirect_uri = azure["redirect_uri"]
 
-        refresh_token = encryption.decrypt(oh.user_info["refresh_token"], oh.password)
-        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
-            client_id,
-            client_secret=None,
-            redirect_uri=redirect_uri,
-            refresh_token=refresh_token,
-        )
+        refresh_token = encryption.decryptAES(oh.user_info["refresh_token"], oh.password)
+        try:
+            login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
+                client_id,
+                client_secret=None,
+                redirect_uri=redirect_uri,
+                refresh_token=refresh_token,
+            )
+        except minecraft_launcher_lib.exceptions.InvalidRefreshToken:
+            # If the refresh with the old token decrypted with AES fails, it was probably encrypted using the old method
+            refresh_token = encryption.decrypt(oh.user_info["refresh_token"], oh.password)
+            login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
+                client_id,
+                client_secret=None,
+                redirect_uri=redirect_uri,
+                refresh_token=refresh_token,
+            )
+
         launch_options = {
             "username": login_data["name"],
             "uuid": login_data["id"],
-            "token": encryption.encrypt(login_data["access_token"], oh.password),
+            "token": encryption.encryptAES(login_data["access_token"], oh.password),
         }
         oh.user_info["launchOptions"] = launch_options
-        oh.user_info["refresh_token"] = encryption.encrypt(login_data["refresh_token"], oh.password)
+        oh.user_info["refresh_token"] = encryption.encryptAES(login_data["refresh_token"], oh.password)
         return True
     except Exception as e:  # pylint: disable=broad-exception-caught
         oh.debug("Authentification failed because of: " + str(e))
@@ -320,9 +346,9 @@ def launch(oh: OptionHandler, version_index: int):
     game_dir = os.path.join(oh.game_dirs, version_prefs["alias"].replace(" ", "-"))
     launch_options["gameDirectory"] = game_dir
     access_token = launch_options["token"]
-    launch_options["token"] = encryption.decrypt(access_token, oh.password)
+    launch_options["token"] = encryption.decryptAES(access_token, oh.password)
     launch_options["launcherName"] = "minceraft-launcher"
-    launch_options["launcherVersion"] = oh.config[0]["launcher_version"]
+    launch_options["launcherVersion"] = metadata.version("minceraft")
     launch_options["jvmArguments"] = [
         f"-Xmx{version_prefs['memory'][0]}G",
         f"-Xms{version_prefs['memory'][1]}G",
@@ -372,7 +398,7 @@ def listSkins(oh: OptionHandler) -> list:
 def changeSkin(oh: OptionHandler, filename: str, skin_width: str):
     """Change a users skins"""
     authIfNeeded(oh)
-    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
+    authorization = "Bearer " + encryption.decryptAES(oh.user_info["launchOptions"]["token"], oh.password)
     url = "https://api.minecraftservices.com/minecraft/profile/skins"
 
     data = {"variant": skin_width}
@@ -388,7 +414,7 @@ def changeSkin(oh: OptionHandler, filename: str, skin_width: str):
 def listCapes(oh: OptionHandler) -> tuple[list[tuple[str, str]], str | None]:
     """Returns a list of all owned capes"""
     authIfNeeded(oh)
-    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
+    authorization = "Bearer " + encryption.decryptAES(oh.user_info["launchOptions"]["token"], oh.password)
     url = "https://api.minecraftservices.com/minecraft/profile"
     headers = {"Authorization": authorization}
     r = requests.get(url, headers=headers, timeout=5).json()
@@ -404,7 +430,7 @@ def listCapes(oh: OptionHandler) -> tuple[list[tuple[str, str]], str | None]:
 def changeCape(oh: OptionHandler, cape: tuple[str, str], current_cape: str | None):
     """Change a users cape"""
     authIfNeeded(oh)
-    authorization = "Bearer " + encryption.decrypt(oh.user_info["launchOptions"]["token"], oh.password)
+    authorization = "Bearer " + encryption.decryptAES(oh.user_info["launchOptions"]["token"], oh.password)
     url = "https://api.minecraftservices.com/minecraft/profile/capes/active"
 
     headers = {"Authorization": authorization, "Content-Type": "application/json"}

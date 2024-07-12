@@ -24,8 +24,7 @@ import time
 
 from minecraft_launcher_lib.types import CallbackDict
 
-import minceraft
-import terminalDisplay
+from minceraft import minceraft, terminalDisplay
 
 DEFAULT_DELAY = 1
 
@@ -487,6 +486,11 @@ class MinecraftTui:
         self.current_max = new_max
 
 
-if __name__ == "__main__":
+def main():
+    """Main function"""
     mc_tui = MinecraftTui()
     mc_tui.run()
+
+
+if __name__ == "__main__":
+    main()

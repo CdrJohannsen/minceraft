@@ -6,12 +6,11 @@ import tempfile
 import time
 
 import pytest
-
 from mock_optionHandler import MockOptionHandler
 
 sys.path.append("src/")
-import minceraft
-from optionHandler import OptionHandler
+from minceraft import minceraft
+from minceraft.optionHandler import OptionHandler
 
 
 class TestMinceraft:

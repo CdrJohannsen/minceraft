@@ -21,10 +21,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # pylint: disable=wrong-import-position
 import os
+import sys
 import threading
 from time import sleep
 
-import gi
+try:
+    import gi
+except ImportError:
+    print("Please install minceraft[gtk] to use this feature")
+    sys.exit(1)
 
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
@@ -33,7 +38,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 from minecraft_launcher_lib.types import CallbackDict
 
 minceraft_gtk_path = os.path.abspath(os.path.dirname(__file__))
-import minceraft
+from minceraft import minceraft
 
 # pylint: enable=wrong-import-position
 
@@ -561,6 +566,10 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.delete_alert.set_visible(False)
 
 
-if __name__ == "__main__":
+def main():
     app = Minceraft(application_id="com.github.CdrJohannsen.minceraft")
     app.run()
+
+
+if __name__ == "__main__":
+    main()

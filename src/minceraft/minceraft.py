@@ -29,8 +29,8 @@ import msmcauth
 import requests
 from minecraft_launcher_lib.types import CallbackDict, MinecraftOptions
 
-import encryption
-from optionHandler import OptionHandler
+from minceraft import encryption
+from minceraft.optionHandler import OptionHandler
 
 ###############################################################
 

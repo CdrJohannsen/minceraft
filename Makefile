@@ -39,21 +39,21 @@ install-gui:
 
 
 executable:
-	rm -f src/minceraft
-	echo "#!/usr/bin/env bash" >> src/minceraft
-	echo 'if [ $$1 == "-g" ] || [ $$1 == "--gui" ]; then' >> src/minceraft
-	echo $(GUI_SCRIPT) '$$*' >> src/minceraft
-	echo "else" >> src/minceraft
-	echo $(TUI_SCRIPT) '$$*' >> src/minceraft
-	echo "fi" >> src/minceraft
-	chmod +x src/minceraft
+	rm -f minceraft
+	echo "#!/usr/bin/env bash" >> minceraft
+	echo 'if [ $$1 == "-g" ] || [ $$1 == "--gui" ]; then' >> minceraft
+	echo $(GUI_SCRIPT) '$$*' >> minceraft
+	echo "else" >> minceraft
+	echo $(TUI_SCRIPT) '$$*' >> minceraft
+	echo "fi" >> minceraft
+	chmod +x minceraft
 
 desktop:
 	rm -f src/minceraft.desktop
-	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> src/minceraft.desktop
-	echo Exec=$(PREEXEC)$(HOME)/.local/bin/minceraft $(GUI_FLAG) >> src/minceraft.desktop
-	echo "Icon=minceraft" >> src/minceraft.desktop
-	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
+	echo -e "[Desktop Entry]\nName=Minceraft\nStartupWMClass=Minceraft" >> minceraft.desktop
+	echo Exec=$(PREEXEC)$(HOME)/.local/bin/minceraft $(GUI_FLAG) >> minceraft.desktop
+	echo "Icon=minceraft" >> minceraft.desktop
+	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> minceraft.desktop
 
 install-dependencies:
 	pip install msmcauth minecraft-launcher-lib argparse

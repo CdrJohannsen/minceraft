@@ -137,7 +137,7 @@ class MinecraftTui:
             self.display.listSet("[0]  normal (email & password)")
             self.display.listAppend("[1]  two factor (only for weirdos)")
             auth_type = self.display.userInput()
-            if auth_type in ["1", "2"]:
+            if auth_type in ["0", "1"]:
                 break
             self.display.homeSet(["Option not avaliable", "Select your microsoft authentication type"])
         auth_successfull = False

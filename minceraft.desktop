@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Minceraft
+StartupWMClass=Minceraft
+Exec=alacritty -e minceraft
+Icon=minceraft
+Type=Application
+Categories=Games;
+Keywords=Minceraft, Python, Quick, Fast, Minecraft;

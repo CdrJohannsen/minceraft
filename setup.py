@@ -3,6 +3,7 @@ import os
 import pathlib
 
 from setuptools import setup
+from setuptools.command.install import install
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -10,8 +11,15 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 with open(os.path.join(os.path.dirname(__file__), "src", "minceraft", "config.json"), "r", encoding="utf-8") as f:
-    version = json.load(f)[0]["launcher_version"]
+    base_config = json.load(f)
+    version = base_config[0]["launcher_version"]
+    config_version = base_config[0]["config_version"]
 
+
+class CustomInstall(install):
+    """Custom install class"""
+    def run(self):
+        install.run(self)
 
 setup(
     name="minceraft",
@@ -49,5 +57,8 @@ setup(
         "console_scripts": [
             "minceraft=minceraft.minceraft_main:main",
         ]
+    },
+    cmdclass={
+        "install": CustomInstall,
     },
 )

@@ -33,6 +33,8 @@ A fast minecraft launcher.
 
 ## Install
 
+Make sure you have `pip` installed
+
 ```bash
 git clone https://github.com/muslimitmilch/minceraft && cd minceraft
 ```

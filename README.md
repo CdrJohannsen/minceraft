@@ -39,7 +39,7 @@ Make sure you have `pip` installed
 git clone https://github.com/muslimitmilch/minceraft && cd minceraft
 ```
 
-if you have msmcauth and minecraft-launcher-lib already installed
+if you have minecraft-launcher-lib already installed
 
 ```bash
 make install

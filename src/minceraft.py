@@ -2,7 +2,7 @@
 Main code for the backend
 
 Minceraft-launcher is a fast launcher for minecraft
-Copyright (C) 2024  Cdr_Johannsen, Muslimitmilch
+Copyright (C) 2025  Cdr_Johannsen, Muslimitmilch
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@ import time
 import webbrowser
 
 import minecraft_launcher_lib
-import msmcauth
 import requests
 from minecraft_launcher_lib.types import CallbackDict, MinecraftOptions
 
 import encryption
+import normal_auth
 from optionHandler import OptionHandler
 
 ###############################################################
@@ -50,7 +50,7 @@ def addUser(oh: OptionHandler, user_info: dict):
 def newNormalAuth(oh: OptionHandler, username: str, password: str, email: str, ms_password: str) -> bool:
     """Add a new user account with normal authentification"""
     try:
-        resp = msmcauth.login(email, ms_password)
+        resp = normal_auth.login(email, ms_password)
         launch_options = {
             "username": resp.username,
             "uuid": resp.uuid,
@@ -254,7 +254,7 @@ def normalAuth(oh: OptionHandler) -> bool:
     try:
         email = encryption.decrypt(oh.user_info["msEmail"], oh.password)
         ms_password = encryption.decrypt(oh.user_info["msPassword"], oh.password)
-        resp = msmcauth.login(email, ms_password)
+        resp = normal_auth.login(email, ms_password)
         launch_options = {
             "username": resp.username,
             "uuid": resp.uuid,

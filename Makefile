@@ -23,6 +23,7 @@ install:
 	cp src/encryption.py $(HOME)/.minceraft/minceraft/
 	cp src/logo.txt $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.py $(HOME)/.minceraft/minceraft/
+	cp src/normal_auth.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft_tui.py $(HOME)/.minceraft/minceraft/
 	cp src/minceraft.png $(HOME)/.icons/hicolor/256x256/apps/
 	cp src/terminalDisplay.py $(HOME)/.minceraft/minceraft/
@@ -56,7 +57,7 @@ desktop:
 	echo -e "Type=Application\nCategories=Games;\nKeywords=Minceraft, Python, Quick, Fast, Minecraft;" >> src/minceraft.desktop
 
 install-dependencies:
-	pip install msmcauth minecraft-launcher-lib argparse
+	pip install minecraft-launcher-lib argparse
 
 check-uninstall:
 	@echo -en "This will remove your entire minceraft installation, including your worlds! \nProceed? [y/N] " && read ans && [ $${ans:-N} = y ]

@@ -5,8 +5,7 @@ from mock_optionHandler import MockOptionHandler
 from mock_terminalDisplay import MockAdvancedDisplay
 
 sys.path.append("src/")
-import minceraft_tui
-import terminalDisplay
+from minceraft import minceraft_tui, terminalDisplay
 
 minceraft_tui.minceraft.OptionHandler = MockOptionHandler
 terminalDisplay.AdvancedDisplay = MockAdvancedDisplay

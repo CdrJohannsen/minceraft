@@ -2,7 +2,7 @@
 Handles all data to be stored
 
 Minceraft-launcher is a fast launcher for minecraft
-Copyright (C) 2024  Cdr_Johannsen, Muslimitmilch
+Copyright (C) 2025  Cdr_Johannsen, Muslimitmilch
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
 import json
+
+import platformdirs as pd
 
 
 class OptionHandler:
@@ -28,11 +29,10 @@ class OptionHandler:
     """
 
     def __init__(self):
-        self.home_path = os.path.expanduser("~")
-        self.minceraft_dir = os.path.join(self.home_path, ".minceraft")
-        self.versions_dir = os.path.join(self.minceraft_dir, "versions")
-        self.game_dirs = os.path.join(self.minceraft_dir, "gameDirs")
-        self.config_path = os.path.join(self.minceraft_dir, "config.json")
+        self.minceraft_dir = pd.user_data_path("minceraft", ensure_exists=True)
+        self.versions_dir = pd.user_data_path("minceraft", ensure_exists=True).joinpath("versions")
+        self.game_dirs = pd.user_data_path("minceraft", ensure_exists=True).joinpath("gameDirs")
+        self.config_path = pd.user_config_path("minceraft", ensure_exists=True).joinpath("config.json")
         self.config = []
         self.reloadConfig()
         self.password = str()
@@ -77,11 +77,15 @@ class OptionHandler:
 
     def reloadConfig(self) -> None:
         """Reload the config file"""
-        with open(self.config_path, "r", encoding="utf-8") as f:
-            self.config = json.load(f)
+        if self.config_path.exists():
+            with open(self.config_path, "r", encoding="utf-8") as f:
+                self.config = json.load(f)
+        else:
+            self.config = [{"last_user": 1}]
 
     def saveConfig(self) -> None:
         """Save the config to the config file"""
+        self.config[0]["config_version"] = 3.0
         with open(self.config_path, "w", encoding="utf-8") as f:
             json.dump(self.config, f, indent=4)
 
@@ -118,9 +122,7 @@ class OptionHandler:
             self.updateVersions()
             self.version -= 1
             if self.version > len(self.user_info["versions"]) - 1:
-                print(
-                    f"Index out of range. Version must be between 0 and {len(self.user_info['versions'])-1}"
-                )
+                print(f"Index out of range. Version must be between 0 and {len(self.user_info['versions'])-1}")
                 exit(1)
         self.server = args.server
         self.port = args.port

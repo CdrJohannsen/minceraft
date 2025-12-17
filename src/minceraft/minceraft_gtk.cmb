@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<!-- Created with Cambalache 0.96.3 -->
+<cambalache-project version="0.96.0" target_tk="gtk-4.0">
+  <ui filename="minceraft_gtk.ui" sha256="4869f9c60bb62e414f4638ea9d124dd0ce219b44dea949a3f16f319f00621ee3"/>
+</cambalache-project>

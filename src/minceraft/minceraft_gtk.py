@@ -3,7 +3,7 @@
 A GUI for the minceraft launcher
 
 Minceraft-launcher is a fast launcher for minecraft
-Copyright (C) 2024  Cdr_Johannsen, Muslimitmilch
+Copyright (C) 2025  Cdr_Johannsen, Muslimitmilch
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=wrong-import-position
 import os
 import threading
+from importlib import metadata
 from time import sleep
 
 import gi
@@ -33,7 +34,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 from minecraft_launcher_lib.types import CallbackDict
 
 minceraft_gtk_path = os.path.abspath(os.path.dirname(__file__))
-import minceraft
+from minceraft import minceraft
 
 # pylint: enable=wrong-import-position
 
@@ -53,21 +54,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.win = self.builder.get_object("win")
         self.add_account_dialog = self.builder.get_object("add-account-dialog")
         self.add_account_stack = self.builder.get_object("add-account-stack")
-        self.add_account_2fa = self.builder.get_object("add-account-2fa")
-        self.two_fa_url = self.builder.get_object("2fa-url")
-        self.two_fa_confirm = self.builder.get_object("2fa-confirm")
-        self.two_fa_error_label = self.builder.get_object("2fa-error-label")
-        self.add_account_normal = self.builder.get_object("add-account-normal")
-        self.microsoft_mail = self.builder.get_object("microsoft-mail")
-        self.microsoft_password = self.builder.get_object("microsoft-password")
-        self.normal_error_label = self.builder.get_object("normal-error-label")
-        self.normal_spinner = self.builder.get_object("normal-spinner")
-        self.normal_confirm = self.builder.get_object("normal-confirm")
         self.add_account_select = self.builder.get_object("add-account-select")
-        self.auth_type_select = self.builder.get_object("auth-type-select")
-        self.normal_auth_action = self.builder.get_object("normal-auth-action")
-        self.two_fa_action = self.builder.get_object("2fa-action")
-        self.add_account_minceraft = self.builder.get_object("add-account-minceraft")
         self.minceraft_confirm = self.builder.get_object("minceraft-confirm")
         self.minceraft_error_label = self.builder.get_object("minceraft-error-label")
         self.minceraft_password2 = self.builder.get_object("minceraft-password2")
@@ -117,11 +104,11 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.install_new_button = self.builder.get_object("install-new-button")
         self.launch_button = self.builder.get_object("launch-button")
 
-        self.hamburger_menu = Gio.Menu.new()
+        self.hamburger_menu = Gio.Menu.new()  # pylint: disable=no-value-for-parameter
         self.about_action = Gio.SimpleAction.new("about", None)
         self.add_action(self.about_action)
 
-        self.account_menu = Gio.Menu.new()
+        self.account_menu = Gio.Menu.new()  # pylint: disable=no-value-for-parameter
 
         self.connectAll()
         self.hamburger_menu.append("About", "app.about")
@@ -133,7 +120,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         f_filter.add_mime_type("image/png")
         f_filters = Gio.ListStore.new(Gtk.FileFilter)
         f_filters.append(f_filter)
-        self.file_dialog = Gtk.FileDialog.new()
+        self.file_dialog = Gtk.FileDialog.new()  # pylint: disable=no-value-for-parameter
         self.file_dialog.set_title("Select a skin")
         self.file_dialog.set_accept_label("Select")
         self.file_dialog.set_filters(f_filters)
@@ -183,8 +170,6 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         """
 
         self.minceraft_confirm.connect("clicked", self.addMinceraft)
-        self.normal_auth_action.connect("clicked", self.manageAddAccountStack, 2)
-        self.two_fa_action.connect("clicked", self.prepare2fa)
         self.about_action.connect("activate", self.showAbout)
         self.delete_button.connect("clicked", self.showDelete)
         self.preferences_button.connect("clicked", self.showPreferences)
@@ -197,8 +182,6 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.min_ram.connect("value-changed", self.handleMinRam)
         self.max_ram.connect("value-changed", self.handleMaxRam)
         self.preferences_apply_button.connect("clicked", self.applyPreferences)
-        self.normal_confirm.connect("clicked", self.newNormalAuth)
-        self.two_fa_confirm.connect("clicked", self.new2FactorAuth)
         self.install_button.connect("clicked", self.installVersion)
         self.vanilla_check.connect("toggled", self.updateModloader)
         self.fabric_check.connect("toggled", self.updateModloader)
@@ -353,62 +336,21 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         # for i in self.oh.config[1:]:
         # self.account_list.append(i.get("username"))
 
-    def prepare2fa(self, *_):
-        """Prepares a new user with two factor authentification"""
-        minceraft.twoFactorOpenBrowser()
-        self.manageAddAccountStack(None, 3)
-
-    def new2FactorAuth(self, *_):
-        """Adds a new user with two factor authentification"""
-        self.two_fa_error_label.set_text("")
-        if not self.two_fa_url.get_text():
-            self.two_fa_error_label.set_text("URL missing")
-        else:
-            auth_successfull = minceraft.newTwoFactorAuth(
-                self.oh,
-                self.minceraft_name.get_text(),
-                self.minceraft_password.get_text(),
-                self.two_fa_url.get_text(),
+    def newUser(self, *_):
+        """Adds a new user"""
+        self.add_account_dialog.set_sensitive(False)
+        self.oh.password = self.minceraft_password.get_text()
+        auth_successfull = False
+        while not auth_successfull:
+            auth_successfull = minceraft.newUser(
+                self.oh, self.minceraft_name.get_text(), self.minceraft_password.get_text()
             )
             if not auth_successfull:
-                self.two_fa_error_label.set_text("The url is not valid, try again")
-                minceraft.twoFactorOpenBrowser()
-            else:
-                self.oh.password = self.minceraft_password.get_text()
-                self.updateUsers()
-                self.add_account_dialog.set_visible(False)
-                self.handleVersionButtons()
-
-    def newNormalAuth(self, *_):
-        """Adds a new user with normal authentification"""
-        if not self.microsoft_mail.get_text() or not self.microsoft_password.get_text():
-            self.normal_error_label.set_text("Mail address and password need to be provided")
-        else:
-            self.normal_error_label.set_text("")
-            self.normal_confirm.set_sensitive(False)
-            self.normal_spinner.set_spinning(True)
-            n_thread = threading.Thread(target=self.addNormalAuth)
-            n_thread.daemon = True
-            n_thread.start()
-
-    def addNormalAuth(self):
-        """Adds a new user with normal authentification"""
-        auth_successfull = minceraft.newNormalAuth(
-            self.oh,
-            self.minceraft_name.get_text(),
-            self.minceraft_password.get_text(),
-            self.microsoft_mail.get_text(),
-            self.microsoft_password.get_text(),
-        )
-        if not auth_successfull:
-            GLib.idle_add(self.normal_error_label.set_text, "Invalid credentials")
-        else:
-            self.oh.password = self.minceraft_password.get_text()
-            GLib.idle_add(self.updateUsers)
-            GLib.idle_add(self.add_account_dialog.set_visible, False)
-        GLib.idle_add(self.normal_confirm.set_sensitive, True)
-        GLib.idle_add(self.normal_spinner.set_spinning, False)
-        GLib.idle_add(self.handleVersionButtons)
+                self.minceraft_error_label.set_text("Authentification failed! Try again.")
+        self.updateUsers()
+        self.add_account_dialog.set_visible(False)
+        self.add_account_dialog.set_sensitive(True)
+        self.handleVersionButtons()
 
     def addMinceraft(self, *_):
         """Gets credentials for a new account"""
@@ -419,7 +361,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         elif self.minceraft_password.get_text() != self.minceraft_password2.get_text():
             self.minceraft_error_label.set_text("Passwords are not the same")
         else:
-            self.manageAddAccountStack(None, 1)
+            self.newUser()
 
     def applyPreferences(self, *_):
         """Apply and save selected preferences"""
@@ -473,20 +415,12 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.minceraft_name.delete_text(0, -1)
         self.minceraft_password.delete_text(0, -1)
         self.minceraft_password2.delete_text(0, -1)
-        self.microsoft_mail.delete_text(0, -1)
-        self.microsoft_password.delete_text(0, -1)
-        self.two_fa_url.delete_text(0, -1)
         self.add_account_dialog.set_visible(True)
 
     def manageAddAccountStack(self, action, page):
         """Manages the add account dialog"""
         del action
-        pages = [
-            "add-account-minceraft",
-            "add-account-select",
-            "add-account-normal",
-            "add-account-2fa",
-        ]
+        pages = ["add-account-minceraft"]
         self.add_account_stack.set_visible_child_name(pages[page])
 
     def manageMainStack(self, action, page):
@@ -497,7 +431,7 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
 
     def showAbout(self, *_):
         """Shows the about dialog"""
-        self.about_dialog.set_version(self.oh.config[0]["launcher_version"])
+        self.about_dialog.set_version(metadata.version("minceraft"))
         self.about_dialog.set_visible(True)
 
     def showDelete(self, *_):
@@ -561,6 +495,11 @@ class Minceraft(Adw.Application):  # pylint: disable=too-many-public-methods, to
         self.delete_alert.set_visible(False)
 
 
-if __name__ == "__main__":
+def main():
+    """Run the minceraft gui launcher"""
     app = Minceraft(application_id="com.github.CdrJohannsen.minceraft")
     app.run()
+
+
+if __name__ == "__main__":
+    main()

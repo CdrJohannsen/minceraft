@@ -1,0 +1,4 @@
+include src/minceraft/azure.json
+include src/minceraft/logo.txt
+include src/minceraft/minceraft.png
+include src/minceraft/minceraft_gtk.ui

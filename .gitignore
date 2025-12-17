@@ -130,5 +130,4 @@ dmypy.json
 .pyre/
 
 # desktop file and executable
-src/minceraft.desktop
-src/minceraft
+./minceraft

@@ -46,12 +46,6 @@ Make sure you have `pip` installed
 pip install minceraft@git+https://github.com/CdrJohannsen/minceraft.git
 ```
 
-or if you want to be able to use the gui version
-
-```bash
-pip install minceraft[gtk]@git+https://github.com/CdrJohannsen/minceraft.git
-```
-
 ## Uninstall
 
 ```bash

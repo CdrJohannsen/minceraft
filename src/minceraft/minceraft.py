@@ -21,21 +21,65 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import argparse
 import json
 import os
-import re
 import time
-import webbrowser
 from importlib import metadata
 
+import gi
 import minecraft_launcher_lib
 import requests
+
+# pylint: disable=wrong-import-position
+gi.require_version("GLib", "2.0")
+gi.require_version("WebKit", "6.0")
+gi.require_version("Gtk", "4.0")
+from gi.repository import GLib, Gtk, WebKit
 from minecraft_launcher_lib.types import CallbackDict, MinecraftOptions
 
-from minceraft import encryption, normal_auth
+from minceraft import encryption
 from minceraft.optionHandler import OptionHandler
+
+# pylint: enable=wrong-import-position
+
 
 ###############################################################
 
 azure_path = os.path.dirname(os.path.abspath(__file__)) + "/azure.json"
+
+
+class LoginApp(Gtk.Application):
+    """Creates a window for the user to log into their Microsoft account"""
+
+    def __init__(self, url: str, redirect_uri: str):
+        Gtk.Application.__init__(self)
+        self.url = url
+        self.redirect_uri = redirect_uri
+
+    def onLoadChanged(self, _, _0):
+        """Called when the url of the webview changes"""
+        if self._view.props.uri.startswith(self.redirect_uri):
+            self.url = self._view.props.uri
+            self.win.close()
+            # pylint: disable=no-value-for-parameter
+            if GLib.main_context_default().is_owner():
+                GLib.main_context_default().release()
+            # pylint: enable=no-value-for-parameter
+
+    def onActivate(self, application):
+        """Activates the window"""
+        self.win = Gtk.Window(  # pylint: disable=attribute-defined-outside-init
+            title="Login to your Microsoft account", width_request=300, height_request=600
+        )
+        if application is not None:
+            self.add_window(self.win)
+        self._view = WebKit.WebView.new()  # pylint: disable=attribute-defined-outside-init,no-value-for-parameter
+        self._view.connect("load_changed", self.onLoadChanged)
+        self.win.set_child(self._view)
+        self._view.load_uri(self.url)
+        self.win.present()
+
+    def getUrl(self):
+        """Returns the saved url"""
+        return self.url
 
 
 def addUser(oh: OptionHandler, user_info: dict):
@@ -48,52 +92,40 @@ def addUser(oh: OptionHandler, user_info: dict):
     oh.saveConfig()
 
 
-def newNormalAuth(oh: OptionHandler, username: str, password: str, email: str, ms_password: str) -> bool:
-    """Add a new user account with normal authentification"""
-    try:
-        resp = normal_auth.login(email, ms_password)
-        launch_options = {
-            "username": resp.username,
-            "uuid": resp.uuid,
-            "token": encryption.encryptAES(resp.access_token, password),
-        }
-        user_info = {
-            "username": username,
-            "passwordHash": encryption.hashValue(password),
-            "msEmail": encryption.encryptAES(email, password),
-            "msPassword": encryption.encryptAES(ms_password, password),
-            "authType": "normal",
-            "last_time": time.time(),
-            "launchOptions": launch_options,
-            "last_played": -1,
-            "versions": [],
-        }
-        addUser(oh, user_info)
-        return True
-    except:  # pylint: disable=bare-except
-        return False
+def newAuth(oh: OptionHandler) -> tuple[dict, str] | tuple[dict, None]:
+    """
+    Authentificates the user with the microsoft account
 
-
-def twoFactorOpenBrowser():
-    """Open the redirect url in the users browser"""
+    This is only needed once, as all further authentifications will be done with the refresh_token
+    """
     with open(azure_path, "r", encoding="utf-8") as f:
         azure = json.load(f)
     client_id = azure["client_id"]
     redirect_uri = azure["redirect_uri"]
-    webbrowser.open(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri))
-
-
-def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) -> bool:
-    """Add a new user account with 2 factor authentification"""
+    GLib.log_set_writer_func(
+        lambda a, b, c: GLib.LogWriterOutput.HANDLED,
+    )
+    app = LoginApp(minecraft_launcher_lib.microsoft_account.get_login_url(client_id, redirect_uri), redirect_uri)
+    app.connect("activate", app.onActivate)
+    # pylint: disable=no-value-for-parameter
+    # This is incredibly ugly
+    if GLib.main_context_default().acquire():
+        app.run()
+    else:
+        GLib.main_context_default().invoke_full(1, app.onActivate, (app, None))
+        GLib.main_context_default().iteration(True)
+    # pylint: enable=no-value-for-parameter
+    url = app.getUrl()
+    oh.debug(url)
     if not minecraft_launcher_lib.microsoft_account.url_contains_auth_code(url):
-        return False
+        return {}, None
     with open(azure_path, "r", encoding="utf-8") as f:
         azure = json.load(f)
     client_id = azure["client_id"]
     redirect_uri = azure["redirect_uri"]
     auth_code = minecraft_launcher_lib.microsoft_account.get_auth_code_from_url(url)
     if auth_code is None:
-        return False
+        return {}, None
     login_data = minecraft_launcher_lib.microsoft_account.complete_login(
         client_id,
         client_secret=None,
@@ -103,20 +135,27 @@ def newTwoFactorAuth(oh: OptionHandler, username: str, password: str, url: str) 
     launch_options = {
         "username": login_data["name"],
         "uuid": login_data["id"],
-        "token": encryption.encryptAES(login_data["access_token"], password),
+        "token": encryption.encryptAES(login_data["access_token"], oh.password),
     }
-    user_info = {
-        "username": username,
-        "passwordHash": encryption.hashValue(password),
-        "authType": "2fa",
-        "refresh_token": encryption.encryptAES(login_data["refresh_token"], password),
-        "last_time": time.time(),
-        "launchOptions": launch_options,
-        "last_played": -1,
-        "versions": [],
-    }
-    addUser(oh, user_info)
-    return True
+    return launch_options, login_data["refresh_token"]
+
+
+def newUser(oh: OptionHandler, username: str, password: str) -> bool:
+    """Add a new user account"""
+    launch_options, refresh_token = newAuth(oh)
+    if refresh_token is not None:
+        user_info = {
+            "username": username,
+            "passwordHash": encryption.hashValue(password),
+            "refresh_token": encryption.encryptAES(refresh_token, password),
+            "last_time": time.time(),
+            "launchOptions": launch_options,
+            "last_played": -1,
+            "versions": [],
+        }
+        addUser(oh, user_info)
+        return True
+    return False
 
 
 def deleteVersion(oh: OptionHandler, del_version: int):
@@ -233,57 +272,29 @@ def install(oh: OptionHandler, version: str, modloader: str, alias: str, callbac
 
 def auth(oh: OptionHandler) -> bool:
     """Authenticates with the users selected auth method"""
-    if oh.user_info["authType"] == "normal":
-        oh.debug("Doing normal auth")
-        if not normalAuth(oh):
+    if "authType" in oh.user_info:
+        oh.debug("Redoing the initial auth")
+        launch_options, refresh_token = newAuth(oh)
+        if refresh_token is None:
             return False
-
-    elif oh.user_info["authType"] == "2fa":
-        oh.debug("Doing 2fa auth")
-        if not twoFactorAuth(oh):
-            return False
+        oh.user_info["refresh_token"] = encryption.encryptAES(refresh_token, oh.password)
+        oh.user_info["launchOptions"] = launch_options
+        del oh.user_info["authType"]
+        if "msEmail" in oh.user_info:
+            del oh.user_info["msEmail"]
+            del oh.user_info["msPassword"]
     else:
-        pass
+        oh.debug("Authenticating...")
+        if not doAuth(oh):
+            return False
 
     oh.user_info["last_time"] = time.time()
     oh.saveConfig()
     return True
 
 
-def normalAuth(oh: OptionHandler) -> bool:
-    """Authenticate the normal way"""
-    try:
-        try:
-            email = encryption.decryptAES(oh.user_info["msEmail"], oh.password)
-        except Exception as e:
-            oh.debug("AES decryption of email failed: " + str(e))
-            email = ""
-        # If decrypting with AES doesn't give a valid email address, it is probably still encrypted with the old method
-        # The RegEx used for validating the email address should probably catch most standard addresses
-        if re.match(r"^[a-zA-Z.0-9]+@[a-zA-Z.0-9]+$", email) is None:
-            email = encryption.decrypt(oh.user_info["msEmail"], oh.password)
-            ms_password = encryption.decrypt(oh.user_info["msPassword"], oh.password)
-            oh.debug("Used old decryption for email: " + email)
-            oh.user_info["msEmail"] = encryption.encryptAES(email, oh.password)
-            oh.user_info["msPassword"] = encryption.encryptAES(ms_password, oh.password)
-        else:
-            oh.debug("Used AES decryption for email: " + email)
-            ms_password = encryption.decryptAES(oh.user_info["msPassword"], oh.password)
-        resp = normal_auth.login(email, ms_password)
-        launch_options = {
-            "username": resp.username,
-            "uuid": resp.uuid,
-            "token": encryption.encryptAES(resp.access_token, oh.password),
-        }
-        oh.user_info["launchOptions"] = launch_options
-        return True
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        oh.debug("Authentification failed because of: " + str(e))
-        return False
-
-
-def twoFactorAuth(oh: OptionHandler) -> bool:
-    """Authenticate with 2fa"""
+def doAuth(oh: OptionHandler) -> bool:
+    """Refresh authentification"""
     try:
         with open(azure_path, "r", encoding="utf-8") as f:
             azure = json.load(f)
@@ -291,22 +302,12 @@ def twoFactorAuth(oh: OptionHandler) -> bool:
         redirect_uri = azure["redirect_uri"]
 
         refresh_token = encryption.decryptAES(oh.user_info["refresh_token"], oh.password)
-        try:
-            login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
-                client_id,
-                client_secret=None,
-                redirect_uri=redirect_uri,
-                refresh_token=refresh_token,
-            )
-        except minecraft_launcher_lib.exceptions.InvalidRefreshToken:
-            # If the refresh with the old token decrypted with AES fails, it was probably encrypted using the old method
-            refresh_token = encryption.decrypt(oh.user_info["refresh_token"], oh.password)
-            login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
-                client_id,
-                client_secret=None,
-                redirect_uri=redirect_uri,
-                refresh_token=refresh_token,
-            )
+        login_data = minecraft_launcher_lib.microsoft_account.complete_refresh(
+            client_id,
+            client_secret=None,
+            redirect_uri=redirect_uri,
+            refresh_token=refresh_token,
+        )
 
         launch_options = {
             "username": login_data["name"],

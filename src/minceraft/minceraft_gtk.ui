@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.12.1 -->
+<!-- Created with Cambalache 0.96.3 -->
 <interface>
   <!-- interface-name minceraft_gtk.ui -->
   <!-- interface-description A Minecraft launcher -->
-  <!-- interface-copyright Cdr_Johannsen, muslimitmilch -->
-  <!-- interface-authors Cdr_Johannsen, muslimitmilch -->
+  <!-- interface-copyright muslimitmilch, Cdr_Johannsen -->
+  <!-- interface-authors muslimitmilch, Cdr_Johannsen -->
   <requires lib="gtk" version="4.10"/>
-  <requires lib="libadwaita" version="1.3"/>
+  <requires lib="libadwaita" version="1.6"/>
   <object class="GtkApplicationWindow" id="win">
     <property name="default-height">900</property>
     <property name="default-width">800</property>
@@ -490,11 +490,11 @@
     <property name="application-name">Minceraft</property>
     <property name="artists">Cdr_Johannsen</property>
     <property name="comments">A fast minecaft launcher</property>
-    <property name="copyright">Cdr_Johannsen, muslimitmilch</property>
+    <property name="copyright">muslimitmilch, Cdr_Johannsen</property>
     <property name="designers">Cdr_Johannsen</property>
     <property name="developer-name">Cdr_Johannsen</property>
-    <property name="developers">Cdr_Johannsen
-muslimitmilch</property>
+    <property name="developers">muslimitmilch
+Cdr_Johannsen</property>
     <property name="documenters">Cdr_Johannsen</property>
     <property name="hide-on-close">True</property>
     <property name="issue-url">https://github.com/CdrJohannsen/minceraft/issues/new</property>
@@ -585,166 +585,6 @@ muslimitmilch</property>
               </object>
             </property>
             <property name="name">add-account-minceraft</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwViewStackPage" id="add-account-select">
-            <property name="child">
-              <object class="AdwClamp">
-                <child>
-                  <object class="GtkListBox" id="auth-type-select">
-                    <property name="css-classes">boxed-list</property>
-                    <property name="halign">center</property>
-                    <property name="margin-bottom">10</property>
-                    <property name="margin-end">20</property>
-                    <property name="margin-start">20</property>
-                    <property name="margin-top">10</property>
-                    <property name="selection-mode">none</property>
-                    <property name="valign">center</property>
-                    <property name="width-request">420</property>
-                    <child>
-                      <object class="GtkButton" id="normal-auth-action">
-                        <property name="label">Normal Authentication</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="2fa-action">
-                        <property name="label">2 Factor Authentication</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </property>
-            <property name="name">add-account-select</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwViewStackPage" id="add-account-2fa">
-            <property name="child">
-              <object class="AdwClamp">
-                <child>
-                  <object class="AdwPreferencesGroup">
-                    <property name="margin-end">20</property>
-                    <property name="margin-start">20</property>
-                    <property name="title">Two Factor Authentication</property>
-                    <child>
-                      <object class="GtkListBox">
-                        <property name="css-classes">boxed-list</property>
-                        <property name="halign">center</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="margin-top">10</property>
-                        <property name="selection-mode">none</property>
-                        <property name="valign">center</property>
-                        <property name="width-request">420</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">Your browser should have opened, paste the url you will be redirectet below</property>
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-end">10</property>
-                            <property name="margin-start">10</property>
-                            <property name="margin-top">10</property>
-                            <property name="natural-wrap-mode">word</property>
-                            <property name="wrap">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwEntryRow" id="2fa-url">
-                            <property name="input-hints">no-emoji | no-spellcheck</property>
-                            <property name="input-purpose">url</property>
-                            <property name="title">URL</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="halign">end</property>
-                        <property name="spacing">3</property>
-                        <child>
-                          <object class="GtkLabel" id="2fa-error-label">
-                            <property name="css-classes">error</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="2fa-confirm">
-                            <property name="css-classes">suggested-action</property>
-                            <property name="halign">end</property>
-                            <property name="label">Confirm</property>
-                            <property name="valign">end</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </property>
-            <property name="name">add-account-2fa</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwViewStackPage" id="add-account-normal">
-            <property name="child">
-              <object class="AdwClamp">
-                <child>
-                  <object class="AdwPreferencesGroup">
-                    <property name="margin-end">20</property>
-                    <property name="margin-start">20</property>
-                    <property name="title">Normal Authentication</property>
-                    <child>
-                      <object class="GtkListBox">
-                        <property name="css-classes">boxed-list</property>
-                        <property name="halign">center</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="margin-top">10</property>
-                        <property name="selection-mode">none</property>
-                        <property name="valign">center</property>
-                        <property name="width-request">420</property>
-                        <child>
-                          <object class="AdwEntryRow" id="microsoft-mail">
-                            <property name="input-hints">no-emoji | no-spellcheck</property>
-                            <property name="input-purpose">email</property>
-                            <property name="title">Microsoft email</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwPasswordEntryRow" id="microsoft-password">
-                            <property name="title">Microsoft password</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="halign">end</property>
-                        <property name="margin-end">20</property>
-                        <property name="margin-start">20</property>
-                        <property name="spacing">3</property>
-                        <child>
-                          <object class="GtkLabel" id="normal-error-label">
-                            <property name="css-classes">error</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkSpinner" id="normal-spinner"/>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="normal-confirm">
-                            <property name="css-classes">suggested-action</property>
-                            <property name="halign">end</property>
-                            <property name="label">Confirm</property>
-                            <property name="valign">end</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </property>
-            <property name="name">add-account-normal</property>
           </object>
         </child>
       </object>

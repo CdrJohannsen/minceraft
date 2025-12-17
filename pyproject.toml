@@ -25,8 +25,7 @@ classifiers = [
   "Topic :: Games/Entertainment",
 ]
 dynamic = [ "version" ]
-dependencies = [ "argparse", "minecraft-launcher-lib>=8", "platformdirs", "pycryptodomex" ]
-optional-dependencies.gtk = [ "pygobject" ]
+dependencies = [ "argparse", "minecraft-launcher-lib>=8", "platformdirs", "pycryptodomex", "pygobject" ]
 urls.Homepage = "https://github.com/CdrJohannsen/minceraft"
 urls.Issues = "https://github.com/CdrJohannsen/minceraft/issues"
 urls.Repository = "https://github.com/CdrJohannsen/minceraft.git"
@@ -40,7 +39,7 @@ include-package-data = true
 "share/icons/hicolor/256x256/apps" = [ "src/minceraft/minceraft.png" ]
 
 [tool.setuptools.package-data]
-minceraft = [ "azure.json", "config.json", "logo.txt", "minceraft.png", "minceraft_gtk.ui" ]
+minceraft = [ "azure.json", "logo.txt", "minceraft.png", "minceraft_gtk.ui" ]
 
 [tool.setuptools.packages.find]
 where = [ "src" ]

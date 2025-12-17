@@ -131,41 +131,12 @@ class MinecraftTui:
             password = self.display.userInput()
             self.display.homeSet("Please repeat the password")
             password2 = self.display.userInput()
-        self.display.homeSet("Select your microsoft authentication")
-        while True:
-            self.display.listSet("[0]  normal (email & password)")
-            self.display.listAppend("[1]  two factor (only for weirdos)")
-            auth_type = self.display.userInput()
-            if auth_type in ["0", "1"]:
-                break
-            self.display.homeSet(["Option not avaliable", "Select your microsoft authentication type"])
         auth_successfull = False
         while not auth_successfull:
-            if auth_type == "0":
-                self.display.listSet("Normal authentication")
-                self.display.homeSet("please enter your microsoft email adress")
-                email = self.display.userInput()
-                self.display.homeSet("please enter your microsoft email password")
-                ms_password = self.display.userInput()
-                self.display.homeSet("Verifying...", 1)
-                auth_successfull = minceraft.newNormalAuth(self.oh, username, password, email, ms_password)
-                if not auth_successfull:
-                    self.display.listSet(["Not a correct microsoft account", "Please try again"])
-                    time.sleep(DEFAULT_DELAY)
-            else:
-                self.display.listSet("Two factor authentication")
-                minceraft.twoFactorOpenBrowser()
-                self.display.homeSet(
-                    [
-                        "Your browser should have opened",
-                        "Please paste the url you will be redirected to below",
-                    ]
-                )
-                url = self.display.userInput()
-                auth_successfull = minceraft.newTwoFactorAuth(self.oh, username, password, url)
-                if not auth_successfull:
-                    self.display.listSet("The url is not valid, try again")
-                    time.sleep(DEFAULT_DELAY)
+            auth_successfull = minceraft.newUser(self.oh, username, password)
+            if not auth_successfull:
+                self.display.listSet("The url is not valid, try again")
+                time.sleep(DEFAULT_DELAY)
         self.oh.password = password
 
     def selectOption(self) -> bool:

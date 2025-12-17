@@ -1,4 +1,3 @@
-include src/minceraft/config.json
 include src/minceraft/azure.json
 include src/minceraft/logo.txt
 include src/minceraft/minceraft.png

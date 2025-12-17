@@ -77,11 +77,15 @@ class OptionHandler:
 
     def reloadConfig(self) -> None:
         """Reload the config file"""
-        with open(self.config_path, "r", encoding="utf-8") as f:
-            self.config = json.load(f)
+        if self.config_path.exists():
+            with open(self.config_path, "r", encoding="utf-8") as f:
+                self.config = json.load(f)
+        else:
+            self.config = [{"last_user": 1}]
 
     def saveConfig(self) -> None:
         """Save the config to the config file"""
+        self.config[0]["config_version"] = 3.0
         with open(self.config_path, "w", encoding="utf-8") as f:
             json.dump(self.config, f, indent=4)
 

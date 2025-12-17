@@ -6,9 +6,6 @@
     {
         "username": "Cdr_Johannsen",
         "passwordHash": "hashedpassword",
-        "msEmail": "encryptedemail",
-        "msPassword": "encryptedmspassword",
-        "authType": "normal/2fa",
         "refresh_token": "encryptedrefreshtoken",
         "last_time": 169240000.0000000,
         "launchOptions": {

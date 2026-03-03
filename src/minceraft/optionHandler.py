@@ -32,6 +32,7 @@ class OptionHandler:
         self.minceraft_dir = pd.user_data_path("minceraft", ensure_exists=True)
         self.versions_dir = pd.user_data_path("minceraft", ensure_exists=True).joinpath("versions")
         self.game_dirs = pd.user_data_path("minceraft", ensure_exists=True).joinpath("gameDirs")
+        self.game_dirs.mkdir(exist_ok=True)
         self.config_path = pd.user_config_path("minceraft", ensure_exists=True).joinpath("config.json")
         self.config = []
         self.reloadConfig()

@@ -132,12 +132,12 @@ class MinecraftTui:
             self.display.homeSet("Please repeat the password")
             password2 = self.display.userInput()
         auth_successfull = False
+        self.oh.password = password
         while not auth_successfull:
             auth_successfull = minceraft.newUser(self.oh, username, password)
             if not auth_successfull:
                 self.display.listSet("The url is not valid, try again")
                 time.sleep(DEFAULT_DELAY)
-        self.oh.password = password
 
     def selectOption(self) -> bool:
         """
